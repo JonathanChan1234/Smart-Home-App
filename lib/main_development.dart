@@ -12,6 +12,7 @@ Future<void> main() async {
     authLocalStorageApi:
         AuthLocalStorageApi(plugin: await SharedPreferences.getInstance()),
   );
+  await authRepository.checkAuthState();
   await bootstrap(
     () => App(
       authRepository: authRepository,

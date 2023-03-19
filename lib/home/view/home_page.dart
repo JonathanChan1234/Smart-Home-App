@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:smart_home/home/cubit/home_cubit.dart';
-import 'package:smart_home/rooms/room.dart';
 import 'package:smart_home/settings/view/setting_page.dart';
+import 'package:smart_home/smart_home/view/smart_home_page.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -31,7 +31,7 @@ class HomeView extends StatelessWidget {
       body: IndexedStack(
         index: currentTab.index,
         children: const [
-          RoomsPage(),
+          SmartHomePage(),
           Text('Scene Page'),
           SettingPage(),
         ],
@@ -45,7 +45,7 @@ class HomeView extends StatelessWidget {
               value: HomeTabs.rooms,
               groupValue: currentTab,
               icon: Icons.home,
-              label: 'Rooms',
+              label: 'Home',
             ),
             _HomeTabButton(
               value: HomeTabs.scenes,

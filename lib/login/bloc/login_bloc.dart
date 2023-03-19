@@ -1,3 +1,4 @@
+import 'package:auth_api/auth_api.dart';
 import 'package:auth_repository/auth_repository.dart';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
@@ -64,6 +65,13 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
       emit(
         state.copyWith(
           status: FormzStatus.submissionSuccess,
+        ),
+      );
+    } on AuthBadRequestException catch (e) {
+      emit(
+        state.copyWith(
+          status: FormzStatus.submissionFailure,
+          requestError: e.message,
         ),
       );
     } catch (e) {

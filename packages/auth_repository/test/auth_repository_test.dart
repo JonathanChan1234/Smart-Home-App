@@ -249,8 +249,8 @@ void main() {
           accessToken: expiredAccessToken, refreshToken: refreshToken);
 
       when(() => authLocalStorageApi.getAuthToken()).thenReturn(authToken);
-      when(() => apiClient.refreshToken(any(), any()))
-          .thenAnswer((_) async => throw AuthBadRequestException());
+      when(() => apiClient.refreshToken(any(), any())).thenAnswer(
+          (_) async => throw const AuthBadRequestException(message: ''));
       when(() => authLocalStorageApi.storeAuthToken(any(), any()))
           .thenAnswer((_) async => true);
 

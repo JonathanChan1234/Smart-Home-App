@@ -6,6 +6,7 @@ import 'package:smart_home/home/view/home_page.dart';
 import 'package:smart_home/l10n/l10n.dart';
 import 'package:smart_home/login/view/login_page.dart';
 import 'package:smart_home/theme/app_theme.dart';
+import 'package:smart_home_api_client/smart_home_api_client.dart';
 
 class App extends StatefulWidget {
   const App({super.key, required this.authRepository});
@@ -25,8 +26,11 @@ class _AppState extends State<App> {
 
   @override
   Widget build(BuildContext context) {
-    return RepositoryProvider.value(
-      value: widget.authRepository,
+    return MultiRepositoryProvider(
+      providers: [
+        RepositoryProvider<AuthRepository>.value(value: widget.authRepository),
+        RepositoryProvider(create: (_) => SmartHomeApiClient())
+      ],
       child: BlocProvider(
         create: (_) =>
             AuthenticationBloc(authRepository: widget.authRepository),

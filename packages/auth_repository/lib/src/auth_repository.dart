@@ -56,6 +56,11 @@ class AuthRepository {
     return JwtUtils.getAuthUserFromJwt(authToken.accessToken);
   }
 
+  Future<void> checkAuthState() async {
+    final token = await getAuthToken();
+    if (token != null) _controller.add(AuthenticationStatus.authenticated);
+  }
+
   Future<AuthToken?> getAuthToken() async {
     try {
       // Get the jwt from local storage

@@ -7,6 +7,7 @@ environment:
   sdk: ">=2.18.0 <3.0.0"
   flutter: 3.3.10
 
+
 dependencies:
   auth_api:
     path: packages/auth_api
@@ -23,17 +24,29 @@ dependencies:
     sdk: flutter
   formz: ^0.4.1
   google_fonts: ^4.0.2
+  home_api:
+    path: packages/home_api
   intl: ^0.17.0
+  json_annotation: ^4.8.0
+  room_api:
+    path: packages/room_api
+  smart_home_api_client:
+    path: packages/smart_home_api_client
 
 dev_dependencies:
   bloc_test: ^9.1.0
+  build_runner: ^2.3.3
   flutter_test:
     sdk: flutter
+  json_serializable: ^6.6.1
   mocktail: ^0.3.0
   very_good_analysis: ^3.1.0
 
 flutter:
   uses-material-design: true
   generate: true
+  assets:
+    - images/home_banner.png
+
 
 

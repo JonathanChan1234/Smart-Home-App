@@ -4,45 +4,43 @@ enum RoomsStatus { initial, loading, success, failure }
 
 class RoomsState extends Equatable {
   const RoomsState({
-    this.rooms = const [],
+    required this.home,
     this.floors = const [],
     this.status = RoomsStatus.initial,
-    this.selectedFloor = all,
+    this.selectedFloorId = all,
+    this.requestError = '',
   });
 
   static const String all = 'all';
   static const String favorite = 'favorite';
 
-  final List<Room> rooms;
   final RoomsStatus status;
-  final String selectedFloor;
-  final List<String> floors;
+  final SmartHome home;
+  final List<Floor> floors;
+  final String selectedFloorId;
+  final String requestError;
 
-  Iterable<Room> get filteredRooms => rooms.where((room) {
-        switch (selectedFloor) {
-          case RoomsState.all:
-            return true;
-          case RoomsState.favorite:
-            return room.isFavorite;
-          default:
-            return room.floor == selectedFloor;
-        }
-      });
+  Iterable<Room> get favoriteRooms => floors
+      .map((floor) => floor.rooms)
+      .expand((floorRooms) => floorRooms)
+      .where((room) => room.isFavorite);
 
   RoomsState copyWith({
-    List<Room>? rooms,
-    List<String>? floors,
+    List<Floor>? floors,
     RoomsStatus? status,
-    String? selectedFloor,
+    String? selectedFloorId,
+    String? requestError,
   }) {
     return RoomsState(
-      rooms: rooms ?? this.rooms,
-      status: status ?? this.status,
+      home: home,
       floors: floors ?? this.floors,
-      selectedFloor: selectedFloor ?? this.selectedFloor,
+      status: status ?? this.status,
+      selectedFloorId: selectedFloorId ?? this.selectedFloorId,
+      requestError: requestError ?? this.requestError,
     );
   }
 
   @override
-  List<Object> get props => [rooms, status, selectedFloor];
+  List<Object> get props =>
+      [home, status, floors, favoriteRooms, selectedFloorId];
 }

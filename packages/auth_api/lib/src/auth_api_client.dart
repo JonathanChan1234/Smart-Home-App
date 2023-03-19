@@ -36,7 +36,7 @@ class AuthApiClient {
       throw AuthFailureException();
     }
 
-    if (response.statusCode != 200) {
+    if (response.statusCode == 500) {
       throw ServerInternalFailure();
     }
   }

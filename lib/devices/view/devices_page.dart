@@ -33,7 +33,7 @@ class DevicesView extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         leading: const BackButton(color: Colors.black),
-        title: Text('${room.floor} - ${room.name}'),
+        title: Text(room.name),
       ),
       body: LayoutBuilder(
         builder: (BuildContext context, BoxConstraints constraints) => Column(

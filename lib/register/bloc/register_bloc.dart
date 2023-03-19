@@ -45,7 +45,8 @@ class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
       state.copyWith(
         email: email,
         status: Formz.validate(
-            [state.username, email, state.password, state.confirmPassword]),
+          [state.username, email, state.password, state.confirmPassword],
+        ),
       ),
     );
   }
@@ -59,7 +60,8 @@ class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
       state.copyWith(
         password: password,
         status: Formz.validate(
-            [state.username, state.email, password, state.confirmPassword]),
+          [state.username, state.email, password, state.confirmPassword],
+        ),
       ),
     );
   }
@@ -104,7 +106,7 @@ class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
           requestError: e.message,
         ),
       );
-    } catch (_) {
+    } catch (e) {
       emit(
         state.copyWith(
           status: FormzStatus.submissionFailure,

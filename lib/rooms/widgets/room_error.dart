@@ -13,11 +13,10 @@ class RoomError extends StatelessWidget {
         children: [
           Text(
             'Something went wrong',
-            style: textTheme.headlineSmall?.copyWith(color: colorTheme),
+            style: textTheme.headlineSmall?.copyWith(color: Colors.red),
           ),
           const Padding(
             padding: EdgeInsets.all(16),
-            child: CircularProgressIndicator(),
           )
         ],
       ),

@@ -19,3 +19,14 @@ class Password extends FormzInput<String, PasswordValidationError> {
     return null;
   }
 }
+
+extension PasswordValidationErrorExtension on PasswordValidationError {
+  String get message {
+    switch (this) {
+      case PasswordValidationError.empty:
+        return 'Password cannot be empty';
+      case PasswordValidationError.invalid:
+        return '''Invalid Password. Password must contain at least 1 uppercase, lowercase and numeric character''';
+    }
+  }
+}
