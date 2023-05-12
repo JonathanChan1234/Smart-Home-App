@@ -2,25 +2,12 @@ import 'package:dio/dio.dart';
 
 import 'models/error_message.dart';
 
-class HttpBadRequestException implements Exception {
-  const HttpBadRequestException({required this.message});
-
-  final String message;
+class SmartHomeApiException extends DioError {
+  const SmartHomeApiException({
+    message,
+    required super.requestOptions,
+  }) : super(message: message);
 }
-
-class HttpBadFormatException implements Exception {}
-
-class HttpNotFoundException implements Exception {
-  const HttpNotFoundException({required this.message});
-
-  final String message;
-}
-
-class HttpBadAuthenticationException implements Exception {}
-
-class HttpInternalServerException implements Exception {}
-
-class HttpNetworkException implements Exception {}
 
 class SmartHomeApiClient {
   SmartHomeApiClient({
@@ -44,26 +31,35 @@ class SmartHomeApiClient {
         onError: (DioError e, ErrorInterceptorHandler handler) {
           final response = e.response;
           if (response == null) {
-            throw HttpNetworkException();
+            return handler.reject(SmartHomeApiException(
+                requestOptions: e.requestOptions,
+                message: 'Network is poor, please try later'));
           }
 
           switch (response.statusCode) {
             case 400:
-              throw HttpBadRequestException(
+              return handler.reject(SmartHomeApiException(
                   message: ErrorMessage.fromJson(
                           e.response?.data as Map<String, dynamic>)
-                      .message);
+                      .message,
+                  requestOptions: e.requestOptions));
             case 401:
-              throw HttpBadAuthenticationException();
+              return handler.reject(SmartHomeApiException(
+                  message: 'Unauthenticated',
+                  requestOptions: e.requestOptions));
             case 403:
-              throw HttpBadFormatException();
+              return handler.reject(SmartHomeApiException(
+                  message: 'Unauthorized', requestOptions: e.requestOptions));
             case 404:
-              throw HttpNotFoundException(
+              return handler.reject(SmartHomeApiException(
                   message: ErrorMessage.fromJson(
                           e.response?.data as Map<String, dynamic>)
-                      .message);
+                      .message,
+                  requestOptions: e.requestOptions));
             case 500:
-              throw HttpInternalServerException();
+              return handler.reject(SmartHomeApiException(
+                  message: 'Something is wrong',
+                  requestOptions: e.requestOptions));
           }
           return handler.next(e);
         },

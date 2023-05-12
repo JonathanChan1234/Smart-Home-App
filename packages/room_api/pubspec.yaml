@@ -9,8 +9,7 @@ environment:
   flutter: ">=1.17.0"
 
 dependencies:
-  auth_repository:
-    path: ../auth_repository
+  equatable: ^2.0.5
   flutter:
     sdk: flutter
   json_annotation: ^4.8.0

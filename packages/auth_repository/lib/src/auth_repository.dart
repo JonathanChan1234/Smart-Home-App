@@ -20,13 +20,14 @@ class AuthRepository {
 
   Stream<AuthenticationStatus> get status async* {
     yield AuthenticationStatus.unauthenticated;
-    yield* _controller.stream;
+    yield* _controller.stream.asBroadcastStream();
   }
 
-  Future<AuthUser> register(
-      {required String email,
-      required String username,
-      required String password}) async {
+  Future<AuthUser> register({
+    required String email,
+    required String username,
+    required String password,
+  }) async {
     final registerResponse =
         await _authApiClient.register(email, username, password);
     // store the jwt token and login info in local storage

@@ -16,6 +16,8 @@ dependencies:
   auth_repository:
     path: packages/auth_repository
   bloc: ^8.1.0
+  devices_api:
+    path: packages/devices_api
   equatable: ^2.0.5
   flutter:
     sdk: flutter
@@ -26,15 +28,28 @@ dependencies:
   google_fonts: ^4.0.2
   home_api:
     path: packages/home_api
+  home_repository:
+    path: packages/home_repository
+  hydrated_bloc: ^9.1.0
   intl: ^0.17.0
   json_annotation: ^4.8.0
+  lights_api:
+    path: packages/lights_api
+  lights_repository:
+    path: packages/lights_repository
+  mqtt_smarthome_client:
+    path: packages/mqtt_smarthome_client
+  path_provider: ^2.0.14
   room_api:
     path: packages/room_api
+  room_repository:
+    path: packages/room_repository
+  rxdart: ^0.27.7
   smart_home_api_client:
     path: packages/smart_home_api_client
 
 dev_dependencies:
-  bloc_test: ^9.1.0
+  bloc_test: ^9.1.1
   build_runner: ^2.3.3
   flutter_test:
     sdk: flutter

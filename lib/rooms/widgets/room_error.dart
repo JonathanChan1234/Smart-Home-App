@@ -5,7 +5,6 @@ class RoomError extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorTheme = Theme.of(context).secondaryHeaderColor;
     final textTheme = Theme.of(context).textTheme;
     return Center(
       child: Column(

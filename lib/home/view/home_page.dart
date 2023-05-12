@@ -1,19 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:smart_home/home/cubit/home_cubit.dart';
-import 'package:smart_home/settings/view/setting_page.dart';
-import 'package:smart_home/smart_home/view/smart_home_page.dart';
+import 'package:smart_home/home/bloc/home_bloc.dart';
+import 'package:smart_home/smart_home_connect/view/smart_home_connect.dart';
+import 'package:smart_home/smart_home_overview/view/smart_home_overview.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
-  static Route<void> route() =>
-      MaterialPageRoute(builder: (_) => const HomePage());
-
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => HomeCubit(),
+      create: (context) => HomeBloc(),
       child: const HomeView(),
     );
   }
@@ -24,73 +21,14 @@ class HomeView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final currentTab =
-        context.select((HomeCubit cubit) => cubit.state.currentTab);
-
-    return Scaffold(
-      body: IndexedStack(
-        index: currentTab.index,
-        children: const [
-          SmartHomePage(),
-          Text('Scene Page'),
-          SettingPage(),
-        ],
-      ),
-      bottomNavigationBar: BottomAppBar(
-        shape: const CircularNotchedRectangle(),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            _HomeTabButton(
-              value: HomeTabs.rooms,
-              groupValue: currentTab,
-              icon: Icons.home,
-              label: 'Home',
-            ),
-            _HomeTabButton(
-              value: HomeTabs.scenes,
-              groupValue: currentTab,
-              icon: Icons.dashboard_customize,
-              label: 'Scenes',
-            ),
-            _HomeTabButton(
-              value: HomeTabs.settings,
-              groupValue: currentTab,
-              icon: Icons.settings,
-              label: 'Settings',
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _HomeTabButton extends StatelessWidget {
-  const _HomeTabButton({
-    required this.value,
-    required this.groupValue,
-    required this.icon,
-    required this.label,
-  });
-
-  final HomeTabs value;
-  final HomeTabs groupValue;
-  final IconData icon;
-  final String label;
-
-  @override
-  Widget build(BuildContext context) {
-    final color = groupValue == value
-        ? Theme.of(context).colorScheme.secondary
-        : Colors.black;
-    return TextButton.icon(
-      onPressed: () => context.read<HomeCubit>().setCurrentTab(value),
-      icon: Icon(icon, size: 32, color: color),
-      label: Text(
-        label,
-        style: TextStyle(color: color, fontSize: 12),
-      ),
+    return BlocBuilder<HomeBloc, HomeState>(
+      buildWhen: (previous, current) =>
+          previous.selectedHome != current.selectedHome,
+      builder: (ctx, state) {
+        final home = state.selectedHome;
+        if (home == null) return const SmartHomeOverview();
+        return SmartHomeConnect(home: home);
+      },
     );
   }
 }

@@ -1,32 +1,30 @@
-import 'package:auth_repository/auth_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:room_api/room_api.dart' hide Floor;
-import 'package:smart_home/rooms/cubit/rooms_cubit.dart';
-import 'package:smart_home/rooms/widgets/room_overview.dart';
+import 'package:home_api/home_api.dart';
+import 'package:room_repository/room_repository.dart';
+import 'package:smart_home/home/bloc/home_bloc.dart';
+import 'package:smart_home/rooms/bloc/rooms_bloc.dart';
 import 'package:smart_home/rooms/widgets/widget.dart';
-import 'package:smart_home/smart_home/models/smart_home.dart';
-import 'package:smart_home_api_client/smart_home_api_client.dart';
 
 class RoomsPage extends StatelessWidget {
-  const RoomsPage({super.key});
+  const RoomsPage({
+    super.key,
+    required this.home,
+  });
 
-  static Route<void> route(SmartHome home) => MaterialPageRoute(
-        builder: (context) => BlocProvider(
-          create: (context) => RoomsCubit(
-            home: home,
-            roomApi: RoomApi(
-              authRepository: context.read<AuthRepository>(),
-              smartHomeApiClient: context.read<SmartHomeApiClient>(),
-            ),
-          )..getAllRooms(),
-          child: const RoomView(),
-        ),
-      );
+  final SmartHome home;
 
   @override
   Widget build(BuildContext context) {
-    return const RoomView();
+    return BlocProvider(
+      create: (cotnext) => RoomsBloc(
+        home: home,
+        roomRepository: context.read<RoomRepository>(),
+      )
+        ..add(const RoomSubscriptionRequestEvent())
+        ..add(const RoomListInitEvent()),
+      child: const RoomView(),
+    );
   }
 }
 
@@ -35,40 +33,77 @@ class RoomView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final homeName = context.read<RoomsCubit>().state.home.name;
-
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(homeName),
+    void showExitDialog(String homeName) {
+      final alert = AlertDialog(
+        title: const Text('Exit Home'),
+        content: Text(
+          'Would you like to exit $homeName?',
+        ),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.refresh),
+          ElevatedButton(
             onPressed: () {
-              context.read<RoomsCubit>().getAllRooms();
+              Navigator.of(context).pop();
             },
-          )
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.blueAccent),
+            child: const Text(
+              'Cancel',
+              style: TextStyle(color: Colors.white),
+            ),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+              context.read<HomeBloc>().add(const HomeDeselectedEvent());
+            },
+            style: TextButton.styleFrom(backgroundColor: Colors.redAccent),
+            child: const Text(
+              'Exit',
+              style: TextStyle(color: Colors.white),
+            ),
+          ),
         ],
-      ),
-      body: BlocBuilder<RoomsCubit, RoomsState>(
-        buildWhen: (previous, current) =>
-            previous.status != current.status ||
-            previous.selectedFloorId != current.selectedFloorId,
-        builder: (context, state) {
-          switch (state.status) {
-            case RoomsStatus.initial:
-              return const RoomInitial();
-            case RoomsStatus.loading:
-              return const RoomLoading();
-            case RoomsStatus.success:
-              return RoomOverview(
-                floors: state.floors,
-                selectedFloorId: state.selectedFloorId,
-              );
-            case RoomsStatus.failure:
-              return const RoomError();
-          }
+      );
+      showDialog<void>(
+        context: context,
+        builder: (BuildContext context) {
+          return alert;
         },
-      ),
+      );
+    }
+
+    return BlocBuilder<RoomsBloc, RoomsState>(
+      builder: (context, state) {
+        return Scaffold(
+          appBar: AppBar(
+            title: Text(state.home.name),
+            actions: [
+              IconButton(
+                icon: const Icon(Icons.refresh),
+                onPressed: () =>
+                    context.read<RoomsBloc>().add(const RoomListInitEvent()),
+              ),
+              IconButton(
+                onPressed: () => {showExitDialog(state.home.name)},
+                icon: const Icon(Icons.exit_to_app_sharp),
+              ),
+            ],
+          ),
+          body: Builder(
+            builder: (_) {
+              switch (state.status) {
+                case RoomsStatus.initial:
+                  return const RoomInitial();
+                case RoomsStatus.loading:
+                  return const RoomLoading();
+                case RoomsStatus.success:
+                  return const RoomOverview();
+                case RoomsStatus.failure:
+                  return const RoomError();
+              }
+            },
+          ),
+        );
+      },
     );
   }
 }

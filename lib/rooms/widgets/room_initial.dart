@@ -11,7 +11,7 @@ class RoomInitial extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(
-            'Initializing',
+            'Initializing Room',
             style: textTheme.headlineSmall,
           )
         ],
