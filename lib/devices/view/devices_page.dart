@@ -6,6 +6,9 @@ import 'package:home_api/home_api.dart';
 import 'package:room_api/room_api.dart';
 import 'package:smart_home/devices/bloc/devices_bloc.dart';
 import 'package:smart_home/devices/widgets/widget.dart';
+import 'package:smart_home/widgets/error_view.dart';
+import 'package:smart_home/widgets/initial_view.dart';
+import 'package:smart_home/widgets/loading_view.dart';
 import 'package:smart_home_api_client/smart_home_api_client.dart';
 
 class DevicesPage extends StatelessWidget {
@@ -65,19 +68,20 @@ class DevicesView extends StatelessWidget {
         builder: (context, state) {
           switch (state.status) {
             case DevicesStatus.initial:
-              return const DevicesInitial();
+              return const InitialView(
+                title: 'Initializing Your Devices',
+              );
             case DevicesStatus.loading:
-              return const DevicesLoading();
+              return const LoadingView(message: 'Loading...');
             case DevicesStatus.success:
               return DevicesOverview(
-                devices: state.devices
-                    .where((device) => device.numberOfDevice != 0)
-                    .toList(),
+                devices:
+                    state.deviceCount.where((row) => row.count != 0).toList(),
                 home: state.home,
                 room: state.room,
               );
             case DevicesStatus.failure:
-              return DevicesError(message: state.requestError);
+              return ErrorView(message: state.requestError);
           }
         },
       ),

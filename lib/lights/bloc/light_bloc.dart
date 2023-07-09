@@ -33,6 +33,7 @@ class LightBloc extends Bloc<LightEvent, LightState> {
     emit(state.copyWith(status: LightStatus.loading));
     try {
       await _lightsRepository.fetchLightsInRoom(
+        homeId: state.home.id,
         roomId: state.room.id,
       );
     } catch (error) {
@@ -79,7 +80,7 @@ class LightBloc extends Bloc<LightEvent, LightState> {
       _lightsRepository.updateLightStatus(
         homeId: state.home.id,
         deviceId: event.deviceId,
-        brightness: event.brightness,
+        properties: event.properties,
       );
     } catch (error) {
       emit(

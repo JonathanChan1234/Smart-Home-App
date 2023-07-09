@@ -40,10 +40,14 @@ class LightsRepository {
   }
 
   Future<void> fetchLightsInRoom({
+    required String homeId,
     required String roomId,
   }) async {
     try {
-      final lights = await _lightsApi.fetchLightsInRoom(roomId);
+      final lights = await _lightsApi.fetchLightsInRoom(
+        homeId: homeId,
+        roomId: roomId,
+      );
       _lightsStreamController.add(lights);
     } on Exception catch (error) {
       _lightsStreamController.addError(error);
@@ -53,20 +57,20 @@ class LightsRepository {
   void updateLightStatus({
     required String homeId,
     required String deviceId,
-    required int brightness,
+    required LightProperties properties,
   }) {
     final topic = 'home/$homeId/device/light/$deviceId/control';
-    final payload = LightPayload(brightness: brightness, time: DateTime.now());
+    final payload = LightPayload(properties: properties, time: DateTime.now());
     _mqttClient.publish(topic, jsonEncode(payload.toJson()));
   }
 
   Future<void> updateLightInRoom({
-    required String roomId,
+    required String homeId,
     required String lightId,
     required String name,
   }) async {
     await _lightsApi.updateLightName(
-      roomId: roomId,
+      homeId: homeId,
       lightId: lightId,
       name: name,
     );
@@ -93,7 +97,7 @@ class LightsRepository {
     }
 
     lights[updatedLightIndex] = lights[updatedLightIndex].copyWith(
-      level: status.payload.brightness,
+      properties: status.payload.properties,
       statusLastUpdatedAt: status.payload.time,
     );
     _lightsStreamController.add(lights);

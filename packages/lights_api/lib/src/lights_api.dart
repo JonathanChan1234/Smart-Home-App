@@ -22,16 +22,17 @@ class LightsApi {
   final AuthRepository _authRepository;
   final SmartHomeApiClient _smartHomeApiClient;
 
-  Future<List<Light>> fetchLightsInRoom(
-    String roomId,
-  ) async {
+  Future<List<Light>> fetchLightsInRoom({
+    required String homeId,
+    required String roomId,
+  }) async {
     final accessToken = (await _authRepository.getAuthToken())?.accessToken;
     if (accessToken == null) {
       throw const LightsApiException(message: 'unable to get access token');
     }
     try {
       final response = await _smartHomeApiClient.httpGet(
-        path: '/room/$roomId/device/light',
+        path: '/home/$homeId/light?roomId=$roomId',
         accessToken: accessToken,
       );
       final body = response.data;
@@ -46,17 +47,18 @@ class LightsApi {
     }
   }
 
-  Future<void> updateLightName(
-      {required String roomId,
-      required String lightId,
-      required String name}) async {
+  Future<void> updateLightName({
+    required String homeId,
+    required String lightId,
+    required String name,
+  }) async {
     final accessToken = (await _authRepository.getAuthToken())?.accessToken;
     if (accessToken == null) {
       throw const LightsApiException(message: 'unable to get access token');
     }
     try {
       await _smartHomeApiClient.httpPut(
-        path: '/room/$roomId/device/light/$lightId',
+        path: '/home/$homeId/device/$lightId',
         body: jsonEncode(UpdateLightDto(name: name).toJson()),
         accessToken: accessToken,
       );

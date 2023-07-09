@@ -20,50 +20,24 @@ class DeviceApi {
 
   /// Fetch the number of devices in each category
   /// throw [DeviceApiException] for any error;
-  Future<List<SmartHomeDevice>> fetchDevicesInRoom(String roomId) async {
+  Future<List<DeviceCount>> fetchDevicesInRoom(
+      String homeId, String roomId) async {
     final accessToken = (await _authRepository.getAuthToken())?.accessToken;
     if (accessToken == null) {
       throw DeviceApiException(message: 'unauthenticated');
     }
     try {
       final response = await _smartHomeApiClient.httpGet(
-        path: '/room/$roomId/device',
+        path: '/home/$homeId/device/count?roomId=$roomId',
         accessToken: accessToken,
       );
       final body = response.data;
       if (body == null) throw DeviceApiException(message: 'Empty Body');
-      final devices = (body as List<dynamic>)
-          .map((device) => Device.fromJson(device as Map<String, dynamic>))
-          .toList();
-      return devices
-          .map(
-            (device) => SmartHomeDevice(
-              deviceType: DeviceType.values.firstWhere(
-                  (value) => value.toTypeString() == device.deviceType,
-                  orElse: () => DeviceType.unknown),
-              numberOfDevice: device.numberOfDevices,
-            ),
-          )
+      return (body as List<dynamic>)
+          .map((device) => DeviceCount.fromJson(device as Map<String, dynamic>))
           .toList();
     } on SmartHomeApiException catch (e) {
       throw DeviceApiException(message: e.message);
     }
-  }
-
-  Future<List<Shade>> fetchShadesInRoom(String roomId) async {
-    final accessToken = (await _authRepository.getAuthToken())?.accessToken;
-    if (accessToken == null) {
-      throw DeviceApiException(message: 'unable to get access token');
-    }
-    final response = await _smartHomeApiClient.httpGet(
-      path: '/room/$roomId/device/shade',
-      accessToken: accessToken,
-    );
-    final body = response.data;
-    if (body == null) throw DeviceApiException(message: 'Empty Body');
-    final shades = (body as List<dynamic>)
-        .map((shade) => Shade.fromJson(shade as Map<String, dynamic>))
-        .toList();
-    return shades;
   }
 }

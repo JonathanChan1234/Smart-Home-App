@@ -435,10 +435,10 @@ packages:
     dependency: "direct main"
     description:
       name: json_annotation
-      sha256: c33da08e136c3df0190bd5bbe51ae1df4a7d96e7954d1d7249fea2968a72d317
+      sha256: b10a7b2ff83d83c777edba3c6a0f97045ddadd56c944e1a23a3fdf43a1bf4467
       url: "https://pub.dev"
     source: hosted
-    version: "4.8.0"
+    version: "4.8.1"
   json_serializable:
     dependency: "direct dev"
     description:
@@ -689,6 +689,48 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.27.7"
+  scene_action_api:
+    dependency: "direct main"
+    description:
+      path: "packages/scene_action_api"
+      relative: true
+    source: path
+    version: "0.0.1"
+  scene_action_repository:
+    dependency: "direct main"
+    description:
+      path: "packages/scene_action_repository"
+      relative: true
+    source: path
+    version: "0.0.1"
+  scene_api:
+    dependency: "direct main"
+    description:
+      path: "packages/scene_api"
+      relative: true
+    source: path
+    version: "0.0.1"
+  scene_repository:
+    dependency: "direct main"
+    description:
+      path: "packages/scene_repository"
+      relative: true
+    source: path
+    version: "0.0.1"
+  shades_api:
+    dependency: "direct main"
+    description:
+      path: "packages/shades_api"
+      relative: true
+    source: path
+    version: "0.0.1"
+  shades_repository:
+    dependency: "direct main"
+    description:
+      path: "packages/shades_repository"
+      relative: true
+    source: path
+    version: "0.0.1"
   shared_preferences:
     dependency: transitive
     description:
@@ -786,6 +828,13 @@ packages:
     dependency: "direct main"
     description:
       path: "packages/smart_home_api_client"
+      relative: true
+    source: path
+    version: "0.0.1"
+  smart_home_exception:
+    dependency: "direct main"
+    description:
+      path: "packages/smart_home_exception"
       relative: true
     source: path
     version: "0.0.1"

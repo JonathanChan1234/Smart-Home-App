@@ -13,6 +13,9 @@ class LightControl extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final brightness = light.properties.brightness ?? 0;
+    final dimmable = light.capabilities.dimmable;
+
     return DecoratedBox(
       decoration: const BoxDecoration(
         color: Colors.white,
@@ -22,42 +25,49 @@ class LightControl extends StatelessWidget {
         children: [
           ListTile(
             title: Text(light.name),
-            subtitle: Text('${light.level}%'),
+            subtitle: light.properties.brightness == null
+                ? const Text('--')
+                : dimmable
+                    ? Text('$brightness%')
+                    : Text(brightness > 0 ? 'ON' : 'OFF'),
             trailing: Switch(
               activeColor: Colors.yellow,
-              value: light.level > 0,
+              value: brightness > 0,
               onChanged: (value) => context.read<LightBloc>().add(
                     LightStatusChangedEvent(
                       deviceId: light.id,
-                      brightness: light.level == 0 ? 100 : 0,
+                      properties: light.properties.copyWith(
+                        brightness: () => brightness == 0 ? 100 : 0,
+                      ),
                     ),
                   ),
             ),
           ),
-          SliderTheme(
-            data: SliderTheme.of(context).copyWith(
-              trackHeight: 30,
-              trackShape: const RoundedRectSliderTrackShape(),
-              activeTrackColor: Colors.yellow,
-              inactiveTrackColor: Colors.grey.shade300,
-              thumbShape: const RoundSliderThumbShape(
-                enabledThumbRadius: 15,
-                pressedElevation: 8,
+          if (dimmable)
+            SliderTheme(
+              data: SliderTheme.of(context).copyWith(
+                trackHeight: 30,
+                trackShape: const RoundedRectSliderTrackShape(),
+                activeTrackColor: Colors.yellow,
+                inactiveTrackColor: Colors.grey.shade300,
+                thumbShape: const RoundSliderThumbShape(
+                  enabledThumbRadius: 15,
+                  pressedElevation: 8,
+                ),
+                thumbColor: Colors.white,
+                overlayShape: const RoundSliderOverlayShape(overlayRadius: 10),
               ),
-              thumbColor: Colors.white,
-              overlayShape: const RoundSliderOverlayShape(overlayRadius: 10),
-            ),
-            child: Slider(
-              max: 100,
-              value: light.level.toDouble(),
-              onChanged: (level) => context.read<LightBloc>().add(
-                    LightStatusChangedEvent(
-                      deviceId: light.id,
-                      brightness: level.toInt(),
+              child: Slider(
+                max: 100,
+                value: brightness.toDouble(),
+                onChanged: (level) => context.read<LightBloc>().add(
+                      LightStatusChangedEvent(
+                        deviceId: light.id,
+                        properties: LightProperties(brightness: level.toInt()),
+                      ),
                     ),
-                  ),
+              ),
             ),
-          ),
           const Divider(),
         ],
       ),

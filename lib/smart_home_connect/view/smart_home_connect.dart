@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:home_api/home_api.dart';
 import 'package:home_repository/home_repository.dart';
-import 'package:smart_home/rooms/room.dart';
 import 'package:smart_home/smart_home_connect/bloc/smart_home_connect_bloc.dart';
 import 'package:smart_home/smart_home_connect/widgets/smart_home_connect_connecting.dart';
 import 'package:smart_home/smart_home_connect/widgets/smart_home_connect_disconnected.dart';
 import 'package:smart_home/smart_home_connect/widgets/smart_home_connect_failure.dart';
 import 'package:smart_home/smart_home_connect/widgets/smart_home_connect_initial.dart';
+import 'package:smart_home/smart_home_connect/widgets/smart_home_connected.dart';
 
 class SmartHomeConnect extends StatelessWidget {
   const SmartHomeConnect({
@@ -46,7 +46,7 @@ class SmartHomeConnectView extends StatelessWidget {
                 case SmartHomeConnectStatus.connecting:
                   return SmartHomeConnectConnecting(home: state.home);
                 case SmartHomeConnectStatus.connected:
-                  return RoomsPage(home: state.home);
+                  return SmartHomeConnected(home: state.home);
                 case SmartHomeConnectStatus.disconnected:
                   return SmartHomeConnectDisconnected(home: state.home);
                 case SmartHomeConnectStatus.failure:

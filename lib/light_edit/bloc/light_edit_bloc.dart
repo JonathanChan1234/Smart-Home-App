@@ -32,7 +32,7 @@ class LightEditBloc extends Bloc<LightEditEvent, LightEditState> {
     emit(state.copyWith(status: LightEditStatus.loading));
     try {
       await _lightsRepository.updateLightInRoom(
-        roomId: state.light.roomId,
+        homeId: state.light.homeId,
         lightId: state.light.id,
         name: state.name,
       );

@@ -18,14 +18,14 @@ class LightListInitEvent extends LightEvent {
 class LightStatusChangedEvent extends LightEvent {
   const LightStatusChangedEvent({
     required this.deviceId,
-    required this.brightness,
+    required this.properties,
   });
 
   final String deviceId;
-  final int brightness;
+  final LightProperties properties;
 
   @override
-  List<Object?> get props => [deviceId, brightness];
+  List<Object?> get props => [deviceId, properties];
 }
 
 class LightEditModeChangedEvent extends LightEvent {

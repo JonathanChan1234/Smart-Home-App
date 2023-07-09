@@ -27,11 +27,12 @@ class DevicesBloc extends Bloc<DevicesEvent, DevicesState> {
   ) async {
     emit(state.copyWith(status: DevicesStatus.loading));
     try {
-      final devices = await _deviceApi.fetchDevicesInRoom(state.room.id);
+      final devices =
+          await _deviceApi.fetchDevicesInRoom(state.home.id, state.room.id);
       emit(
         state.copyWith(
           status: DevicesStatus.success,
-          devices: devices,
+          deviceCount: devices,
           requestError: '',
         ),
       );

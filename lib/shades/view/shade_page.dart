@@ -1,148 +1,87 @@
+import 'package:auth_repository/auth_repository.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:home_api/home_api.dart';
+import 'package:mqtt_smarthome_client/mqtt_smarthome_client.dart';
 import 'package:room_api/room_api.dart';
-import 'package:smart_home/shades/view/shade_slider_thumb.dart';
+import 'package:shades_api/shades_api.dart';
+import 'package:shades_repository/shades_repository.dart' hide ShadeStatus;
+import 'package:smart_home/shades/bloc/shade_bloc.dart';
+import 'package:smart_home/shades/widgets/shade_overview.dart';
+import 'package:smart_home/widgets/error_view.dart';
+import 'package:smart_home/widgets/initial_view.dart';
+import 'package:smart_home/widgets/loading_view.dart';
+import 'package:smart_home_api_client/smart_home_api_client.dart';
 
 class ShadePage extends StatelessWidget {
-  const ShadePage({super.key, required this.room});
+  const ShadePage({
+    super.key,
+  });
 
-  final Room room;
-
-  static Route<void> route(Room room) {
-    return MaterialPageRoute(builder: (_) => ShadePage(room: room));
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
-
-    final shades = [
-      'Shade 1',
-      'Shade 2',
-      'Shade 3',
-      'Shade 4',
-      'Shade 5',
-      'Shade 6',
-    ];
-    return Scaffold(
-      appBar: AppBar(title: Text('${room.name} - Shades')),
-      body: DecoratedBox(
-        decoration: const BoxDecoration(
-          color: Color.fromARGB(255, 9, 12, 19),
+  static Route<void> route({
+    required SmartHome home,
+    required Room room,
+  }) {
+    return MaterialPageRoute(
+      builder: (_) => RepositoryProvider(
+        create: (context) => ShadesRepository(
+          authRepository: context.read<AuthRepository>(),
+          shadesApi: ShadesApi(
+            smartHomeApiClient: context.read<SmartHomeApiClient>(),
+          ),
+          mqttSmartHomeClient: context.read<MqttSmartHomeClient>(),
         ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(top: 12, left: 12),
-              child: Align(
-                alignment: Alignment.topLeft,
-                child: Text(
-                  'CONTROLS',
-                  style: textTheme.titleSmall!.copyWith(
-                    color: const Color.fromARGB(255, 222, 223, 225),
-                  ),
-                ),
-              ),
-            ),
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
-                child: ListView.builder(
-                  itemCount: shades.length,
-                  itemBuilder: (context, index) => _ShadeControl(
-                    name: shades[index],
-                  ),
-                ),
-              ),
-            )
-          ],
+        child: BlocProvider(
+          create: (context) => ShadeBloc(
+            shadesRepository: context.read<ShadesRepository>(),
+            home: home,
+            room: room,
+          )
+            ..add(const ShadeStatusSubscriptionRequestedEvent())
+            ..add(const ShadeListInitEvent()),
+          child: const ShadePage(),
         ),
       ),
     );
   }
-}
-
-class _ShadeControl extends StatefulWidget {
-  const _ShadeControl({
-    required this.name,
-  });
-
-  final String name;
-
-  @override
-  State<_ShadeControl> createState() => _ShadeControlState();
-}
-
-class _ShadeControlState extends State<_ShadeControl> {
-  double _level = 0;
 
   @override
   Widget build(BuildContext context) {
-    final width = MediaQuery.of(context).size.width;
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(0, 4, 0, 4),
-      child: DecoratedBox(
-        decoration: const BoxDecoration(
-          color: Color.fromARGB(255, 34, 37, 44),
-          borderRadius: BorderRadius.all(Radius.circular(6)),
-        ),
-        child: Column(
-          children: [
-            ListTile(
-              title: Text(
-                widget.name,
-                style: const TextStyle(
-                  color: Color.fromARGB(255, 119, 120, 124),
-                  fontSize: 18,
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8),
-              child: Row(
-                children: [
-                  SliderTheme(
-                    data: SliderTheme.of(context).copyWith(
-                      trackHeight: 3,
-                      activeTrackColor:
-                          const Color.fromARGB(255, 223, 224, 227),
-                      inactiveTrackColor: const Color.fromARGB(255, 70, 73, 80),
-                      overlayShape:
-                          const RoundSliderOverlayShape(overlayRadius: 2),
-                      thumbShape: ShadeSliderThumb(
-                        height: 30,
-                        width: 50,
-                        sliderValue: _level,
-                      ),
-                    ),
-                    child: SizedBox(
-                      width: width * 0.85,
-                      child: Slider(
-                        max: 100,
-                        divisions: 100,
-                        value: _level,
-                        onChanged: (value) {
-                          setState(() {
-                            _level = value;
-                          });
-                        },
-                      ),
-                    ),
-                  ),
-                  // ignore: lines_longer_than_80_chars
-                  Icon(
-                    _level == 0
-                        ? Icons.roller_shades_closed
-                        : Icons.roller_shades_outlined,
-                    color: const Color.fromARGB(255, 222, 223, 255),
-                    size: 30,
-                  )
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
+    return const ShadeView();
+  }
+}
+
+class ShadeView extends StatelessWidget {
+  const ShadeView({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<ShadeBloc, ShadeState>(
+      builder: (context, state) {
+        return Scaffold(
+          appBar: AppBar(title: Text('${state.room.name} - Shades')),
+          body: Builder(
+            builder: (context) {
+              switch (state.status) {
+                case ShadeStatus.initial:
+                  return const InitialView(
+                    title: 'Initializing Shades',
+                  );
+                case ShadeStatus.loading:
+                  return const LoadingView(
+                    message: 'Fetching...',
+                  );
+                case ShadeStatus.success:
+                  return ShadeOverview(shades: state.shades);
+                case ShadeStatus.failure:
+                  return ErrorView(
+                    message: state.requestError,
+                  );
+              }
+            },
+          ),
+        );
+      },
     );
   }
 }

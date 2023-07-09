@@ -12,10 +12,16 @@ Light _$LightFromJson(Map<String, dynamic> json) => $checkedCreate(
       ($checkedConvert) {
         final val = Light(
           id: $checkedConvert('id', (v) => v as String),
+          homeId: $checkedConvert('homeId', (v) => v as String),
           roomId: $checkedConvert('roomId', (v) => v as String),
           name: $checkedConvert('name', (v) => v as String),
-          level: $checkedConvert('level', (v) => v as int),
-          dimmable: $checkedConvert('dimmable', (v) => v as bool),
+          mainCategory: $checkedConvert('mainCategory', (v) => v as int),
+          subCategory: $checkedConvert('subCategory', (v) => v as int),
+          properties: $checkedConvert('properties',
+              (v) => LightProperties.fromJson(v as Map<String, dynamic>)),
+          capabilities: $checkedConvert('capabilities',
+              (v) => LightCapabilities.fromJson(v as Map<String, dynamic>)),
+          onlineStatus: $checkedConvert('onlineStatus', (v) => v as bool),
           statusLastUpdatedAt: $checkedConvert(
               'statusLastUpdatedAt', (v) => DateTime.parse(v as String)),
         );
@@ -25,9 +31,13 @@ Light _$LightFromJson(Map<String, dynamic> json) => $checkedCreate(
 
 Map<String, dynamic> _$LightToJson(Light instance) => <String, dynamic>{
       'id': instance.id,
+      'homeId': instance.homeId,
       'roomId': instance.roomId,
       'name': instance.name,
-      'level': instance.level,
-      'dimmable': instance.dimmable,
+      'mainCategory': instance.mainCategory,
+      'subCategory': instance.subCategory,
+      'properties': instance.properties.toJson(),
+      'capabilities': instance.capabilities.toJson(),
+      'onlineStatus': instance.onlineStatus,
       'statusLastUpdatedAt': instance.statusLastUpdatedAt.toIso8601String(),
     };

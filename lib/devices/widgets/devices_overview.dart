@@ -14,7 +14,7 @@ class DevicesOverview extends StatelessWidget {
     required this.room,
   });
 
-  final List<SmartHomeDevice> devices;
+  final List<DeviceCount> devices;
   final SmartHome home;
   final Room room;
 
@@ -59,14 +59,14 @@ class DevicesOverview extends StatelessWidget {
                   runSpacing: 1,
                   children: devices.map((device) {
                     final params = DeviceParams.fromDeviceType(
-                      type: device.deviceType,
+                      type: device.mainCategory.toDeviceMainCategory(),
                       home: home,
                       room: room,
                     );
                     return DevicesTile(
                       name: params.name,
                       icon: params.icon,
-                      statusText: '${device.numberOfDevice} devices',
+                      statusText: '${device.count} devices',
                       color: params.color,
                       route: params.route,
                     );
@@ -90,26 +90,26 @@ class DeviceParams {
   });
 
   factory DeviceParams.fromDeviceType({
-    required DeviceType type,
+    required DeviceMainCategory type,
     required SmartHome home,
     required Room room,
   }) {
     switch (type) {
-      case DeviceType.light:
+      case DeviceMainCategory.light:
         return DeviceParams(
           name: 'Lights',
           icon: Icons.lightbulb_rounded,
           color: Colors.yellow,
           route: () => LightPage.route(home: home, room: room),
         );
-      case DeviceType.shade:
+      case DeviceMainCategory.shade:
         return DeviceParams(
           name: 'Shades',
           color: Colors.lightBlue,
           icon: Icons.roller_shades_rounded,
-          route: () => ShadePage.route(room),
+          route: () => ShadePage.route(home: home, room: room),
         );
-      case DeviceType.unknown:
+      case DeviceMainCategory.unknown:
         return DeviceParams(
           name: 'Unknown',
           icon: Icons.question_mark,

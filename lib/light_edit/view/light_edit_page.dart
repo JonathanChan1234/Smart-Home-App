@@ -36,7 +36,9 @@ class LightEditPage extends StatelessWidget {
             const SnackBar(content: Text('Light name changed successfully')),
           );
           Navigator.of(context).pop(true);
-        } else if (state.status == LightEditStatus.failure) {
+          return;
+        }
+        if (state.status == LightEditStatus.failure) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text(state.requestError)),
           );
@@ -101,7 +103,7 @@ class _LightNameField extends StatelessWidget {
     final state = context.watch<LightEditBloc>().state;
 
     return TextFormField(
-      key: const Key('roomEdit_name_text_form'),
+      key: const Key('lightEdit_name_text_form'),
       initialValue: state.light.name,
       decoration: InputDecoration(
         enabled: !state.status.isLoadingOrSuccess,

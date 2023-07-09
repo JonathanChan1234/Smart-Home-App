@@ -7,7 +7,6 @@ environment:
   sdk: ">=2.18.0 <3.0.0"
   flutter: 3.3.10
 
-
 dependencies:
   auth_api:
     path: packages/auth_api
@@ -45,8 +44,22 @@ dependencies:
   room_repository:
     path: packages/room_repository
   rxdart: ^0.27.7
+  scene_action_api:
+    path: packages/scene_action_api
+  scene_action_repository:
+    path: packages/scene_action_repository
+  scene_api:
+    path: packages/scene_api
+  scene_repository:
+    path: packages/scene_repository
+  shades_api:
+    path: packages/shades_api
+  shades_repository:
+    path: packages/shades_repository
   smart_home_api_client:
     path: packages/smart_home_api_client
+  smart_home_exception:
+    path: packages/smart_home_exception
 
 dev_dependencies:
   bloc_test: ^9.1.1

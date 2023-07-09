@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:smart_home_exception/smart_home_exception.dart';
 
 import 'models/error_message.dart';
 
@@ -6,7 +7,10 @@ class SmartHomeApiException extends DioError {
   const SmartHomeApiException({
     message,
     required super.requestOptions,
+    required this.code,
   }) : super(message: message);
+
+  final ErrorCode code;
 }
 
 class SmartHomeApiClient {
@@ -33,7 +37,8 @@ class SmartHomeApiClient {
           if (response == null) {
             return handler.reject(SmartHomeApiException(
                 requestOptions: e.requestOptions,
-                message: 'Network is poor, please try later'));
+                message: 'Network is poor, please try later',
+                code: ErrorCode.networkIssue));
           }
 
           switch (response.statusCode) {
@@ -42,24 +47,34 @@ class SmartHomeApiClient {
                   message: ErrorMessage.fromJson(
                           e.response?.data as Map<String, dynamic>)
                       .message,
-                  requestOptions: e.requestOptions));
+                  requestOptions: e.requestOptions,
+                  code: ErrorCode.badRequest));
             case 401:
               return handler.reject(SmartHomeApiException(
-                  message: 'Unauthenticated',
-                  requestOptions: e.requestOptions));
+                message: 'Unauthenticated',
+                requestOptions: e.requestOptions,
+                code: ErrorCode.badAuthentication,
+              ));
             case 403:
               return handler.reject(SmartHomeApiException(
-                  message: 'Unauthorized', requestOptions: e.requestOptions));
+                message: 'Unauthorized',
+                requestOptions: e.requestOptions,
+                code: ErrorCode.forbidden,
+              ));
             case 404:
               return handler.reject(SmartHomeApiException(
-                  message: ErrorMessage.fromJson(
-                          e.response?.data as Map<String, dynamic>)
-                      .message,
-                  requestOptions: e.requestOptions));
+                message: ErrorMessage.fromJson(
+                        e.response?.data as Map<String, dynamic>)
+                    .message,
+                requestOptions: e.requestOptions,
+                code: ErrorCode.resourceNotFound,
+              ));
             case 500:
               return handler.reject(SmartHomeApiException(
-                  message: 'Something is wrong',
-                  requestOptions: e.requestOptions));
+                message: 'Something is wrong',
+                requestOptions: e.requestOptions,
+                code: ErrorCode.serverInternalError,
+              ));
           }
           return handler.next(e);
         },
@@ -75,50 +90,82 @@ class SmartHomeApiClient {
     Map<String, String>? queryParameter,
     String? accessToken,
   }) {
-    if (accessToken == null) {
-      return _dio.get(path, queryParameters: queryParameter);
+    try {
+      return _dio.get(path,
+          queryParameters: queryParameter,
+          options: accessToken == null
+              ? null
+              : Options(
+                  headers: {'Authorization': 'Bearer $accessToken'},
+                ));
+    } on SmartHomeApiException catch (e) {
+      throw SmartHomeException(
+        code: e.code,
+        message: e.message,
+      );
     }
-    return _dio.get(path,
-        queryParameters: queryParameter,
-        options: Options(headers: {'Authorization': 'Bearer $accessToken'}));
   }
 
   Future<Response> httpPost({
     required String path,
-    required String body,
+    String? body,
     String? accessToken,
   }) {
-    if (accessToken == null) {
-      return _dio.post(path, data: body);
+    try {
+      return _dio.post(path,
+          data: body,
+          options: accessToken == null
+              ? null
+              : Options(
+                  headers: {'Authorization': 'Bearer $accessToken'},
+                ));
+    } on SmartHomeApiException catch (e) {
+      throw SmartHomeException(
+        code: e.code,
+        message: e.message,
+      );
     }
-    return _dio.post(path,
-        data: body,
-        options: Options(headers: {'Authorization': 'Bearer $accessToken'}));
   }
 
   Future<Response> httpPut({
     required String path,
-    required String body,
+    String? body,
     String? accessToken,
   }) {
-    if (accessToken == null) {
-      return _dio.put(path, data: body);
+    try {
+      return _dio.put(path,
+          data: body,
+          options: accessToken == null
+              ? null
+              : Options(
+                  headers: {'Authorization': 'Bearer $accessToken'},
+                ));
+    } on SmartHomeApiException catch (e) {
+      throw SmartHomeException(
+        code: e.code,
+        message: e.message,
+      );
     }
-    return _dio.put(path,
-        data: body,
-        options: Options(headers: {'Authorization': 'Bearer $accessToken'}));
   }
 
   Future<Response> httpDelete({
     required String path,
-    required String body,
+    String? body,
     String? accessToken,
   }) {
-    if (accessToken == null) {
-      return _dio.delete(path, data: body);
+    try {
+      return _dio.delete(path,
+          data: body,
+          options: accessToken == null
+              ? null
+              : Options(
+                  headers: {'Authorization': 'Bearer $accessToken'},
+                ));
+    } on SmartHomeApiException catch (e) {
+      throw SmartHomeException(
+        code: e.code,
+        message: e.message,
+      );
     }
-    return _dio.delete(path,
-        data: body,
-        options: Options(headers: {'Authorization': 'Bearer $accessToken'}));
   }
 }
