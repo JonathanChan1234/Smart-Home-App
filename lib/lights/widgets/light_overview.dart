@@ -6,7 +6,10 @@ import 'package:smart_home/lights/widgets/light_control.dart';
 import 'package:smart_home/lights/widgets/light_edit.dart';
 
 class LightOverview extends StatelessWidget {
-  const LightOverview({super.key, required this.lights});
+  const LightOverview({
+    super.key,
+    required this.lights,
+  });
 
   final List<Light> lights;
 

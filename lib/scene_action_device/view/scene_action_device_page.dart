@@ -13,20 +13,16 @@ class SceneActionDevicePage extends StatelessWidget {
 
   static Route<void> route(
     Scene scene,
-    SceneActionRepository sceneActionRepository,
   ) {
     return MaterialPageRoute(
-      builder: (context) => RepositoryProvider.value(
-        value: sceneActionRepository,
-        child: BlocProvider(
-          create: (_) => SceneActionDeviceBloc(
-            scene: scene,
-            sceneActionRepository: sceneActionRepository,
-          )
-            ..add(const SceneActionDeviceInitEvent())
-            ..add(const SceneActionDeviceSubscriptionRequestEvent()),
-          child: const SceneActionDevicePage(),
-        ),
+      builder: (context) => BlocProvider(
+        create: (_) => SceneActionDeviceBloc(
+          scene: scene,
+          sceneActionRepository: context.read<SceneActionRepository>(),
+        )
+          ..add(const SceneActionDeviceInitEvent())
+          ..add(const SceneActionDeviceSubscriptionRequestEvent()),
+        child: const SceneActionDevicePage(),
       ),
     );
   }

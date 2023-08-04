@@ -139,4 +139,9 @@ class SceneActionRepository {
     actions.removeAt(deleteActionIndex);
     _sceneActionStreamController.add(actions);
   }
+
+  Future<void> dispose() async {
+    await _sceneActionStreamController.close();
+    _sceneDeviceStreamController.close();
+  }
 }

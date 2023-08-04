@@ -19,3 +19,7 @@ class SceneActionEditSubmittedEvent<T extends DeviceAction>
   final Device device;
   final T deviceProperties;
 }
+
+class SceneActionEditDeletedEvent extends SceneActionEditEvent {
+  const SceneActionEditDeletedEvent();
+}

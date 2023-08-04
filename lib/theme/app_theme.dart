@@ -10,7 +10,7 @@ class AppTheme {
     textTheme: GoogleFonts.sourceSansProTextTheme().copyWith(
       titleSmall: GoogleFonts.sourceSansPro().copyWith(
         fontSize: 15,
-        color: Colors.grey.shade500,
+        color: Colors.black,
         fontWeight: FontWeight.w300,
       ),
       headlineSmall: GoogleFonts.sourceSansPro().copyWith(

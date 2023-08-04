@@ -17,6 +17,8 @@ dependencies:
     path: ../mqtt_smarthome_client
   shades_api:
     path: ../shades_api
+  smart_home_exception:
+    path: ../smart_home_exception
   rxdart: ^0.27.7
   json_annotation: ^4.8.1
 

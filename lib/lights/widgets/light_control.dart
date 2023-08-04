@@ -33,14 +33,16 @@ class LightControl extends StatelessWidget {
             trailing: Switch(
               activeColor: Colors.yellow,
               value: brightness > 0,
-              onChanged: (value) => context.read<LightBloc>().add(
-                    LightStatusChangedEvent(
-                      deviceId: light.id,
-                      properties: light.properties.copyWith(
-                        brightness: () => brightness == 0 ? 100 : 0,
-                      ),
-                    ),
-                  ),
+              onChanged: light.onlineStatus
+                  ? (value) => context.read<LightBloc>().add(
+                        LightStatusChangedEvent(
+                          deviceId: light.id,
+                          properties: light.properties.copyWith(
+                            brightness: () => brightness == 0 ? 100 : 0,
+                          ),
+                        ),
+                      )
+                  : null,
             ),
           ),
           if (dimmable)
@@ -60,12 +62,15 @@ class LightControl extends StatelessWidget {
               child: Slider(
                 max: 100,
                 value: brightness.toDouble(),
-                onChanged: (level) => context.read<LightBloc>().add(
-                      LightStatusChangedEvent(
-                        deviceId: light.id,
-                        properties: LightProperties(brightness: level.toInt()),
-                      ),
-                    ),
+                onChanged: (level) => light.onlineStatus
+                    ? context.read<LightBloc>().add(
+                          LightStatusChangedEvent(
+                            deviceId: light.id,
+                            properties:
+                                LightProperties(brightness: level.toInt()),
+                          ),
+                        )
+                    : null,
               ),
             ),
           const Divider(),

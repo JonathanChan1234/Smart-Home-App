@@ -14,3 +14,12 @@ class SceneListInitEvent extends SceneEvent {
 class SceneListSubscriptionRequestedEvent extends SceneEvent {
   const SceneListSubscriptionRequestedEvent();
 }
+
+class SceneActivatedEvent extends SceneEvent {
+  const SceneActivatedEvent({required this.scene});
+
+  final Scene scene;
+
+  @override
+  List<Object> get props => [scene];
+}

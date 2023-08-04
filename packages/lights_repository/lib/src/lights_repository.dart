@@ -1,19 +1,24 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:auth_repository/auth_repository.dart';
 import 'package:lights_api/lights_api.dart';
 import 'package:lights_repository/src/models/light_payload.dart';
 import 'package:lights_repository/src/models/light_status.dart';
 import 'package:mqtt_smarthome_client/mqtt_smarthome_client.dart';
 import 'package:rxdart/rxdart.dart';
+import 'package:smart_home_exception/smart_home_exception.dart';
 
 class LightsRepository {
   LightsRepository({
+    required AuthRepository authRepository,
     required LightsApi lightsApi,
     required MqttSmartHomeClient mqttClient,
-  })  : _lightsApi = lightsApi,
+  })  : _authRepository = authRepository,
+        _lightsApi = lightsApi,
         _mqttClient = mqttClient;
 
+  final AuthRepository _authRepository;
   final LightsApi _lightsApi;
   final MqttSmartHomeClient _mqttClient;
 
@@ -22,6 +27,16 @@ class LightsRepository {
   StreamSubscription? _messageSubscription;
 
   Stream<List<Light>> get lights => _lightsStreamController.asBroadcastStream();
+
+  Future<String> _getAccessToken() async {
+    final token = await _authRepository.getAuthToken();
+    if (token == null) {
+      throw const SmartHomeException(
+          code: ErrorCode.badAuthentication,
+          message: 'access token does not exist');
+    }
+    return token.accessToken;
+  }
 
   void initLightStatusSubscription({
     required String homeId,
@@ -45,11 +60,11 @@ class LightsRepository {
   }) async {
     try {
       final lights = await _lightsApi.fetchLightsInRoom(
-        homeId: homeId,
-        roomId: roomId,
-      );
+          homeId: homeId,
+          roomId: roomId,
+          accessToken: (await _getAccessToken()));
       _lightsStreamController.add(lights);
-    } on Exception catch (error) {
+    } catch (error) {
       _lightsStreamController.addError(error);
     }
   }
@@ -73,6 +88,7 @@ class LightsRepository {
       homeId: homeId,
       lightId: lightId,
       name: name,
+      accessToken: await _getAccessToken(),
     );
 
     final lights = [..._lightsStreamController.value];

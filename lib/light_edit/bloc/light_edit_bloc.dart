@@ -2,6 +2,7 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:lights_api/lights_api.dart';
 import 'package:lights_repository/lights_repository.dart';
+import 'package:smart_home_exception/smart_home_exception.dart';
 
 part 'light_edit_event.dart';
 part 'light_edit_state.dart';
@@ -42,7 +43,7 @@ class LightEditBloc extends Bloc<LightEditEvent, LightEditState> {
         state.copyWith(
           status: LightEditStatus.failure,
           requestError:
-              e is LightsApiException ? e.message : 'Something is wrong',
+              e is SmartHomeException ? e.message : 'Something is wrong',
         ),
       );
     }

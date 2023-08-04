@@ -7,6 +7,12 @@ enum SmartHomeOverviewStatus {
   failure,
 }
 
+enum SmartHomeOverviewEventType {
+  fetch,
+  add,
+  delete,
+}
+
 enum SmartHomeTab { home, settings }
 
 @JsonSerializable()
@@ -16,6 +22,7 @@ class SmartHomeOverviewState extends Equatable {
     this.status = SmartHomeOverviewStatus.initial,
     this.homes = const [],
     this.requestError = '',
+    this.eventType = SmartHomeOverviewEventType.fetch,
   });
 
   factory SmartHomeOverviewState.fromJson(Map<String, dynamic> json) =>
@@ -23,18 +30,21 @@ class SmartHomeOverviewState extends Equatable {
 
   final SmartHomeTab tab;
   final SmartHomeOverviewStatus status;
+  final SmartHomeOverviewEventType eventType;
   final List<SmartHome> homes;
   final String requestError;
 
   SmartHomeOverviewState copyWith({
     SmartHomeTab? tab,
     SmartHomeOverviewStatus? status,
+    SmartHomeOverviewEventType? eventType,
     List<SmartHome>? homes,
     String? requestError,
   }) {
     return SmartHomeOverviewState(
       tab: tab ?? this.tab,
       status: status ?? this.status,
+      eventType: eventType ?? this.eventType,
       homes: homes ?? this.homes,
       requestError: requestError ?? this.requestError,
     );
@@ -46,6 +56,7 @@ class SmartHomeOverviewState extends Equatable {
   List<Object> get props => [
         tab,
         status,
+        eventType,
         homes,
         requestError,
       ];

@@ -18,56 +18,47 @@ class ShadeOverview extends StatelessWidget {
     final textTheme = Theme.of(context).textTheme;
     final editMode = context.read<ShadeBloc>().state.editMode;
 
-    return DecoratedBox(
-      decoration: const BoxDecoration(
-        color: Color.fromARGB(255, 9, 12, 19),
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(4),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  editMode ? 'EDIT' : 'CONTROLS',
-                  style: textTheme.titleSmall!.copyWith(
-                    color: const Color.fromARGB(255, 222, 223, 225),
-                  ),
-                ),
-                IconButton(
-                  onPressed: () {
-                    context
-                        .read<ShadeBloc>()
-                        .add(ShadeEditModeChangedEvent(editMode: !editMode));
-                  },
-                  icon: editMode
-                      ? const Icon(
-                          Icons.edit_off,
-                          color: Color.fromARGB(255, 222, 223, 225),
-                        )
-                      : const Icon(
-                          Icons.mode_edit,
-                          color: Color.fromARGB(255, 222, 223, 225),
-                        ),
-                )
-              ],
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(4),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                editMode ? 'EDIT' : 'CONTROLS',
+                style: textTheme.titleSmall,
+              ),
+              IconButton(
+                onPressed: () {
+                  context
+                      .read<ShadeBloc>()
+                      .add(ShadeEditModeChangedEvent(editMode: !editMode));
+                },
+                icon: editMode
+                    ? const Icon(
+                        Icons.edit_off,
+                      )
+                    : const Icon(
+                        Icons.mode_edit,
+                      ),
+              )
+            ],
+          ),
+        ),
+        Expanded(
+          child: Padding(
+            padding: const EdgeInsets.all(12),
+            child: ListView.builder(
+              itemCount: shades.length,
+              itemBuilder: (context, index) => editMode
+                  ? ShadeEdit(shade: shades[index])
+                  : ShadeControl(shade: shades[index]),
             ),
           ),
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
-              child: ListView.builder(
-                itemCount: shades.length,
-                itemBuilder: (context, index) => editMode
-                    ? ShadeEdit(shade: shades[index])
-                    : ShadeControl(shade: shades[index]),
-              ),
-            ),
-          )
-        ],
-      ),
+        )
+      ],
     );
   }
 }

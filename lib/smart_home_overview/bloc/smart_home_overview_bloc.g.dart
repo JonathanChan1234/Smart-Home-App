@@ -33,6 +33,11 @@ SmartHomeOverviewState _$SmartHomeOverviewStateFromJson(
                   const []),
           requestError:
               $checkedConvert('requestError', (v) => v as String? ?? ''),
+          eventType: $checkedConvert(
+              'eventType',
+              (v) =>
+                  $enumDecodeNullable(_$SmartHomeOverviewEventTypeEnumMap, v) ??
+                  SmartHomeOverviewEventType.fetch),
         );
         return val;
       },
@@ -43,6 +48,7 @@ Map<String, dynamic> _$SmartHomeOverviewStateToJson(
     <String, dynamic>{
       'tab': _$SmartHomeTabEnumMap[instance.tab]!,
       'status': _$SmartHomeOverviewStatusEnumMap[instance.status]!,
+      'eventType': _$SmartHomeOverviewEventTypeEnumMap[instance.eventType]!,
       'homes': instance.homes.map((e) => e.toJson()).toList(),
       'requestError': instance.requestError,
     };
@@ -57,4 +63,10 @@ const _$SmartHomeOverviewStatusEnumMap = {
   SmartHomeOverviewStatus.loading: 'loading',
   SmartHomeOverviewStatus.success: 'success',
   SmartHomeOverviewStatus.failure: 'failure',
+};
+
+const _$SmartHomeOverviewEventTypeEnumMap = {
+  SmartHomeOverviewEventType.fetch: 'fetch',
+  SmartHomeOverviewEventType.add: 'add',
+  SmartHomeOverviewEventType.delete: 'delete',
 };

@@ -22,3 +22,12 @@ class SmartHomeOverviewSubscriptionRequestEvent extends SmartHomeOverviewEvent {
 class SmartHomeOverviewFetchEvent extends SmartHomeOverviewEvent {
   const SmartHomeOverviewFetchEvent();
 }
+
+class SmartHomeOverviewHomeDeletedEvent extends SmartHomeOverviewEvent {
+  const SmartHomeOverviewHomeDeletedEvent({required this.home});
+
+  final SmartHome home;
+
+  @override
+  List<Object> get props => [home];
+}

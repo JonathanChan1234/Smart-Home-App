@@ -2,6 +2,7 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:shades_api/shades_api.dart';
 import 'package:shades_repository/shades_repository.dart';
+import 'package:smart_home_exception/smart_home_exception.dart';
 
 part 'shade_edit_event.dart';
 part 'shade_edit_state.dart';
@@ -47,7 +48,7 @@ class ShadeEditBloc extends Bloc<ShadeEditEvent, ShadeEditState> {
       emit(
         state.copyWith(
           status: ShadeEditStatus.failure,
-          requestError: error is ShadesApiException
+          requestError: error is SmartHomeException
               ? error.message
               : 'Something is wrong',
         ),

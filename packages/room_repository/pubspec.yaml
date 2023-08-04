@@ -13,6 +13,8 @@ dependencies:
     path: ../auth_repository
   flutter:
     sdk: flutter
+  smart_home_exception:
+    path: ../smart_home_exception
   room_api:
     path: ../room_api
   rxdart: ^0.27.7

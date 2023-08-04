@@ -1,9 +1,9 @@
-import 'package:auth_api/auth_api.dart';
 import 'package:auth_repository/auth_repository.dart';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:formz/formz.dart';
 import 'package:smart_home/login/models/models.dart';
+import 'package:smart_home_exception/smart_home_exception.dart';
 
 part 'login_event.dart';
 part 'login_state.dart';
@@ -67,17 +67,13 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
           status: FormzStatus.submissionSuccess,
         ),
       );
-    } on AuthBadRequestException catch (e) {
-      emit(
-        state.copyWith(
-          status: FormzStatus.submissionFailure,
-          requestError: e.message,
-        ),
-      );
     } catch (e) {
+      // print(e);
       emit(
         state.copyWith(
           status: FormzStatus.submissionFailure,
+          requestError:
+              e is SmartHomeException ? e.message : 'Something is wrong',
         ),
       );
     }

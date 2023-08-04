@@ -9,6 +9,8 @@ environment:
   flutter: ">=1.17.0"
 
 dependencies:
+  auth_repository:
+    path: ../auth_repository
   flutter:
     sdk: flutter
   json_annotation: ^4.8.0
@@ -16,6 +18,8 @@ dependencies:
     path: ../lights_api
   mqtt_smarthome_client:
     path: ../mqtt_smarthome_client
+  smart_home_exception:
+    path: ../smart_home_exception
   rxdart: ^0.27.7
 
 dev_dependencies:

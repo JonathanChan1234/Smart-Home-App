@@ -1,9 +1,11 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:home_api/home_api.dart';
+import 'package:mqtt_smarthome_client/mqtt_smarthome_client.dart';
 import 'package:room_api/room_api.dart';
 import 'package:shades_api/shades_api.dart';
 import 'package:shades_repository/shades_repository.dart';
+import 'package:smart_home_exception/smart_home_exception.dart';
 
 part 'shade_event.dart';
 part 'shade_state.dart';
@@ -39,7 +41,7 @@ class ShadeBloc extends Bloc<ShadeEvent, ShadeState> {
       emit(
         state.copyWith(
           status: ShadeStatus.failure,
-          requestError: error is ShadesApiException
+          requestError: error is SmartHomeException
               ? error.message
               : 'Something is wrong',
         ),
@@ -62,7 +64,7 @@ class ShadeBloc extends Bloc<ShadeEvent, ShadeState> {
       ),
       onError: (error, _) => state.copyWith(
         status: ShadeStatus.failure,
-        requestError: (error is ShadesApiException)
+        requestError: (error is SmartHomeException)
             ? error.message
             : 'Something is wrong',
       ),
@@ -79,10 +81,12 @@ class ShadeBloc extends Bloc<ShadeEvent, ShadeState> {
         deviceId: event.deviceId,
         action: event.action,
       );
-    } catch (error) {
+    } catch (e) {
       emit(
         state.copyWith(
-          controlError: error.toString(),
+          controlError: e is MqttSmartHomeClientException
+              ? e.message
+              : 'Something is wrong',
         ),
       );
     }

@@ -4,6 +4,7 @@ import 'package:auth_repository/auth_repository.dart';
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:smart_home_api_client/smart_home_api_client.dart';
+import 'package:smart_home_exception/smart_home_exception.dart';
 
 import 'models/models.dart';
 
@@ -34,7 +35,10 @@ class MqttClientApi {
     // Get the current user from auth repo
     final user = await _authRepository.getCurrentUser();
     if (user == null) {
-      throw const MqttClientApiException(message: "unauthenticated");
+      throw const SmartHomeException(
+        code: ErrorCode.badAuthentication,
+        message: "unauthenticated",
+      );
     }
 
     final cacheString = _getValue(mqttClientIdCacheKey);
@@ -75,7 +79,10 @@ class MqttClientApi {
   Future<MqttClientDto> obtainMqttClientFromServer(String homeId) async {
     final accessToken = (await _authRepository.getAuthToken())?.accessToken;
     if (accessToken == null) {
-      throw const MqttClientApiException(message: 'Unable to get access token');
+      throw const SmartHomeException(
+        code: ErrorCode.badAuthentication,
+        message: 'Unable to get access token',
+      );
     }
     final response = await _smartHomeApiClient.httpPost(
       path: '/home/$homeId/mqttClient',
@@ -83,7 +90,12 @@ class MqttClientApi {
       accessToken: accessToken,
     );
     final data = response.data;
-    if (data == null) throw const MqttClientApiException(message: 'Empty body');
+    if (data == null) {
+      throw const SmartHomeException(
+        code: ErrorCode.emptyBody,
+        message: 'Empty body',
+      );
+    }
     final mqttClient = MqttClientDto.fromJson(data as Map<String, dynamic>);
     return mqttClient;
   }
@@ -98,9 +110,4 @@ class MqttClientApi {
     await cacheMqttClient(newClient);
     return newClient;
   }
-}
-
-class MqttClientApiException implements Exception {
-  const MqttClientApiException({this.message});
-  final String? message;
 }

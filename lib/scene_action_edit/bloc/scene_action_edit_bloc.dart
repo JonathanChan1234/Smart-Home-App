@@ -22,6 +22,7 @@ class SceneActionEditBloc
           ),
         ) {
     on<SceneActionEditSubmittedEvent>(_onSceneActionEditSubmittedEvent);
+    on<SceneActionEditDeletedEvent>(_onSceneActionEditDeletedEvent);
   }
 
   final SceneActionRepository _sceneActionRepository;
@@ -30,7 +31,12 @@ class SceneActionEditBloc
     SceneActionEditSubmittedEvent<T> event,
     Emitter<SceneActionEditState> emit,
   ) async {
-    emit(state.copyWith(status: SceneActionEditStatus.loading));
+    emit(
+      state.copyWith(
+        status: SceneActionEditStatus.loading,
+        eventType: SceneActionEditEventType.edit,
+      ),
+    );
     try {
       final action = state.action;
       if (action != null) {
@@ -55,6 +61,47 @@ class SceneActionEditBloc
           ),
         );
       }
+      emit(state.copyWith(status: SceneActionEditStatus.success));
+    } catch (error) {
+      emit(
+        state.copyWith(
+          status: SceneActionEditStatus.failure,
+          requestError: error is SmartHomeException
+              ? error.message
+              : 'Something is wrong',
+        ),
+      );
+    }
+  }
+
+  Future<void> _onSceneActionEditDeletedEvent(
+    SceneActionEditDeletedEvent event,
+    Emitter<SceneActionEditState> emit,
+  ) async {
+    emit(
+      state.copyWith(
+        status: SceneActionEditStatus.loading,
+        eventType: SceneActionEditEventType.delete,
+      ),
+    );
+    final action = state.action;
+    if (action == null) {
+      emit(
+        state.copyWith(
+          status: SceneActionEditStatus.failure,
+          requestError:
+              '''Scene action no longer exists. Please go back to scene action page''',
+        ),
+      );
+      return;
+    }
+
+    try {
+      await _sceneActionRepository.deleteSceneAction(
+        homeId: state.scene.homeId,
+        sceneId: state.scene.id,
+        actionId: action.id,
+      );
       emit(state.copyWith(status: SceneActionEditStatus.success));
     } catch (error) {
       emit(

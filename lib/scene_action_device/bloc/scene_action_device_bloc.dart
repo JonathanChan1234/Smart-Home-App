@@ -35,8 +35,9 @@ class SceneActionDeviceBloc
   }
 
   Future<void> _onSceneActionDeviceSubscriptionRequested(
-      SceneActionDeviceSubscriptionRequestEvent event,
-      Emitter<SceneActionDeviceState> emit) async {
+    SceneActionDeviceSubscriptionRequestEvent event,
+    Emitter<SceneActionDeviceState> emit,
+  ) async {
     emit(state.copyWith(status: SceneActionDeviceStatus.loading));
     await emit.forEach(
       _sceneActionRepository.devices,

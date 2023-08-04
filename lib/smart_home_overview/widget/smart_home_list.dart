@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:smart_home/smart_home_add/view/smart_home_add_page.dart';
 import 'package:smart_home/smart_home_overview/bloc/smart_home_overview_bloc.dart';
 import 'package:smart_home/smart_home_overview/widget/smart_home_error.dart';
 import 'package:smart_home/smart_home_overview/widget/smart_home_initial.dart';
@@ -23,7 +24,12 @@ class SmartHomeList extends StatelessWidget {
                 onPressed: () => context
                     .read<SmartHomeOverviewBloc>()
                     .add(const SmartHomeOverviewFetchEvent()),
-              )
+              ),
+              IconButton(
+                icon: const Icon(Icons.add),
+                onPressed: () =>
+                    Navigator.of(context).push(SmartHomeAddPage.route()),
+              ),
             ],
           ),
           body: Builder(

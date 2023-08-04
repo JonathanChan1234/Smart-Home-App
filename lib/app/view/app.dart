@@ -5,12 +5,18 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:home_repository/home_repository.dart';
 import 'package:mqtt_smarthome_client/mqtt_smarthome_client.dart';
 import 'package:room_repository/room_repository.dart';
+import 'package:scene_action_repository/scene_action_repository.dart';
+import 'package:scene_repository/scene_repository.dart';
+import 'package:smart_home/auth_unknown/auth_unknown_page.dart';
 import 'package:smart_home/authentication/bloc/authentication_bloc.dart';
 import 'package:smart_home/home/bloc/home_bloc.dart';
 import 'package:smart_home/home/view/home_page.dart';
 import 'package:smart_home/l10n/l10n.dart';
 import 'package:smart_home/login/view/login_page.dart';
+import 'package:smart_home/scene_action/view/scene_action_page.dart';
+import 'package:smart_home/scene_action_edit/view/scene_action_edit_page.dart';
 import 'package:smart_home/theme/app_theme.dart';
+import 'package:smart_home/widgets/error_view.dart';
 import 'package:smart_home_api_client/smart_home_api_client.dart';
 
 class App extends StatefulWidget {
@@ -22,6 +28,8 @@ class App extends StatefulWidget {
     required this.roomRepository,
     required this.sharedPreferences,
     required this.smartHomeApiClient,
+    required this.sceneRepository,
+    required this.sceneActionRepository,
   });
 
   final AuthRepository authRepository;
@@ -30,6 +38,8 @@ class App extends StatefulWidget {
   final MqttSmartHomeClient mqttSmartHomeClient;
   final SharedPreferences sharedPreferences;
   final SmartHomeApiClient smartHomeApiClient;
+  final SceneRepository sceneRepository;
+  final SceneActionRepository sceneActionRepository;
 
   @override
   State<App> createState() => _AppState();
@@ -42,6 +52,8 @@ class _AppState extends State<App> {
     widget.homeRepository.dispose();
     widget.mqttSmartHomeClient.dispose();
     widget.roomRepository.dispose();
+    widget.sceneRepository.dispose();
+    widget.sceneActionRepository.dispose();
     super.dispose();
   }
 
@@ -67,6 +79,12 @@ class _AppState extends State<App> {
         RepositoryProvider<RoomRepository>.value(
           value: widget.roomRepository,
         ),
+        RepositoryProvider<SceneRepository>.value(
+          value: widget.sceneRepository,
+        ),
+        RepositoryProvider<SceneActionRepository>.value(
+          value: widget.sceneActionRepository,
+        )
       ],
       child: MultiBlocProvider(
         providers: [
@@ -94,7 +112,7 @@ class _AppViewState extends State<AppView> {
   Widget build(BuildContext context) {
     return MaterialApp(
       theme: AppTheme.lightTheme,
-      darkTheme: AppTheme.darkTheme,
+      darkTheme: AppTheme.lightTheme,
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
       home: BlocBuilder<AuthenticationBloc, AuthenticationState>(
@@ -106,11 +124,45 @@ class _AppViewState extends State<AppView> {
             case AuthenticationStatus.unauthenticated:
               return const LoginPage();
             case AuthenticationStatus.unknown:
-              return const HomePage();
+              return const AuthUnknownPage();
           }
         },
       ),
-      onGenerateRoute: (_) => SplashPage.route(),
+      onGenerateRoute: (settings) {
+        switch (settings.name) {
+          case SceneActionPage.routeName:
+            final routeArgs = settings.arguments;
+            if (routeArgs == null) {
+              return MaterialPageRoute(
+                builder: (_) => const ErrorView(
+                  message: 'Scene action page contains null arguments',
+                ),
+              );
+            }
+            final args = routeArgs as SceneActionPageArgument;
+            return SceneActionPage.route(
+              home: args.home,
+              scene: args.scene,
+            );
+          case SceneActionEditPage.routeName:
+            final routeArgs = settings.arguments;
+            if (routeArgs == null) {
+              return MaterialPageRoute(
+                builder: (_) => const ErrorView(
+                  message: 'Scene action page contains null arguments',
+                ),
+              );
+            }
+            final args = routeArgs as SceneActionEditArgument;
+            return SceneActionEditPage.route(
+              scene: args.scene,
+              device: args.device,
+              action: args.action,
+            );
+          default:
+            return SplashPage.route();
+        }
+      },
     );
   }
 }

@@ -1,6 +1,6 @@
 part of 'smart_home_connect_bloc.dart';
 
-enum SmartHomeConnectStatus {
+enum SmartHomeServerConnectStatus {
   initial,
   connecting,
   connected,
@@ -8,28 +8,44 @@ enum SmartHomeConnectStatus {
   failure,
 }
 
+enum SmartHomeProcessorConnectStatus {
+  initial,
+  notExist,
+  offline,
+  online,
+}
+
 class SmartHomeConnectState extends Equatable {
   const SmartHomeConnectState({
-    this.status = SmartHomeConnectStatus.initial,
+    this.serverConnectStatus = SmartHomeServerConnectStatus.initial,
+    this.processorConnectStatus = SmartHomeProcessorConnectStatus.initial,
     this.connectionError = 'Something is wrong',
     required this.home,
   });
 
-  final SmartHomeConnectStatus status;
+  final SmartHomeServerConnectStatus serverConnectStatus;
+  final SmartHomeProcessorConnectStatus processorConnectStatus;
   final SmartHome home;
   final String connectionError;
 
   SmartHomeConnectState copyWith({
-    SmartHomeConnectStatus? status,
+    SmartHomeServerConnectStatus? serverConnectStatus,
+    SmartHomeProcessorConnectStatus? processorConnectStatus,
     String? connectionError,
   }) {
     return SmartHomeConnectState(
       home: home,
-      status: status ?? this.status,
+      serverConnectStatus: serverConnectStatus ?? this.serverConnectStatus,
+      processorConnectStatus:
+          processorConnectStatus ?? this.processorConnectStatus,
       connectionError: connectionError ?? this.connectionError,
     );
   }
 
   @override
-  List<Object> get props => [status, home];
+  List<Object> get props => [
+        serverConnectStatus,
+        processorConnectStatus,
+        home,
+      ];
 }

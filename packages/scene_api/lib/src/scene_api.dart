@@ -5,12 +5,6 @@ import 'package:smart_home_exception/smart_home_exception.dart';
 
 import 'models/models.dart';
 
-class SceneApiException implements Exception {
-  const SceneApiException({this.message});
-
-  final String? message;
-}
-
 class SceneApi {
   SceneApi({
     required SmartHomeApiClient smartHomeApiClient,

@@ -1,9 +1,9 @@
-import 'package:auth_api/auth_api.dart';
 import 'package:auth_repository/auth_repository.dart';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:formz/formz.dart';
 import 'package:smart_home/register/models/models.dart';
+import 'package:smart_home_exception/smart_home_exception.dart';
 
 part 'register_event.dart';
 part 'register_state.dart';
@@ -99,17 +99,12 @@ class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
       emit(
         state.copyWith(status: FormzStatus.submissionSuccess, requestError: ''),
       );
-    } on AuthBadRequestException catch (e) {
-      emit(
-        state.copyWith(
-          status: FormzStatus.submissionFailure,
-          requestError: e.message,
-        ),
-      );
     } catch (e) {
       emit(
         state.copyWith(
           status: FormzStatus.submissionFailure,
+          requestError:
+              e is SmartHomeException ? e.message : 'Something is wrong',
         ),
       );
     }

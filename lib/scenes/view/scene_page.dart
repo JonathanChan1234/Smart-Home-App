@@ -1,40 +1,16 @@
-import 'package:auth_repository/auth_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:home_api/home_api.dart';
-import 'package:scene_api/scene_api.dart';
 import 'package:scene_repository/scene_repository.dart';
 import 'package:smart_home/scenes/bloc/scene_bloc.dart';
 import 'package:smart_home/scenes/widgets/scene_populated.dart';
 import 'package:smart_home/widgets/error_view.dart';
 import 'package:smart_home/widgets/initial_view.dart';
 import 'package:smart_home/widgets/loading_view.dart';
-import 'package:smart_home_api_client/smart_home_api_client.dart';
 
 class ScenePage extends StatelessWidget {
   const ScenePage({
     super.key,
-    required this.home,
-  });
-
-  final SmartHome home;
-
-  @override
-  Widget build(BuildContext context) {
-    return RepositoryProvider(
-      create: (_) => SceneRepository(
-        sceneApi: SceneApi(
-          smartHomeApiClient: context.read<SmartHomeApiClient>(),
-        ),
-        authRepository: context.read<AuthRepository>(),
-      ),
-      child: _ScenePage(home: home),
-    );
-  }
-}
-
-class _ScenePage extends StatelessWidget {
-  const _ScenePage({
     required this.home,
   });
 
@@ -67,9 +43,7 @@ class SceneView extends StatelessWidget {
           case SceneStatus.loading:
             return const LoadingView(message: 'Fetching scenes information');
           case SceneStatus.success:
-            return ScenePopulated(
-              scenes: state.scenes,
-            );
+            return ScenePopulated(scenes: state.scenes);
           case SceneStatus.failure:
             return ErrorView(message: state.error);
         }

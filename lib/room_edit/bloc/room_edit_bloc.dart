@@ -3,6 +3,7 @@ import 'package:equatable/equatable.dart';
 import 'package:home_api/home_api.dart';
 import 'package:room_api/room_api.dart';
 import 'package:room_repository/room_repository.dart';
+import 'package:smart_home_exception/smart_home_exception.dart';
 
 part 'room_edit_event.dart';
 part 'room_edit_state.dart';
@@ -48,7 +49,7 @@ class RoomEditBloc extends Bloc<RoomEditEvent, RoomEditState> {
         state.copyWith(
           status: RoomEditStatus.failure,
           requestError:
-              e is RoomApiException ? e.message : 'Something is wrong',
+              e is SmartHomeException ? e.message : 'Something is wrong',
         ),
       );
     }

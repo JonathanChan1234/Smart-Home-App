@@ -4,6 +4,7 @@ import 'package:formz/formz.dart';
 import 'package:smart_home/login/bloc/login_bloc.dart';
 import 'package:smart_home/login/models/models.dart';
 import 'package:smart_home/register/view/register_page.dart';
+import 'package:smart_home/server_config/view/server_config_page.dart';
 import 'package:smart_home/widgets/custom_text_field.dart';
 
 class LoginForm extends StatelessWidget {
@@ -28,44 +29,42 @@ class LoginForm extends StatelessWidget {
             );
         }
       },
-      child: SingleChildScrollView(
-        child: Align(
-          alignment: const Alignment(0, -1 / 3),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                'Login',
-                style:
-                    textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+      child: Center(
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(12),
+            child: DecoratedBox(
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.all(Radius.circular(12)),
               ),
-              const Icon(
-                Icons.home,
-                size: 72,
-              ),
-              _UsernameInput(),
-              const Padding(
-                padding: EdgeInsets.all(12),
-              ),
-              _PasswordInput(),
-              const Padding(
-                padding: EdgeInsets.all(12),
-              ),
-              _LoginButton(),
-              const Divider(
-                height: 10,
-                thickness: 2,
-              ),
-              Padding(
-                padding: const EdgeInsets.all(20),
+              child: Padding(
+                padding: const EdgeInsets.all(8),
                 child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
-                      'Do not have an account yet?',
-                      style: textTheme.labelLarge!
-                          .copyWith(fontSize: 16, fontWeight: FontWeight.w700),
+                      'Log In',
+                      style: textTheme.titleLarge?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 32,
+                      ),
                     ),
-                    TextButton.icon(
+                    _UsernameInput(),
+                    _PasswordInput(),
+                    _LoginButton(),
+                    const Divider(
+                      height: 20,
+                      thickness: 2,
+                    ),
+                    Text(
+                      "Don't have an account yet?",
+                      style: textTheme.labelLarge!.copyWith(
+                        fontSize: 16,
+                      ),
+                    ),
+                    ElevatedButton.icon(
                       icon: const Icon(Icons.account_box),
                       onPressed: () {
                         Navigator.of(context).pushAndRemoveUntil(
@@ -73,15 +72,29 @@ class LoginForm extends StatelessWidget {
                           (route) => false,
                         );
                       },
-                      style: const ButtonStyle(
-                        backgroundColor: MaterialStatePropertyAll(Colors.red),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.red.shade500,
+                        foregroundColor: Colors.white,
+                        disabledForegroundColor: Colors.black,
+                        minimumSize: const Size.fromHeight(50),
                       ),
-                      label: const Text('Register'),
-                    )
-                  ],
+                      label: const Text(
+                        'Register',
+                        style: TextStyle(fontSize: 18),
+                      ),
+                    ),
+                    _ToServerConfigButton(),
+                  ]
+                      .map(
+                        (widget) => Padding(
+                          padding: const EdgeInsets.all(8),
+                          child: widget,
+                        ),
+                      )
+                      .toList(),
                 ),
-              )
-            ],
+              ),
+            ),
           ),
         ),
       ),
@@ -138,19 +151,51 @@ class _LoginButton extends StatelessWidget {
         return state.status.isSubmissionInProgress
             ? const CircularProgressIndicator()
             : ElevatedButton(
-                style: ButtonStyle(
-                  backgroundColor:
-                      MaterialStatePropertyAll<Color>(Colors.green.shade300),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.blue,
+                  foregroundColor: Colors.white,
+                  disabledForegroundColor: Colors.black,
+                  minimumSize: const Size.fromHeight(50),
                 ),
                 key: const Key('loginForm_loginButton_raisedButton'),
-                onPressed: () => state.status.isValidated
-                    ? context.read<LoginBloc>().add(const LoginFormSubmitted())
+                onPressed: state.status.isValidated
+                    ? () => context
+                        .read<LoginBloc>()
+                        .add(const LoginFormSubmitted())
                     : null,
                 child: const Text(
-                  'Login',
-                  style: TextStyle(color: Colors.black),
+                  'Log In',
+                  style: TextStyle(fontSize: 18),
                 ),
               );
+      },
+    );
+  }
+}
+
+class _ToServerConfigButton extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<LoginBloc, LoginState>(
+      buildWhen: (previous, current) => previous.status != current.status,
+      builder: (context, state) {
+        return ElevatedButton.icon(
+          icon: const Icon(Icons.dns),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.blue,
+            foregroundColor: Colors.white,
+            disabledForegroundColor: Colors.black,
+            minimumSize: const Size.fromHeight(50),
+          ),
+          key: const Key('loginForm_serverConfig_raisedButton'),
+          onPressed: state.status.isSubmissionInProgress
+              ? null
+              : () => Navigator.of(context).push(ServerConfigPage.route()),
+          label: const Text(
+            'Edit Server Configuration',
+            style: TextStyle(fontSize: 18),
+          ),
+        );
       },
     );
   }

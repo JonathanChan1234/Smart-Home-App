@@ -35,21 +35,26 @@ class SmartHomeConnectView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<SmartHomeConnectBloc, SmartHomeConnectState>(
-      buildWhen: (previous, current) => previous.status != current.status,
+      buildWhen: (previous, current) =>
+          previous.serverConnectStatus != current.serverConnectStatus ||
+          previous.processorConnectStatus != current.processorConnectStatus,
       builder: (context, state) {
         return Scaffold(
           body: Builder(
             builder: (context) {
-              switch (state.status) {
-                case SmartHomeConnectStatus.initial:
+              switch (state.serverConnectStatus) {
+                case SmartHomeServerConnectStatus.initial:
                   return const SmartHomeConnectInitial();
-                case SmartHomeConnectStatus.connecting:
+                case SmartHomeServerConnectStatus.connecting:
                   return SmartHomeConnectConnecting(home: state.home);
-                case SmartHomeConnectStatus.connected:
-                  return SmartHomeConnected(home: state.home);
-                case SmartHomeConnectStatus.disconnected:
+                case SmartHomeServerConnectStatus.connected:
+                  return SmartHomeConnected(
+                    home: state.home,
+                    status: state.processorConnectStatus,
+                  );
+                case SmartHomeServerConnectStatus.disconnected:
                   return SmartHomeConnectDisconnected(home: state.home);
-                case SmartHomeConnectStatus.failure:
+                case SmartHomeServerConnectStatus.failure:
                   return SmartHomeConnectFailure(error: state.connectionError);
               }
             },

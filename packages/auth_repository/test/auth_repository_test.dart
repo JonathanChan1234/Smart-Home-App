@@ -3,6 +3,7 @@ import 'package:auth_local_storage/auth_local_storage.dart';
 import 'package:auth_repository/auth_repository.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:smart_home_exception/smart_home_exception.dart';
 
 class MockAuthApiClient extends Mock implements AuthApiClient {}
 
@@ -249,8 +250,11 @@ void main() {
           accessToken: expiredAccessToken, refreshToken: refreshToken);
 
       when(() => authLocalStorageApi.getAuthToken()).thenReturn(authToken);
-      when(() => apiClient.refreshToken(any(), any())).thenAnswer(
-          (_) async => throw const AuthBadRequestException(message: ''));
+      when(() => apiClient.refreshToken(any(), any()))
+          .thenAnswer((_) async => throw const SmartHomeException(
+                code: ErrorCode.emptyBody,
+                message: '',
+              ));
       when(() => authLocalStorageApi.storeAuthToken(any(), any()))
           .thenAnswer((_) async => true);
 

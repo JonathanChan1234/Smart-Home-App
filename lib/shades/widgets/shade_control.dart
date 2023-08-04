@@ -18,19 +18,13 @@ class ShadeControl extends StatelessWidget {
   Widget build(BuildContext context) {
     return DecoratedBox(
       decoration: const BoxDecoration(
-        color: Color.fromARGB(255, 34, 37, 44),
+        color: Colors.white,
         borderRadius: BorderRadius.all(Radius.circular(6)),
       ),
       child: Column(
         children: [
           ListTile(
-            title: Text(
-              shade.name,
-              style: const TextStyle(
-                color: Color.fromARGB(255, 119, 120, 124),
-                fontSize: 18,
-              ),
-            ),
+            title: Text(shade.name),
           ),
           Padding(
             padding: const EdgeInsets.all(8),
@@ -77,14 +71,14 @@ class _ShadeSliderControl extends StatelessWidget {
           max: 100,
           divisions: 100,
           value: level,
-          onChanged: (value) {
-            context.read<ShadeBloc>().add(
-                  ShadeControlEvent(
-                    deviceId: shade.id,
-                    action: ShadeAction(level: value.toInt()),
-                  ),
-                );
-          },
+          onChanged: shade.onlineStatus
+              ? (value) => context.read<ShadeBloc>().add(
+                    ShadeControlEvent(
+                      deviceId: shade.id,
+                      action: ShadeAction(level: value.toInt()),
+                    ),
+                  )
+              : null,
         ),
       ),
     );
@@ -102,36 +96,44 @@ class _ShadeButtonControl extends StatelessWidget {
     return SizedBox(
       width: width * 0.85,
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           CircularButton(
             icon: Icons.chevron_left_sharp,
-            onPressed: () => context.read<ShadeBloc>().add(
-                  ShadeControlEvent(
-                    deviceId: shade.id,
-                    action:
-                        const ShadeAction(actionType: ShadeActionType.lower),
-                  ),
-                ),
+            onPressed: shade.onlineStatus
+                ? () => context.read<ShadeBloc>().add(
+                      ShadeControlEvent(
+                        deviceId: shade.id,
+                        action: const ShadeAction(
+                          actionType: ShadeActionType.lower,
+                        ),
+                      ),
+                    )
+                : null,
           ),
           CircularButton(
             icon: Icons.stop,
-            onPressed: () => context.read<ShadeBloc>().add(
-                  ShadeControlEvent(
-                    deviceId: shade.id,
-                    action: const ShadeAction(actionType: ShadeActionType.stop),
-                  ),
-                ),
+            onPressed: shade.onlineStatus
+                ? () => context.read<ShadeBloc>().add(
+                      ShadeControlEvent(
+                        deviceId: shade.id,
+                        action:
+                            const ShadeAction(actionType: ShadeActionType.stop),
+                      ),
+                    )
+                : null,
           ),
           CircularButton(
             icon: Icons.chevron_right_sharp,
-            onPressed: () => context.read<ShadeBloc>().add(
-                  ShadeControlEvent(
-                    deviceId: shade.id,
-                    action:
-                        const ShadeAction(actionType: ShadeActionType.lower),
-                  ),
-                ),
+            onPressed: shade.onlineStatus
+                ? () => context.read<ShadeBloc>().add(
+                      ShadeControlEvent(
+                        deviceId: shade.id,
+                        action: const ShadeAction(
+                          actionType: ShadeActionType.lower,
+                        ),
+                      ),
+                    )
+                : null,
           ),
         ],
       ),

@@ -1,94 +1,43 @@
 import 'package:flutter/material.dart';
 import 'package:home_api/home_api.dart';
-import 'package:smart_home/rooms/room.dart';
-import 'package:smart_home/scenes/view/scene_page.dart';
+import 'package:smart_home/smart_home_connect/bloc/smart_home_connect_bloc.dart';
+import 'package:smart_home/smart_home_connect/widgets/smart_home_control_overview.dart';
+import 'package:smart_home/widgets/error_view.dart';
+import 'package:smart_home/widgets/initial_view.dart';
 
-class SmartHomeConnected extends StatefulWidget {
+class SmartHomeConnected extends StatelessWidget {
   const SmartHomeConnected({
     super.key,
     required this.home,
+    required this.status,
   });
 
   final SmartHome home;
-
-  @override
-  State<SmartHomeConnected> createState() => _SmartHomeConnectedState();
-}
-
-enum SmartHomeConnectedTab {
-  rooms,
-  scenes,
-}
-
-class _SmartHomeConnectedState extends State<SmartHomeConnected> {
-  SmartHomeConnectedTab currentTab = SmartHomeConnectedTab.rooms;
+  final SmartHomeProcessorConnectStatus status;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: IndexedStack(
-        index: currentTab.index,
-        children: [
-          RoomsPage(home: widget.home),
-          ScenePage(home: widget.home),
-        ],
-      ),
-      bottomNavigationBar: BottomAppBar(
-        shape: const CircularNotchedRectangle(),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            _SmartHomeConnectedTabButton(
-              value: SmartHomeConnectedTab.rooms,
-              groupValue: currentTab,
-              icon: Icons.house,
-              label: 'Rooms',
-              onclick: () => setState(() {
-                currentTab = SmartHomeConnectedTab.rooms;
-              }),
-            ),
-            _SmartHomeConnectedTabButton(
-              value: SmartHomeConnectedTab.scenes,
-              groupValue: currentTab,
-              icon: Icons.smart_button,
-              label: 'Scenes',
-              onclick: () => setState(() {
-                currentTab = SmartHomeConnectedTab.scenes;
-              }),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _SmartHomeConnectedTabButton extends StatelessWidget {
-  const _SmartHomeConnectedTabButton({
-    required this.value,
-    required this.groupValue,
-    required this.icon,
-    required this.label,
-    required this.onclick,
-  });
-
-  final SmartHomeConnectedTab value;
-  final SmartHomeConnectedTab groupValue;
-  final IconData icon;
-  final String label;
-  final void Function() onclick;
-
-  @override
-  Widget build(BuildContext context) {
-    final color = groupValue == value
-        ? Theme.of(context).colorScheme.secondary
-        : Colors.black;
-    return TextButton.icon(
-      onPressed: onclick,
-      icon: Icon(icon, size: 32, color: color),
-      label: Text(
-        label,
-        style: TextStyle(color: color, fontSize: 12),
+      appBar: AppBar(title: Text('Home ${home.name}')),
+      body: Builder(
+        builder: (context) {
+          switch (status) {
+            case SmartHomeProcessorConnectStatus.initial:
+              return const InitialView(title: 'Finding Your Home Processor');
+            case SmartHomeProcessorConnectStatus.notExist:
+              return const ErrorView(
+                message:
+                    '''No home processor in your home. Please contact your installer for more details''',
+              );
+            case SmartHomeProcessorConnectStatus.offline:
+              return const ErrorView(
+                message:
+                    '''Your home processor is currently offline. Please check the network connection of your processor''',
+              );
+            case SmartHomeProcessorConnectStatus.online:
+              return SmartHomeControlOverview(home: home);
+          }
+        },
       ),
     );
   }

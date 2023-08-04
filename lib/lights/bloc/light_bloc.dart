@@ -3,8 +3,9 @@ import 'package:equatable/equatable.dart';
 import 'package:home_api/home_api.dart';
 import 'package:lights_api/lights_api.dart';
 import 'package:lights_repository/lights_repository.dart';
+import 'package:mqtt_smarthome_client/mqtt_smarthome_client.dart';
 import 'package:room_api/room_api.dart';
-import 'package:smart_home_api_client/smart_home_api_client.dart';
+import 'package:smart_home_exception/smart_home_exception.dart';
 
 part 'light_event.dart';
 part 'light_state.dart';
@@ -40,7 +41,7 @@ class LightBloc extends Bloc<LightEvent, LightState> {
       emit(
         state.copyWith(
           status: LightStatus.failure,
-          requestError: error is LightsApiException
+          requestError: error is SmartHomeException
               ? error.message
               : 'Something is wrong',
         ),
@@ -63,11 +64,9 @@ class LightBloc extends Bloc<LightEvent, LightState> {
       ),
       onError: (error, _) => state.copyWith(
         status: LightStatus.failure,
-        requestError: (error is SmartHomeApiException)
+        requestError: (error is SmartHomeException)
             ? error.message
-            : (error is LightsApiException)
-                ? error.message
-                : 'Something is wrong',
+            : 'Something is wrong',
       ),
     );
   }
@@ -82,10 +81,12 @@ class LightBloc extends Bloc<LightEvent, LightState> {
         deviceId: event.deviceId,
         properties: event.properties,
       );
-    } catch (error) {
+    } catch (e) {
       emit(
         state.copyWith(
-          controlError: error.toString(),
+          controlError: e is MqttSmartHomeClientException
+              ? e.message
+              : 'Something is wrong',
         ),
       );
     }

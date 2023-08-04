@@ -27,9 +27,9 @@ class LightPage extends StatelessWidget {
     return MaterialPageRoute(
       builder: (_) => RepositoryProvider(
         create: (context) => LightsRepository(
+          authRepository: context.read<AuthRepository>(),
           mqttClient: context.read<MqttSmartHomeClient>(),
           lightsApi: LightsApi(
-            authRepository: context.read<AuthRepository>(),
             smartHomeApiClient: context.read<SmartHomeApiClient>(),
           ),
         ),

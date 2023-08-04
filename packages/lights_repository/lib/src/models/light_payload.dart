@@ -6,14 +6,16 @@ part 'light_payload.g.dart';
 @JsonSerializable()
 class LightPayload {
   const LightPayload({
-    required this.properties,
+    this.properties,
     required this.time,
+    this.onlineStatus,
   });
 
   factory LightPayload.fromJson(Map<String, dynamic> json) =>
       _$LightPayloadFromJson(json);
 
-  final LightProperties properties;
+  final LightProperties? properties;
+  final bool? onlineStatus;
   final DateTime time;
 
   Map<String, dynamic> toJson() => _$LightPayloadToJson(this);

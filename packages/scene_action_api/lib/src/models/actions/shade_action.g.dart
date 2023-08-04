@@ -7,8 +7,9 @@ part of 'shade_action.dart';
 // **************************************************************************
 
 ShadeAction _$ShadeActionFromJson(Map<String, dynamic> json) => ShadeAction(
-      actionType:
-          $enumDecodeNullable(_$ShadeActionTypeEnumMap, json['actionType']),
+      actionType: $enumDecodeNullable(
+          _$ShadeActionTypeEnumMap, json['actionType'],
+          unknownValue: ShadeActionType.na),
       level: json['level'] as int?,
     );
 
@@ -19,7 +20,7 @@ Map<String, dynamic> _$ShadeActionToJson(ShadeAction instance) =>
     };
 
 const _$ShadeActionTypeEnumMap = {
-  ShadeActionType.raise: 'raise',
-  ShadeActionType.stop: 'stop',
-  ShadeActionType.lower: 'lower',
+  ShadeActionType.raise: 0,
+  ShadeActionType.lower: 1,
+  ShadeActionType.na: 2,
 };

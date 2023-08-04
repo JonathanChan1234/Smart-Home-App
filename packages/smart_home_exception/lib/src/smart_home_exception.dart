@@ -17,4 +17,5 @@ enum ErrorCode {
   forbidden,
   serverInternalError,
   networkIssue,
+  unknown,
 }

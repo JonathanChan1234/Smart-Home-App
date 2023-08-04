@@ -17,6 +17,8 @@ dependencies:
   rxdart: ^0.27.7
   smart_home_api_client:
     path: ../smart_home_api_client
+  smart_home_exception:
+    path: ../smart_home_exception
 
 dev_dependencies:
   flutter_test:

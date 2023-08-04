@@ -29,7 +29,7 @@ class SmartHomeConnectBloc
   ) async {
     emit(
       state.copyWith(
-        status: SmartHomeConnectStatus.connecting,
+        serverConnectStatus: SmartHomeServerConnectStatus.connecting,
       ),
     );
     try {
@@ -40,16 +40,16 @@ class SmartHomeConnectBloc
           switch (status) {
             case MqttClientConnectionStatus.connecting:
               return state.copyWith(
-                status: SmartHomeConnectStatus.connecting,
+                serverConnectStatus: SmartHomeServerConnectStatus.connecting,
               );
             case MqttClientConnectionStatus.connected:
               return state.copyWith(
-                status: SmartHomeConnectStatus.connected,
+                serverConnectStatus: SmartHomeServerConnectStatus.connected,
                 connectionError: '',
               );
             case MqttClientConnectionStatus.disconnected:
               return state.copyWith(
-                status: SmartHomeConnectStatus.disconnected,
+                serverConnectStatus: SmartHomeServerConnectStatus.disconnected,
               );
           }
         },
@@ -57,7 +57,7 @@ class SmartHomeConnectBloc
     } catch (error) {
       emit(
         state.copyWith(
-          status: SmartHomeConnectStatus.failure,
+          serverConnectStatus: SmartHomeServerConnectStatus.failure,
           connectionError: error is MqttSmartHomeClientException
               ? error.message
               : 'Something is wrong',

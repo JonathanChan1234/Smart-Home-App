@@ -3,6 +3,7 @@ import 'package:devices_api/devices_api.dart';
 import 'package:equatable/equatable.dart';
 import 'package:home_api/home_api.dart';
 import 'package:room_api/room_api.dart';
+import 'package:smart_home_exception/smart_home_exception.dart';
 
 part 'devices_event.dart';
 part 'devices_state.dart';
@@ -36,18 +37,12 @@ class DevicesBloc extends Bloc<DevicesEvent, DevicesState> {
           requestError: '',
         ),
       );
-    } on DeviceApiException catch (e) {
-      emit(
-        state.copyWith(
-          status: DevicesStatus.failure,
-          requestError: e.message,
-        ),
-      );
     } catch (e) {
       emit(
         state.copyWith(
           status: DevicesStatus.failure,
-          requestError: 'Something is wrong',
+          requestError:
+              e is SmartHomeException ? e.message : 'Something is wrong',
         ),
       );
     }

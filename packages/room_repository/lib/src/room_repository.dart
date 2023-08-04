@@ -1,6 +1,7 @@
 import 'package:auth_repository/auth_repository.dart';
 import 'package:room_api/room_api.dart';
 import 'package:rxdart/rxdart.dart';
+import 'package:smart_home_exception/smart_home_exception.dart';
 
 class RoomRepository {
   RoomRepository({
@@ -16,32 +17,31 @@ class RoomRepository {
 
   Stream<List<Floor>> get floors => _floorControllers.asBroadcastStream();
 
+  Future<String> _getAccessToken() async {
+    final token = await _authRepository.getAuthToken();
+    if (token == null) {
+      throw const SmartHomeException(
+          code: ErrorCode.badAuthentication,
+          message: 'access token does not exist');
+    }
+    return token.accessToken;
+  }
+
   Future<void> initFloorList(String homeId) async {
     try {
-      final authToken = await _authRepository.getAuthToken();
-      if (authToken == null) {
-        _floorControllers.addError('unauthenticated');
-        return;
-      }
       final floors =
-          await _roomApi.fetchHomeFloors(homeId, authToken.accessToken);
+          await _roomApi.fetchHomeFloors(homeId, (await _getAccessToken()));
       _floorControllers.add(floors);
     } catch (e) {
-      _floorControllers
-          .addError(e is RoomApiException ? e.message : 'Something is wrong');
+      _floorControllers.addError(e);
     }
   }
 
   Future<void> updateRoom(String homeId, Room room) async {
-    final authToken = await _authRepository.getAuthToken();
-    if (authToken == null) {
-      throw const RoomApiException(message: 'invalid token');
-    }
-
     await _roomApi.updateRoom(
       homeId: homeId,
       room: room,
-      accessToken: authToken.accessToken,
+      accessToken: (await _getAccessToken()),
     );
 
     final floors = [..._floorControllers.value];

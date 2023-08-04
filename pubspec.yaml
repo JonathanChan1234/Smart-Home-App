@@ -36,6 +36,7 @@ dependencies:
     path: packages/lights_api
   lights_repository:
     path: packages/lights_repository
+  mobile_scanner: ^3.3.0
   mqtt_smarthome_client:
     path: packages/mqtt_smarthome_client
   path_provider: ^2.0.14

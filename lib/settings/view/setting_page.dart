@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:smart_home/authentication/bloc/authentication_bloc.dart';
+import 'package:smart_home/home_delete/view/home_delete_page.dart';
 
 class SettingPage extends StatelessWidget {
   const SettingPage({super.key});
@@ -40,18 +41,14 @@ class SettingPage extends StatelessWidget {
                   padding: const EdgeInsets.all(16),
                   children: [
                     ListTile(
+                      leading: const Icon(Icons.delete),
+                      title: const Text('Remove Home'),
+                      onTap: () =>
+                          Navigator.of(context).push(HomeDeletePage.route()),
+                    ),
+                    ListTile(
                       leading: const Icon(Icons.password),
                       title: const Text('Change Password'),
-                      onTap: () {},
-                    ),
-                    ListTile(
-                      leading: const Icon(Icons.home),
-                      title: const Text('Add Home'),
-                      onTap: () {},
-                    ),
-                    ListTile(
-                      leading: const Icon(Icons.delete_forever),
-                      title: const Text('Delete Home'),
                       onTap: () {},
                     ),
                     ListTile(

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:auth_repository/auth_repository.dart';
@@ -17,9 +18,10 @@ class MqttSmartHomeClient {
     required SmartHomeApiClient smartHomeApiClient,
     required SharedPreferences sharedPreferences,
     required AuthRepository authRepository,
-    required String host,
-    required int port,
+    String host = defaultHost,
+    int port = defaultPort,
   })  : _authRepository = authRepository,
+        _sharedPreferences = sharedPreferences,
         _mqttClientApi = MqttClientApi(
           authRepository: authRepository,
           sharedPreferences: sharedPreferences,
@@ -27,9 +29,15 @@ class MqttSmartHomeClient {
         ),
         _mqttServerClient = MqttServerClient.withPort(host, '', port);
 
+  static const defaultHost = '10.0.2.2';
+  static const defaultPort = 1883;
+  static const kMqttServerHostKey = '__mqtt_host_key__';
+  static const kMqttServerPortKey = '__mqtt_port_key__';
+
   final MqttClientApi _mqttClientApi;
   final AuthRepository _authRepository;
   final MqttServerClient _mqttServerClient;
+  final SharedPreferences _sharedPreferences;
 
   final _statusController = BehaviorSubject<MqttClientConnectionStatus>.seeded(
       MqttClientConnectionStatus.disconnected);
@@ -41,30 +49,34 @@ class MqttSmartHomeClient {
   Stream<MqttIncomingMessage> get message =>
       _messageController.asBroadcastStream();
 
+  Future<void> setServerConfig(String host, int port) async {
+    _mqttServerClient.server = host;
+    _mqttServerClient.port = port;
+    await _sharedPreferences.setString(kMqttServerHostKey, host);
+    await _sharedPreferences.setInt(kMqttServerPortKey, port);
+  }
+
+  String getServerHost() {
+    return _sharedPreferences.getString(kMqttServerHostKey) ?? defaultHost;
+  }
+
+  int getServerPort() {
+    return _sharedPreferences.getInt(kMqttServerPortKey) ?? defaultPort;
+  }
+
   Future<void> connect(String homeId) async {
     if (_mqttServerClient.connectionStatus!.state ==
         MqttConnectionState.connected) {
       _mqttServerClient.disconnect();
     }
-    final client = await _mqttClientApi.getMqttClientId(homeId);
+
     _mqttServerClient.keepAlivePeriod = 20;
-
-    final currentUser = await _authRepository.getCurrentUser();
-    final token = await _authRepository.getAuthToken();
-    if (currentUser == null || token == null) {
-      throw const MqttSmartHomeClientException(message: "unauthenticated");
-    }
-
-    final connMess = MqttConnectMessage()
-        .withClientIdentifier(client.clientId.toString())
-        .withWillTopic('willtopic')
-        .withWillMessage('My Will message')
-        .startClean()
-        .authenticateAs(currentUser.name, token.accessToken)
-        .withWillQos(MqttQos.atLeastOnce);
-    _mqttServerClient.connectionMessage = connMess;
+    _mqttServerClient.connectionMessage =
+        await _obtainConnectionMessage(homeId);
     _mqttServerClient.onConnected = _onConnected;
     _mqttServerClient.onDisconnected = _onDisconnected;
+    _mqttServerClient.onAutoReconnect =
+        () async => await _onAuthReconnect(homeId);
 
     _statusController.add(MqttClientConnectionStatus.connecting);
     try {
@@ -104,17 +116,18 @@ class MqttSmartHomeClient {
     final builder = MqttClientPayloadBuilder();
     builder.addString(payload);
     _mqttServerClient.publishMessage(
-        topic, MqttQos.atLeastOnce, builder.payload!);
+      topic,
+      MqttQos.exactlyOnce,
+      builder.payload!,
+      retain: true,
+    );
   }
 
   void _onPayloadRecevied(List<MqttReceivedMessage<MqttMessage?>>? c) {
     final recMess = c![0].payload as MqttPublishMessage;
     final pt =
         MqttPublishPayload.bytesToStringAsString(recMess.payload.message);
-    // TODO: Remove print statement later
-    print(
-        'EXAMPLE::Change notification:: topic is <${c[0].topic}>, payload is <-- $pt -->');
-    print('');
+    log('EXAMPLE::Change notification:: topic is <${c[0].topic}>, payload is <-- $pt -->');
     if (_messageController.isClosed) return;
     _messageController.add(MqttIncomingMessage(topic: c[0].topic, message: pt));
   }
@@ -127,6 +140,27 @@ class MqttSmartHomeClient {
   void _onDisconnected() {
     if (_statusController.isClosed) return;
     _statusController.add(MqttClientConnectionStatus.disconnected);
+  }
+
+  Future<void> _onAuthReconnect(String homeId) async {
+    _mqttServerClient.connectionMessage =
+        await _obtainConnectionMessage(homeId);
+  }
+
+  Future<MqttConnectMessage> _obtainConnectionMessage(String homeId) async {
+    final client = await _mqttClientApi.getMqttClientId(homeId);
+    final currentUser = await _authRepository.getCurrentUser();
+    final token = await _authRepository.getAuthToken();
+    if (currentUser == null || token == null) {
+      throw const MqttSmartHomeClientException(message: "unauthenticated");
+    }
+
+    final connMess = MqttConnectMessage()
+        .withClientIdentifier(client.clientId.toString())
+        .startClean()
+        .authenticateAs(currentUser.name, token.accessToken)
+        .withWillQos(MqttQos.atLeastOnce);
+    return connMess;
   }
 
   void dispose() {

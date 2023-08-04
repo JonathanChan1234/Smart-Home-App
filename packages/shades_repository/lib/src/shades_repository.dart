@@ -5,6 +5,7 @@ import 'package:auth_repository/auth_repository.dart';
 import 'package:mqtt_smarthome_client/mqtt_smarthome_client.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:shades_api/shades_api.dart';
+import 'package:smart_home_exception/smart_home_exception.dart';
 
 import 'models/models.dart';
 
@@ -26,6 +27,16 @@ class ShadesRepository {
   StreamSubscription? _messageSubscription;
   Stream<List<Shade>> get shades => _shadesController.asBroadcastStream();
 
+  Future<String> _getAccessToken() async {
+    final token = await _authRepository.getAuthToken();
+    if (token == null) {
+      throw const SmartHomeException(
+          code: ErrorCode.badAuthentication,
+          message: 'access token does not exist');
+    }
+    return token.accessToken;
+  }
+
   void initShadeStatusSubscription(
     String homeId,
   ) {
@@ -46,20 +57,15 @@ class ShadesRepository {
     required String homeId,
     required String roomId,
   }) async {
-    final authToken = await _authRepository.getAuthToken();
-    if (authToken == null) {
-      throw const ShadesApiException(message: 'unauthenticated');
-    }
     try {
       final shades = await _shadesApi.fetchShadesInRoom(
         homeId: homeId,
         roomId: roomId,
-        accessToken: authToken.accessToken,
+        accessToken: (await _getAccessToken()),
       );
       _shadesController.add(shades);
     } catch (e) {
-      _shadesController.addError(
-          (e is ShadesApiException ? e.message : 'Something is wrong') ?? '');
+      _shadesController.addError(e);
     }
   }
 
@@ -68,15 +74,11 @@ class ShadesRepository {
     required String shadeId,
     required String name,
   }) async {
-    final authToken = await _authRepository.getAuthToken();
-    if (authToken == null) {
-      throw const ShadesApiException(message: 'unauthenticated');
-    }
     await _shadesApi.updateShadeName(
       homeId: homeId,
       shadeId: shadeId,
       name: name,
-      accessToken: authToken.accessToken,
+      accessToken: (await _getAccessToken()),
     );
 
     final shades = [..._shadesController.value];

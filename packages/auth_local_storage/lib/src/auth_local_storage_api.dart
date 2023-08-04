@@ -22,8 +22,12 @@ class AuthLocalStorageApi {
   AuthToken? getAuthToken() {
     final authTokenJson = _getValue(kAuthTokenKey);
     if (authTokenJson == null) return null;
-    final authToken = jsonDecode(authTokenJson);
-    return AuthToken.fromJson(authToken as Map<String, dynamic>);
+    try {
+      final authToken = jsonDecode(authTokenJson);
+      return AuthToken.fromJson(authToken as Map<String, dynamic>);
+    } catch (_) {
+      return null;
+    }
   }
 
   Future<void> clearAuthToken() {

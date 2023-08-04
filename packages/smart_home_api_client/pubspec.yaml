@@ -13,6 +13,7 @@ dependencies:
   flutter:
     sdk: flutter
   json_annotation: ^4.8.0
+  shared_preferences: ^2.2.0
   smart_home_exception:
     path: ../smart_home_exception
 

@@ -1,4 +1,4 @@
-package com.example.verygoodcore.smart_home
+package com.jonathan.crestroncustomized.smart_home
 
 import io.flutter.embedding.android.FlutterActivity
 

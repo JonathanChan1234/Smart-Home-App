@@ -23,10 +23,17 @@ class ShadeAction extends DeviceAction {
   @override
   String toString() {
     final actions = <String>[];
-    if (actionType != null) actions.add(actionType.toString());
+    if (actionType != null) actions.add(actionType.toString().split('.')[1]);
     if (level != null) actions.add('Level: $level%');
     return actions.join(" | ");
   }
 }
 
-enum ShadeActionType { raise, stop, lower }
+enum ShadeActionType {
+  @JsonValue(0)
+  raise,
+  @JsonValue(1)
+  lower,
+  @JsonValue(2)
+  na
+}

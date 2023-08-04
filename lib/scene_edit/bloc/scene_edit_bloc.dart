@@ -1,17 +1,25 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:home_api/home_api.dart';
 import 'package:scene_api/scene_api.dart';
 import 'package:scene_repository/scene_repository.dart';
+import 'package:smart_home_exception/smart_home_exception.dart';
 
 part 'scene_edit_event.dart';
 part 'scene_edit_state.dart';
 
 class SceneEditBloc extends Bloc<SceneEditEvent, SceneEditState> {
   SceneEditBloc({
-    required Scene scene,
+    required SmartHome home,
+    Scene? scene,
     required SceneRepository sceneRepository,
   })  : _sceneRepository = sceneRepository,
-        super(SceneEditState(scene: scene)) {
+        super(
+          SceneEditState(
+            home: home,
+            scene: scene,
+          ),
+        ) {
     on<SceneEditNameChangedEvent>(_onSceneEditNameChanged);
     on<SceneEditSubmittedEvent>(_onSceneEditSubmitted);
     on<SceneEditDeleteEvent>(_onSceneEditDelete);
@@ -32,11 +40,19 @@ class SceneEditBloc extends Bloc<SceneEditEvent, SceneEditState> {
   ) async {
     emit(state.copyWith(status: SceneEditStatus.loading));
     try {
-      await _sceneRepository.updateScene(
-        homeId: state.scene.homeId,
-        sceneId: state.scene.id,
-        name: state.name,
-      );
+      final scene = state.scene;
+      if (scene == null) {
+        await _sceneRepository.createScene(
+          homeId: state.home.id,
+          name: state.name,
+        );
+      } else {
+        await _sceneRepository.updateScene(
+          homeId: scene.homeId,
+          sceneId: scene.id,
+          name: state.name,
+        );
+      }
       emit(
         state.copyWith(
           status: SceneEditStatus.success,
@@ -44,18 +60,36 @@ class SceneEditBloc extends Bloc<SceneEditEvent, SceneEditState> {
           requestError: '',
         ),
       );
-    } catch (e) {}
+    } catch (e) {
+      emit(
+        state.copyWith(
+          status: SceneEditStatus.failure,
+          requestError:
+              e is SmartHomeException ? e.message : 'Something is wrong',
+        ),
+      );
+    }
   }
 
   Future<void> _onSceneEditDelete(
     SceneEditDeleteEvent event,
     Emitter<SceneEditState> emit,
   ) async {
+    final scene = state.scene;
+    if (scene == null) {
+      emit(
+        state.copyWith(
+          status: SceneEditStatus.failure,
+          requestError: 'This scene no longer exists in this home',
+        ),
+      );
+      return;
+    }
     emit(state.copyWith(status: SceneEditStatus.loading));
     try {
       await _sceneRepository.deleteScene(
-        homeId: state.scene.homeId,
-        sceneId: state.scene.id,
+        homeId: scene.homeId,
+        sceneId: scene.id,
       );
       emit(
         state.copyWith(
@@ -64,6 +98,14 @@ class SceneEditBloc extends Bloc<SceneEditEvent, SceneEditState> {
           requestError: '',
         ),
       );
-    } catch (e) {}
+    } catch (e) {
+      emit(
+        state.copyWith(
+          status: SceneEditStatus.failure,
+          requestError:
+              e is SmartHomeException ? e.message : 'Something is wrong',
+        ),
+      );
+    }
   }
 }

@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:smart_home_exception/smart_home_exception.dart';
 
 import 'models/error_message.dart';
@@ -15,10 +16,13 @@ class SmartHomeApiException extends DioError {
 
 class SmartHomeApiClient {
   SmartHomeApiClient({
+    required SharedPreferences plugin,
     Dio? dio,
     String? url,
-  }) : _dio = dio ?? Dio() {
-    _dio.options.baseUrl = url ?? localServerURL;
+  })  : _sharedPreferences = plugin,
+        _dio = dio ?? Dio() {
+    _dio.options.baseUrl =
+        'http://${getServerHost()}:${getServerPort()}/api/v1';
     _dio.options.connectTimeout = const Duration(seconds: 5);
     _dio.options.receiveTimeout = const Duration(seconds: 3);
     _dio.interceptors.add(
@@ -82,27 +86,56 @@ class SmartHomeApiClient {
     );
   }
 
-  static String localServerURL = 'http://10.0.2.2:5181/api/v1';
+  static const defaultHost = '10.0.2.2';
+  static const defaultPort = 5181;
+  static const kServerHostKey = '__http_host_key__';
+  static const kServerPortKey = '__http_port_key__';
   final Dio _dio;
+  final SharedPreferences _sharedPreferences;
+
+  // host: [domain]:[port]
+  Future<void> setServerHost({required String host, required int port}) async {
+    _dio.options.baseUrl = 'http://$host:$port/api/v1';
+    _sharedPreferences.setString(kServerHostKey, host);
+    _sharedPreferences.setInt(kServerPortKey, port);
+  }
+
+  String getServerHost() {
+    final cacheHost = _sharedPreferences.getString(kServerHostKey);
+    return cacheHost == null || cacheHost.isEmpty ? defaultHost : cacheHost;
+  }
+
+  int getServerPort() {
+    final cachePort = _sharedPreferences.getInt(kServerPortKey);
+    return cachePort ?? defaultPort;
+  }
 
   Future<Response> httpGet({
     required String path,
     Map<String, String>? queryParameter,
     String? accessToken,
-  }) {
+  }) async {
     try {
-      return _dio.get(path,
+      final res = await _dio.get(path,
           queryParameters: queryParameter,
           options: accessToken == null
               ? null
               : Options(
                   headers: {'Authorization': 'Bearer $accessToken'},
                 ));
-    } on SmartHomeApiException catch (e) {
-      throw SmartHomeException(
-        code: e.code,
-        message: e.message,
-      );
+      return res;
+    } on DioError catch (e) {
+      if (e is SmartHomeApiException) {
+        throw SmartHomeException(
+          code: e.code,
+          message: e.message,
+        );
+      } else {
+        throw SmartHomeException(
+          code: ErrorCode.unknown,
+          message: e.message,
+        );
+      }
     }
   }
 
@@ -110,20 +143,28 @@ class SmartHomeApiClient {
     required String path,
     String? body,
     String? accessToken,
-  }) {
+  }) async {
     try {
-      return _dio.post(path,
+      final res = await _dio.post(path,
           data: body,
           options: accessToken == null
               ? null
               : Options(
                   headers: {'Authorization': 'Bearer $accessToken'},
                 ));
-    } on SmartHomeApiException catch (e) {
-      throw SmartHomeException(
-        code: e.code,
-        message: e.message,
-      );
+      return res;
+    } on DioError catch (e) {
+      if (e is SmartHomeApiException) {
+        throw SmartHomeException(
+          code: e.code,
+          message: e.message,
+        );
+      } else {
+        throw SmartHomeException(
+          code: ErrorCode.unknown,
+          message: e.message,
+        );
+      }
     }
   }
 
@@ -131,20 +172,28 @@ class SmartHomeApiClient {
     required String path,
     String? body,
     String? accessToken,
-  }) {
+  }) async {
     try {
-      return _dio.put(path,
+      final res = await _dio.put(path,
           data: body,
           options: accessToken == null
               ? null
               : Options(
                   headers: {'Authorization': 'Bearer $accessToken'},
                 ));
-    } on SmartHomeApiException catch (e) {
-      throw SmartHomeException(
-        code: e.code,
-        message: e.message,
-      );
+      return res;
+    } on DioError catch (e) {
+      if (e is SmartHomeApiException) {
+        throw SmartHomeException(
+          code: e.code,
+          message: e.message,
+        );
+      } else {
+        throw SmartHomeException(
+          code: ErrorCode.unknown,
+          message: e.message,
+        );
+      }
     }
   }
 
@@ -152,20 +201,28 @@ class SmartHomeApiClient {
     required String path,
     String? body,
     String? accessToken,
-  }) {
+  }) async {
     try {
-      return _dio.delete(path,
+      final res = await _dio.delete(path,
           data: body,
           options: accessToken == null
               ? null
               : Options(
                   headers: {'Authorization': 'Bearer $accessToken'},
                 ));
-    } on SmartHomeApiException catch (e) {
-      throw SmartHomeException(
-        code: e.code,
-        message: e.message,
-      );
+      return res;
+    } on DioError catch (e) {
+      if (e is SmartHomeApiException) {
+        throw SmartHomeException(
+          code: e.code,
+          message: e.message,
+        );
+      } else {
+        throw SmartHomeException(
+          code: ErrorCode.unknown,
+          message: e.message,
+        );
+      }
     }
   }
 }

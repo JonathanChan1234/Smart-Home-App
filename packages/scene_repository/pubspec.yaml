@@ -13,6 +13,8 @@ dependencies:
     path: ../auth_repository
   flutter:
     sdk: flutter
+  mqtt_smarthome_client:
+    path: ../mqtt_smarthome_client
   scene_api:
     path: ../scene_api
   rxdart: ^0.27.7
