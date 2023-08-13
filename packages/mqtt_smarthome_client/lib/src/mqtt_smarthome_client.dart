@@ -27,7 +27,10 @@ class MqttSmartHomeClient {
           sharedPreferences: sharedPreferences,
           smartHomeApiClient: smartHomeApiClient,
         ),
-        _mqttServerClient = MqttServerClient.withPort(host, '', port);
+        _mqttServerClient = MqttServerClient.withPort(host, '', port) {
+    _mqttServerClient.server = getServerHost();
+    _mqttServerClient.port = getServerPort();
+  }
 
   static const defaultHost = '10.0.2.2';
   static const defaultPort = 1883;

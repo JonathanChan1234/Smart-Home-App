@@ -12,12 +12,3 @@ class MqttPort extends FormzInput<int, MqttPortValidationError> {
     return null;
   }
 }
-
-extension MqttPortErrorExtension on MqttPortValidationError {
-  String? get message {
-    switch (this) {
-      case MqttPortValidationError.outOfRange:
-        return 'MQTT Port out of range';
-    }
-  }
-}

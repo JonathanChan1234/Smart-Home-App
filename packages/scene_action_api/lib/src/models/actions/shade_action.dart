@@ -19,14 +19,6 @@ class ShadeAction extends DeviceAction {
 
   @override
   Map<String, dynamic> toJson() => _$ShadeActionToJson(this);
-
-  @override
-  String toString() {
-    final actions = <String>[];
-    if (actionType != null) actions.add(actionType.toString().split('.')[1]);
-    if (level != null) actions.add('Level: $level%');
-    return actions.join(" | ");
-  }
 }
 
 enum ShadeActionType {

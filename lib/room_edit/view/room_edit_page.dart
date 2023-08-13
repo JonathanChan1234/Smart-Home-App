@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:home_api/home_api.dart';
 import 'package:room_api/room_api.dart';
 import 'package:room_repository/room_repository.dart';
+import 'package:smart_home/l10n/l10n.dart';
 import 'package:smart_home/room_edit/bloc/room_edit_bloc.dart';
 
 class RoomEditPage extends StatelessWidget {
@@ -33,14 +34,20 @@ class RoomEditPage extends StatelessWidget {
     return BlocListener<RoomEditBloc, RoomEditState>(
       listenWhen: (previous, current) => previous.status != current.status,
       listener: (context, state) {
+        final localizations = AppLocalizations.of(context);
         if (state.status == RoomEditStatus.success) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Room name changed successfully')),
+            SnackBar(
+                content: Text(localizations.roomNameChangedSuccessMessage)),
           );
           Navigator.of(context).pop(true);
         } else if (state.status == RoomEditStatus.failure) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(state.requestError)),
+            SnackBar(
+              content: Text(
+                '''${localizations.roomNameChangedFailureMessage} ${localizations.error}: ${state.requestError}''',
+              ),
+            ),
           );
         }
       },
@@ -62,7 +69,7 @@ class RoomEditView extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Edit Room Name'),
+        title: Text(AppLocalizations.of(context).editRoom),
       ),
       floatingActionButton: FloatingActionButton(
         tooltip: 'Edit',
@@ -101,13 +108,14 @@ class _RoomNameField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final state = context.watch<RoomEditBloc>().state;
+    final localizations = AppLocalizations.of(context);
 
     return TextFormField(
       key: const Key('roomEdit_name_text_form'),
       initialValue: state.room.name,
       decoration: InputDecoration(
         enabled: !state.status.isLoadingOrSuccess,
-        labelText: 'Room Name',
+        labelText: localizations.roomName,
       ),
       maxLength: 50,
       inputFormatters: [

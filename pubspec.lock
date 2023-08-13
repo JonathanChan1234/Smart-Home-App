@@ -461,6 +461,13 @@ packages:
       relative: true
     source: path
     version: "0.0.1"
+  locale_repository:
+    dependency: "direct main"
+    description:
+      path: "packages/locale_repository"
+      relative: true
+    source: path
+    version: "0.0.1"
   logging:
     dependency: transitive
     description:

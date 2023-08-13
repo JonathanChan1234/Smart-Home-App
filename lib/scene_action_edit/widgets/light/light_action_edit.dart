@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lights_api/lights_api.dart';
 import 'package:scene_action_api/scene_action_api.dart';
+import 'package:smart_home/l10n/l10n.dart';
 import 'package:smart_home/scene_action_edit/bloc/scene_action_edit_bloc.dart';
 import 'package:smart_home/scene_action_edit/widgets/light/cubit/light_action_edit_cubit.dart';
 import 'package:smart_home/widgets/colored_checkbox.dart';
@@ -77,7 +78,7 @@ class LightActionEdit extends StatelessWidget {
               disabledBackgroundColor: Colors.grey,
             ),
             child: Text(
-              'Submit',
+              AppLocalizations.of(context).submit,
               style: theme.textTheme.titleSmall!.copyWith(
                 color: Colors.white,
               ),
@@ -98,12 +99,13 @@ class _BrightnessActionEdit extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context);
     final brightness = context.watch<LightActionEditCubit>().state.brightness;
 
     return Column(
       children: [
         ListTile(
-          title: const Text('Brightness'),
+          title: Text(localizations.lightBrightness),
           trailing: ColoredCheckbox(
             value: brightness != null,
             onChanged: (bool? value) {
@@ -156,7 +158,7 @@ class _BrightnessActionEdit extends StatelessWidget {
                 if (dimmable)
                   Text('$brightness%')
                 else
-                  Text(brightness > 0 ? 'ON' : 'OFF'),
+                  Text(brightness > 0 ? localizations.on : localizations.off),
               ],
             ),
           )
@@ -174,7 +176,7 @@ class _ColorTemperatureActionEdit extends StatelessWidget {
     return Column(
       children: [
         ListTile(
-          title: const Text('Color Temperature'),
+          title: Text(AppLocalizations.of(context).lightColorTemperature),
           trailing: ColoredCheckbox(
             value: colorTemperature != null,
             onChanged: (value) {

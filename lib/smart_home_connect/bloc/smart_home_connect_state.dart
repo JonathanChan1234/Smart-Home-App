@@ -8,29 +8,22 @@ enum SmartHomeServerConnectStatus {
   failure,
 }
 
-enum SmartHomeProcessorConnectStatus {
-  initial,
-  notExist,
-  offline,
-  online,
-}
-
 class SmartHomeConnectState extends Equatable {
   const SmartHomeConnectState({
     this.serverConnectStatus = SmartHomeServerConnectStatus.initial,
-    this.processorConnectStatus = SmartHomeProcessorConnectStatus.initial,
+    this.processorConnectStatus = ProcessorConnectionStatus.initial,
     this.connectionError = 'Something is wrong',
     required this.home,
   });
 
   final SmartHomeServerConnectStatus serverConnectStatus;
-  final SmartHomeProcessorConnectStatus processorConnectStatus;
+  final ProcessorConnectionStatus processorConnectStatus;
   final SmartHome home;
   final String connectionError;
 
   SmartHomeConnectState copyWith({
     SmartHomeServerConnectStatus? serverConnectStatus,
-    SmartHomeProcessorConnectStatus? processorConnectStatus,
+    ProcessorConnectionStatus? processorConnectStatus,
     String? connectionError,
   }) {
     return SmartHomeConnectState(
@@ -47,5 +40,6 @@ class SmartHomeConnectState extends Equatable {
         serverConnectStatus,
         processorConnectStatus,
         home,
+        connectionError,
       ];
 }

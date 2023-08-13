@@ -16,14 +16,3 @@ class Username extends FormzInput<String, UsernameValidationError> {
     return null;
   }
 }
-
-extension UsernameValidationErrorExtenesion on UsernameValidationError {
-  String get message {
-    switch (this) {
-      case UsernameValidationError.empty:
-        return 'Username cannot be empty';
-      case UsernameValidationError.tooLong:
-        return 'Too long username';
-    }
-  }
-}

@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:formz/formz.dart';
+import 'package:locale_repository/locale_repository.dart';
 import 'package:mqtt_smarthome_client/mqtt_smarthome_client.dart';
+import 'package:smart_home/l10n/cubit/l10n_cubit.dart';
+import 'package:smart_home/l10n/l10n.dart';
 import 'package:smart_home/server_config/bloc/server_config_bloc.dart';
 import 'package:smart_home/server_config/models/models.dart';
 import 'package:smart_home/widgets/custom_text_field.dart';
@@ -27,10 +30,12 @@ class ServerConfigPage extends StatelessWidget {
     return BlocListener<ServerConfigBloc, ServerConfigState>(
       listenWhen: (previous, current) => previous.status != current.status,
       listener: (context, state) {
+        final successMessage =
+            AppLocalizations.of(context).editServerConfigurationMessage;
         if (state.status != FormzStatus.submissionSuccess) return;
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Edit server configuration successfully'),
+          SnackBar(
+            content: Text(successMessage),
           ),
         );
       },
@@ -62,7 +67,7 @@ class ServerConfigView extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
-                      'Server Configuration',
+                      AppLocalizations.of(context).serverConfigurationTitle,
                       style: textTheme.titleLarge!.copyWith(
                         fontWeight: FontWeight.bold,
                         fontSize: 32,
@@ -73,6 +78,7 @@ class ServerConfigView extends StatelessWidget {
                     _MqttHostInput(),
                     _MqttPortInput(),
                     _SameHostSwitch(),
+                    _ChangeLanguageSelect(),
                     _SubmitButton(),
                     _BackButton(),
                   ]
@@ -100,15 +106,26 @@ class _HttpHostInput extends StatelessWidget {
       buildWhen: (previous, current) =>
           previous.httpHost.value != current.httpHost.value,
       builder: (context, state) {
-        final error = state.httpHost.error;
+        final localization = AppLocalizations.of(context);
+        String? errorMessage;
+        switch (state.httpHost.error) {
+          case HttpHostValidationError.empty:
+            errorMessage = localization.emptyTextFieldMessage;
+            break;
+          case HttpHostValidationError.invalid:
+            errorMessage = localization.invalidHostName;
+            break;
+          case null:
+            break;
+        }
         return CustomTextField(
           initialValue: state.httpHost.value,
           key: const Key('serverConfigForm_httpHost_textInput'),
           onChanged: (value) => context
               .read<ServerConfigBloc>()
               .add(ServerConfigHttpHostChanged(httpHost: value)),
-          errorText: state.httpHost.invalid ? error?.message : null,
-          labelText: 'HTTP Host',
+          errorText: errorMessage,
+          labelText: localization.httpHost,
         );
       },
     );
@@ -122,7 +139,15 @@ class _HttpPortInput extends StatelessWidget {
       buildWhen: (previous, current) =>
           previous.httpPort.value != current.httpPort.value,
       builder: (context, state) {
-        final error = state.httpPort.error;
+        final localizations = AppLocalizations.of(context);
+        String? errorMessage;
+        switch (state.httpPort.error) {
+          case HttpPortValidationError.outOfRange:
+            errorMessage = localizations.invalidPortNumber;
+            break;
+          case null:
+            break;
+        }
         return CustomTextField(
           initialValue: state.httpPort.value.toString(),
           key: const Key('serverConfigForm_httpPort_textInput'),
@@ -136,8 +161,8 @@ class _HttpPortInput extends StatelessWidget {
               return;
             }
           },
-          errorText: state.httpPort.invalid ? error?.message : null,
-          labelText: 'HTTP Port',
+          errorText: errorMessage,
+          labelText: localizations.httpPort,
         );
       },
     );
@@ -152,15 +177,26 @@ class _MqttHostInput extends StatelessWidget {
           previous.mqttHost.value != current.mqttHost.value ||
           previous.sameHost != current.sameHost,
       builder: (context, state) {
-        final error = state.mqttHost.error;
+        final localizations = AppLocalizations.of(context);
+        String? errorMessage;
+        switch (state.mqttHost.error) {
+          case MqttHostValidationError.empty:
+            errorMessage = localizations.emptyTextFieldMessage;
+            break;
+          case MqttHostValidationError.invalid:
+            errorMessage = localizations.invalidHostName;
+            break;
+          case null:
+            break;
+        }
         return CustomTextField(
           initialValue: state.mqttHost.value,
           onChanged: (value) => context
               .read<ServerConfigBloc>()
               .add(ServerConfigMqttHostChanged(mqttHost: value)),
           enabled: !state.sameHost,
-          labelText: 'MQTT Host',
-          errorText: state.mqttHost.invalid ? error?.message : null,
+          labelText: localizations.mqttHost,
+          errorText: errorMessage,
         );
       },
     );
@@ -174,7 +210,11 @@ class _MqttPortInput extends StatelessWidget {
       buildWhen: (previous, current) =>
           previous.mqttPort.value != current.mqttPort.value,
       builder: (context, state) {
-        final error = state.mqttPort.error;
+        final localizations = AppLocalizations.of(context);
+        final errorMessage =
+            state.mqttPort.error == MqttPortValidationError.outOfRange
+                ? localizations.invalidPortNumber
+                : null;
         return CustomTextField(
           initialValue: state.mqttPort.value.toString(),
           key: const Key('serverConfigForm_mqttPort_textInput'),
@@ -185,8 +225,8 @@ class _MqttPortInput extends StatelessWidget {
                   .add(ServerConfigMqttPortChanged(mqttPort: int.parse(value)));
             } catch (_) {}
           },
-          errorText: state.httpHost.invalid ? error?.message : null,
-          labelText: 'MQTT Port',
+          errorText: errorMessage,
+          labelText: localizations.mqttPort,
         );
       },
     );
@@ -198,20 +238,76 @@ class _SameHostSwitch extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<ServerConfigBloc, ServerConfigState>(
       builder: (context, state) {
-        return ListTile(
-          title: const Text(
-            'HTTP and MQTT share the same host',
-            style: TextStyle(fontSize: 14),
-          ),
-          trailing: Switch(
-            activeColor: Colors.red,
-            value: state.sameHost,
-            onChanged: (value) => context
-                .read<ServerConfigBloc>()
-                .add(ServerConfigSameHostToggled(sameHost: value)),
-          ),
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              AppLocalizations.of(context).sameHostSwitchTitle,
+              style: const TextStyle(fontSize: 14),
+            ),
+            Switch(
+              activeColor: Colors.red,
+              value: state.sameHost,
+              onChanged: (value) => context
+                  .read<ServerConfigBloc>()
+                  .add(ServerConfigSameHostToggled(sameHost: value)),
+            ),
+          ],
         );
       },
+    );
+  }
+}
+
+class _ChangeLanguageSelect extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final locale =
+        context.watch<L10nCubit>().state?.languageCode ?? LanguageCode.und;
+    final languages = [
+      {'value': LanguageCode.english, 'label': 'English'},
+      {'value': LanguageCode.chinese, 'label': '中文'},
+      {
+        'value': LanguageCode.und,
+        'label': AppLocalizations.of(context).defaultLanguage
+      },
+    ];
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          AppLocalizations.of(context).language,
+          style: const TextStyle(fontSize: 14),
+        ),
+        DropdownButton<String>(
+          value: locale,
+          icon: const Icon(Icons.keyboard_arrow_down),
+          elevation: 16,
+          underline: Container(
+            height: 2,
+            color: Colors.blue,
+          ),
+          onChanged: (String? value) {
+            context.read<L10nCubit>().setLocale(value);
+          },
+          items: languages
+              .map<DropdownMenuItem<String>>((Map<String, dynamic> map) {
+            return DropdownMenuItem<String>(
+              value: map['value'] as String,
+              child: Text(
+                map['label'] as String,
+                style: const TextStyle(fontSize: 14),
+              ),
+            );
+          }).toList(),
+        )
+      ]
+          .map(
+            (widget) =>
+                Padding(padding: const EdgeInsets.all(4), child: widget),
+          )
+          .toList(),
     );
   }
 }
@@ -237,9 +333,9 @@ class _SubmitButton extends StatelessWidget {
                         .read<ServerConfigBloc>()
                         .add(const ServerConfigFormSubmitted())
                     : null,
-                child: const Text(
-                  'Edit',
-                  style: TextStyle(fontSize: 18),
+                child: Text(
+                  AppLocalizations.of(context).edit,
+                  style: const TextStyle(fontSize: 18),
                 ),
               );
       },
@@ -264,9 +360,9 @@ class _BackButton extends StatelessWidget {
           onPressed: state.status.isSubmissionInProgress
               ? null
               : () => Navigator.of(context).pop(),
-          child: const Text(
-            'Back',
-            style: TextStyle(fontSize: 18),
+          child: Text(
+            AppLocalizations.of(context).back,
+            style: const TextStyle(fontSize: 18),
           ),
         );
       },

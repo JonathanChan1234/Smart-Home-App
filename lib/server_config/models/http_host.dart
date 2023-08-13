@@ -20,14 +20,3 @@ class HttpHost extends FormzInput<String, HttpHostValidationError> {
     return null;
   }
 }
-
-extension HttpHostErrorExtension on HttpHostValidationError {
-  String? get message {
-    switch (this) {
-      case HttpHostValidationError.empty:
-        return 'Host cannot be empty';
-      case HttpHostValidationError.invalid:
-        return 'Invalid host name';
-    }
-  }
-}

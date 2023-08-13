@@ -9,7 +9,13 @@ abstract class SmartHomeConnectEvent extends Equatable {
 
 class SmartHomeConnectRequestEvent extends SmartHomeConnectEvent {
   const SmartHomeConnectRequestEvent();
+}
 
-  @override
-  List<Object> get props => [];
+class SmartHomeConnectProcessorStatusSubscriptionRequestEvent
+    extends SmartHomeConnectEvent {
+  const SmartHomeConnectProcessorStatusSubscriptionRequestEvent();
+}
+
+class SmartHomeConnectProcessStatusRefreshEvent extends SmartHomeConnectEvent {
+  const SmartHomeConnectProcessStatusRefreshEvent();
 }

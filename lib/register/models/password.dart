@@ -10,7 +10,7 @@ class Password extends FormzInput<String, PasswordValidationError> {
   const Password.dirty([super.value = '']) : super.dirty();
 
   static final _passwordRegExp =
-      RegExp(r'/(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*\W)/gm');
+      RegExp(r'(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*\W)');
 
   @override
   PasswordValidationError? validator(String value) {
@@ -19,16 +19,5 @@ class Password extends FormzInput<String, PasswordValidationError> {
       return PasswordValidationError.invalid;
     }
     return null;
-  }
-}
-
-extension PasswordValidatorErrorMessage on PasswordValidationError {
-  String? get message {
-    switch (this) {
-      case PasswordValidationError.empty:
-        return 'Password must not be empty';
-      case PasswordValidationError.invalid:
-        return '''Password must contain at least 8 characters with at least 1 uppercase, lowercase, numeric and special characters''';
-    }
   }
 }

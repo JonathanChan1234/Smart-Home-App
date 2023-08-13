@@ -4,6 +4,7 @@ import 'package:auth_repository/auth_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:home_api/home_api.dart';
 import 'package:home_repository/home_repository.dart';
+import 'package:locale_repository/locale_repository.dart';
 import 'package:mqtt_smarthome_client/mqtt_smarthome_client.dart';
 import 'package:room_api/room_api.dart';
 import 'package:room_repository/room_repository.dart';
@@ -57,6 +58,7 @@ Future<void> main() async {
       smartHomeApiClient: smartHomeApiClient,
     ),
   );
+  final localeRepository = LocaleRepository(plugin: sharedPreferences);
 
   await authRepository.checkAuthState();
   await bootstrap(
@@ -69,6 +71,7 @@ Future<void> main() async {
       smartHomeApiClient: smartHomeApiClient,
       sceneRepository: sceneRepository,
       sceneActionRepository: sceneActionRepository,
+      localeRepository: localeRepository,
     ),
   );
 }

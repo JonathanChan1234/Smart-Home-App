@@ -1,10 +1,22 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:auth_repository/auth_repository.dart';
 import 'package:home_api/home_api.dart';
 import 'package:mqtt_smarthome_client/mqtt_smarthome_client.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:smart_home_exception/smart_home_exception.dart';
+
+import 'models/processor_status_dto.dart';
+
+enum ProcessorConnectionStatus {
+  initial,
+  loading,
+  notExist,
+  offline,
+  online,
+  failure,
+}
 
 class HomeRepository {
   HomeRepository({
@@ -21,12 +33,18 @@ class HomeRepository {
 
   final _homeStreamController =
       BehaviorSubject<List<SmartHome>>.seeded(const []);
+  final _processorStatusStreamController =
+      BehaviorSubject<ProcessorConnectionStatus>.seeded(
+          ProcessorConnectionStatus.initial);
 
   Stream<List<SmartHome>> get homes =>
       _homeStreamController.asBroadcastStream();
-  Stream<MqttClientConnectionStatus> get connectionStatus =>
+  Stream<MqttClientConnectionStatus> get serverConnectStatus =>
       _mqttSmartHomeClient.status;
+  Stream<ProcessorConnectionStatus> get processorConnectStatus =>
+      _processorStatusStreamController.asBroadcastStream();
 
+  StreamSubscription? _messageSubscription;
   StreamSubscription? _connectionSubscription;
 
   Future<String> _getAccessToken() async {
@@ -48,6 +66,31 @@ class HomeRepository {
     } catch (e) {
       _homeStreamController.addError(e);
     }
+  }
+
+  Future<Processor?> getHomeProcessor({required String homeId}) async {
+    final processor = await _homeApiClient.getHomeProcessor(
+      homeId: homeId,
+      accessToken: await _getAccessToken(),
+    );
+    if (processor == null) {
+      _processorStatusStreamController.add(ProcessorConnectionStatus.notExist);
+      return null;
+    }
+    _processorStatusStreamController.add(processor.onlineStatus
+        ? ProcessorConnectionStatus.online
+        : ProcessorConnectionStatus.offline);
+    return processor;
+  }
+
+  void initProcessorStatusSubscription({required String homeId}) {
+    _messageSubscription = _mqttSmartHomeClient.message
+        .where((message) => message.topic == 'home/$homeId/processor')
+        .map((message) =>
+            ProcessorStatusDto.fromJson(jsonDecode(message.message)))
+        .listen((dto) => _processorStatusStreamController.add(dto.onlineStatus
+            ? ProcessorConnectionStatus.online
+            : ProcessorConnectionStatus.offline));
   }
 
   Future<SmartHome> addHome({
@@ -92,6 +135,9 @@ class HomeRepository {
   Future<void> disconnectFromServer() async {
     if (_connectionSubscription != null) {
       await _connectionSubscription?.cancel();
+    }
+    if (_messageSubscription != null) {
+      await _messageSubscription?.cancel();
     }
     _mqttSmartHomeClient.disconnect();
   }

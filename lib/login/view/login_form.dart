@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:formz/formz.dart';
+import 'package:smart_home/l10n/l10n.dart';
 import 'package:smart_home/login/bloc/login_bloc.dart';
 import 'package:smart_home/login/models/models.dart';
 import 'package:smart_home/register/view/register_page.dart';
@@ -13,6 +14,7 @@ class LoginForm extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
+    final localization = AppLocalizations.of(context);
     return BlocListener<LoginBloc, LoginState>(
       listener: (context, state) {
         if (state.status == FormzStatus.submissionFailure) {
@@ -45,7 +47,7 @@ class LoginForm extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
-                      'Log In',
+                      AppLocalizations.of(context).loginTitle,
                       style: textTheme.titleLarge?.copyWith(
                         fontWeight: FontWeight.bold,
                         fontSize: 32,
@@ -59,9 +61,10 @@ class LoginForm extends StatelessWidget {
                       thickness: 2,
                     ),
                     Text(
-                      "Don't have an account yet?",
+                      localization.dontHaveAccountText,
                       style: textTheme.labelLarge!.copyWith(
                         fontSize: 16,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
                     ElevatedButton.icon(
@@ -78,9 +81,9 @@ class LoginForm extends StatelessWidget {
                         disabledForegroundColor: Colors.black,
                         minimumSize: const Size.fromHeight(50),
                       ),
-                      label: const Text(
-                        'Register',
-                        style: TextStyle(fontSize: 18),
+                      label: Text(
+                        AppLocalizations.of(context).registerTitle,
+                        style: const TextStyle(fontSize: 18),
                       ),
                     ),
                     _ToServerConfigButton(),
@@ -109,12 +112,25 @@ class _UsernameInput extends StatelessWidget {
       buildWhen: (previous, current) =>
           previous.username.value != current.username.value,
       builder: (context, state) {
+        String? errorMessage;
+        final localization = AppLocalizations.of(context);
+        switch (state.username.error) {
+          case UsernameValidationError.empty:
+            errorMessage = localization.emptyUsernameMessage;
+            break;
+          case UsernameValidationError.tooLong:
+            errorMessage = localization.tooLongUsernameMessage;
+            break;
+          case null:
+            errorMessage = null;
+            break;
+        }
         return CustomTextField(
           key: const Key('loginForm_usernameInput_textField'),
           onChanged: (value) =>
               context.read<LoginBloc>().add(LoginUsernameChanged(name: value)),
-          errorText: state.username.error?.message,
-          labelText: 'Username',
+          errorText: errorMessage,
+          labelText: AppLocalizations.of(context).username,
         );
       },
     );
@@ -128,14 +144,27 @@ class _PasswordInput extends StatelessWidget {
       buildWhen: (previous, current) =>
           previous.password.value != current.password.value,
       builder: (context, state) {
+        String? errorMessage;
+        final localization = AppLocalizations.of(context);
+        switch (state.password.error) {
+          case PasswordValidationError.empty:
+            errorMessage = localization.emptyPasswordMessage;
+            break;
+          case PasswordValidationError.invalid:
+            errorMessage = localization.invalidPasswordMessage;
+            break;
+          case null:
+            errorMessage = null;
+            break;
+        }
         return CustomTextField(
           key: const Key('loginForm_passwordInput_textField'),
           passwordField: true,
           onChanged: (value) => context
               .read<LoginBloc>()
               .add(LoginPasswordChanged(password: value)),
-          errorText: state.password.error?.message,
-          labelText: 'Password',
+          errorText: errorMessage,
+          labelText: AppLocalizations.of(context).password,
         );
       },
     );
@@ -163,9 +192,9 @@ class _LoginButton extends StatelessWidget {
                         .read<LoginBloc>()
                         .add(const LoginFormSubmitted())
                     : null,
-                child: const Text(
-                  'Log In',
-                  style: TextStyle(fontSize: 18),
+                child: Text(
+                  AppLocalizations.of(context).loginTitle,
+                  style: const TextStyle(fontSize: 18),
                 ),
               );
       },
@@ -191,9 +220,9 @@ class _ToServerConfigButton extends StatelessWidget {
           onPressed: state.status.isSubmissionInProgress
               ? null
               : () => Navigator.of(context).push(ServerConfigPage.route()),
-          label: const Text(
-            'Edit Server Configuration',
-            style: TextStyle(fontSize: 18),
+          label: Text(
+            AppLocalizations.of(context).editServerConfiguration,
+            style: const TextStyle(fontSize: 18),
           ),
         );
       },

@@ -18,6 +18,7 @@ class SceneEditBloc extends Bloc<SceneEditEvent, SceneEditState> {
           SceneEditState(
             home: home,
             scene: scene,
+            name: scene?.name ?? '',
           ),
         ) {
     on<SceneEditNameChangedEvent>(_onSceneEditNameChanged);

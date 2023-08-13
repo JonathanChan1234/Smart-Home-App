@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lights_api/lights_api.dart';
 import 'package:lights_repository/lights_repository.dart';
+import 'package:smart_home/l10n/l10n.dart';
 import 'package:smart_home/light_edit/bloc/light_edit_bloc.dart';
 
 class LightEditPage extends StatelessWidget {
@@ -31,16 +32,23 @@ class LightEditPage extends StatelessWidget {
     return BlocListener<LightEditBloc, LightEditState>(
       listenWhen: (previous, current) => previous.status != current.status,
       listener: (context, state) {
+        final localizations = AppLocalizations.of(context);
         if (state.status == LightEditStatus.success) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Light name changed successfully')),
+            SnackBar(
+              content: Text(localizations.lightNameChangedSuccessMessage),
+            ),
           );
           Navigator.of(context).pop(true);
           return;
         }
         if (state.status == LightEditStatus.failure) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(state.requestError)),
+            SnackBar(
+              content: Text(
+                '''${localizations.lightNameChangedFailureMessage} ${localizations.error}: ${state.requestError}''',
+              ),
+            ),
           );
         }
       },
@@ -59,13 +67,14 @@ class LightEditView extends StatelessWidget {
     final floatingActionButtonTheme = theme.floatingActionButtonTheme;
     final fabBackgroundColor = floatingActionButtonTheme.backgroundColor ??
         theme.colorScheme.secondary;
+    final localizations = AppLocalizations.of(context);
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Edit Light Name'),
+        title: Text(localizations.editLightName),
       ),
       floatingActionButton: FloatingActionButton(
-        tooltip: 'Edit',
+        tooltip: localizations.edit,
         shape: const ContinuousRectangleBorder(
           borderRadius: BorderRadius.all(Radius.circular(32)),
         ),
@@ -101,13 +110,14 @@ class _LightNameField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final state = context.watch<LightEditBloc>().state;
+    final localizations = AppLocalizations.of(context);
 
     return TextFormField(
       key: const Key('lightEdit_name_text_form'),
       initialValue: state.light.name,
       decoration: InputDecoration(
         enabled: !state.status.isLoadingOrSuccess,
-        labelText: 'Light Name',
+        labelText: localizations.lightName,
       ),
       maxLength: 50,
       inputFormatters: [

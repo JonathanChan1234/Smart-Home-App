@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:scene_action_api/scene_action_api.dart';
 import 'package:shades_api/shades_api.dart';
+import 'package:smart_home/l10n/l10n.dart';
 import 'package:smart_home/scene_action_edit/bloc/scene_action_edit_bloc.dart';
 import 'package:smart_home/scene_action_edit/widgets/shade/cubit/shade_action_edit_cubit.dart';
 import 'package:smart_home/shades/widgets/shade_slider_thumb.dart';
@@ -76,7 +77,7 @@ class ShadeActionEdit extends StatelessWidget {
               disabledBackgroundColor: Colors.grey,
             ),
             child: Text(
-              'Submit',
+              AppLocalizations.of(context).submit,
               style: theme.textTheme.titleSmall!.copyWith(
                 color: Colors.white,
               ),
@@ -96,7 +97,7 @@ class _ShadeActionLevelEdit extends StatelessWidget {
     return Column(
       children: [
         ListTile(
-          title: const Text('Level'),
+          title: Text(AppLocalizations.of(context).shadeLevel),
           trailing: ColoredCheckbox(
             value: level != null,
             onChanged: (bool? value) {
@@ -143,10 +144,12 @@ class _ShadeActionTypeEdit extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final actionType = context.watch<ShadeActionEditCubit>().state.actionType;
+    final localizations = AppLocalizations.of(context);
+
     return Column(
       children: [
         ListTile(
-          title: const Text('Action Type'),
+          title: Text(localizations.shadeAction),
           trailing: ColoredCheckbox(
             value: actionType != null,
             onChanged: (value) {
@@ -163,7 +166,11 @@ class _ShadeActionTypeEdit extends StatelessWidget {
           for (final action in ShadeActionType.values)
             if (action != ShadeActionType.na)
               ListTile(
-                title: Text(action.name),
+                title: Text(
+                  action == ShadeActionType.raise
+                      ? localizations.shadeRaiseAction
+                      : localizations.shadeLowerAction,
+                ),
                 leading: Radio<ShadeActionType>(
                   value: action,
                   groupValue: actionType,

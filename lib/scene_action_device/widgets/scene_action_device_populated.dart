@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:scene_action_api/scene_action_api.dart';
+import 'package:smart_home/l10n/l10n.dart';
 import 'package:smart_home/scene_action_device/bloc/scene_action_device_bloc.dart';
 import 'package:smart_home/scene_action_edit/view/scene_action_edit_page.dart';
 
@@ -13,7 +14,9 @@ class SceneActionDevicePopulated extends StatelessWidget {
     final devices = state.devices;
     return Scaffold(
       appBar: AppBar(
-        title: Text('${state.scene.name} - Create Action'),
+        title: Text(
+          '${state.scene.name} - ${AppLocalizations.of(context).createAction}',
+        ),
       ),
       body: ListView.builder(
         itemCount: devices.length,

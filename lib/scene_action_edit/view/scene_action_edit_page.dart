@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:scene_action_api/scene_action_api.dart';
 import 'package:scene_action_repository/scene_action_repository.dart';
 import 'package:scene_api/scene_api.dart';
+import 'package:smart_home/l10n/l10n.dart';
 import 'package:smart_home/scene_action/view/scene_action_page.dart';
 import 'package:smart_home/scene_action_edit/bloc/scene_action_edit_bloc.dart';
 import 'package:smart_home/scene_action_edit/widgets/light/light_action_edit.dart';
@@ -62,15 +63,16 @@ class SceneActionEditPage extends StatelessWidget {
     return BlocListener<SceneActionEditBloc, SceneActionEditState>(
       listenWhen: (previous, current) => previous.status != current.status,
       listener: (context, state) {
+        final localizations = AppLocalizations.of(context);
         if (state.status == SceneActionEditStatus.success) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(
                 state.action != null
                     ? state.eventType == SceneActionEditEventType.edit
-                        ? 'Edit action succssfully'
-                        : 'Delete action successfully'
-                    : 'Create action success',
+                        ? localizations.editActionSuccessMessage
+                        : localizations.deleteActionSuccessMessage
+                    : localizations.createActionSuccessMessage,
               ),
             ),
           );
@@ -83,7 +85,13 @@ class SceneActionEditPage extends StatelessWidget {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(
-                state.requestError ?? 'Something is wrong',
+                state.action != null
+                    ? state.eventType == SceneActionEditEventType.edit
+                        ? localizations.editActionFailureMessage
+                        : localizations.deleteActionFailureMessage
+                    : localizations.createActionFailureMessage +
+                        (state.requestError ??
+                            localizations.somethingWentWrong),
               ),
             ),
           );
@@ -112,10 +120,11 @@ class SceneActionEditView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context);
     final actionDevice = device ?? action?.device;
     if (actionDevice == null) {
-      return const ErrorView(
-        message: 'Something is wrong. Cannot find the device/action',
+      return ErrorView(
+        message: localizations.failToFindAction,
       );
     }
     return Scaffold(
@@ -130,8 +139,8 @@ class SceneActionEditView extends StatelessWidget {
                 final deleted = await showDialog<bool?>(
                   context: context,
                   builder: (dialogContext) => ConfirmDialog(
-                    title: 'Are you sure you want to delete this scene action?',
-                    content: 'The action will be removed from the scene.',
+                    title: localizations.deleteAction,
+                    content: localizations.deleteActionDialogContent,
                     onLeftBtnClick: () {
                       Navigator.pop(dialogContext, false);
                     },
@@ -165,8 +174,8 @@ class SceneActionEditView extends StatelessWidget {
                 action: action,
               );
             case DeviceMainCategory.unknown:
-              return const ErrorView(
-                message: 'Something is wrong. The device type is not supported',
+              return ErrorView(
+                message: localizations.deviceTypeNotSupported,
               );
           }
         },

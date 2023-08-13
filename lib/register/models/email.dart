@@ -20,14 +20,3 @@ class Email extends FormzInput<String, EmailValidationError> {
     return null;
   }
 }
-
-extension EmailErrorExtension on EmailValidationError {
-  String? get message {
-    switch (this) {
-      case EmailValidationError.empty:
-        return 'Email cannot be empty';
-      case EmailValidationError.invalid:
-        return 'Invalid email';
-    }
-  }
-}

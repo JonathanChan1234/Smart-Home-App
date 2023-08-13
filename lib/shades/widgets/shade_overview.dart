@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shades_api/shades_api.dart';
+import 'package:smart_home/l10n/l10n.dart';
 import 'package:smart_home/shades/bloc/shade_bloc.dart';
 import 'package:smart_home/shades/widgets/shade_control.dart';
 import 'package:smart_home/shades/widgets/shade_edit.dart';
@@ -17,6 +18,7 @@ class ShadeOverview extends StatelessWidget {
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
     final editMode = context.read<ShadeBloc>().state.editMode;
+    final localizations = AppLocalizations.of(context);
 
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -27,7 +29,7 @@ class ShadeOverview extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                editMode ? 'EDIT' : 'CONTROLS',
+                editMode ? localizations.edit : localizations.control,
                 style: textTheme.titleSmall,
               ),
               IconButton(

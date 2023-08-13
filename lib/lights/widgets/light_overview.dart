@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lights_api/lights_api.dart';
+import 'package:smart_home/l10n/l10n.dart';
 import 'package:smart_home/lights/bloc/light_bloc.dart';
 import 'package:smart_home/lights/widgets/light_control.dart';
 import 'package:smart_home/lights/widgets/light_edit.dart';
@@ -17,6 +18,7 @@ class LightOverview extends StatelessWidget {
   Widget build(BuildContext context) {
     final editMode = context.read<LightBloc>().state.editMode;
     final textTheme = Theme.of(context).textTheme;
+    final localizations = AppLocalizations.of(context);
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -25,7 +27,10 @@ class LightOverview extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(editMode ? 'EDIT' : 'CONTROLS', style: textTheme.titleSmall),
+              Text(
+                editMode ? localizations.edit : localizations.control,
+                style: textTheme.titleSmall,
+              ),
               IconButton(
                 icon: editMode
                     ? const Icon(Icons.edit_off)

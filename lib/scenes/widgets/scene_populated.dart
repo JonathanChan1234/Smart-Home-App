@@ -44,19 +44,6 @@ class ScenePopulated extends StatelessWidget {
         }
       },
       child: Scaffold(
-        appBar: AppBar(
-          title: const Text('Scene'),
-          actions: [
-            IconButton(
-              icon: const Icon(Icons.add),
-              onPressed: () {
-                final home = context.read<HomeBloc>().state.selectedHome;
-                if (home == null) return;
-                Navigator.of(context).push(SceneEditPage.route(home: home));
-              },
-            )
-          ],
-        ),
         body: Builder(
           builder: (context) {
             if (scenes.isEmpty) {
@@ -88,6 +75,14 @@ class ScenePopulated extends StatelessWidget {
                     scenes.map((scene) => _SceneCard(scene: scene)).toList(),
               ),
             );
+          },
+        ),
+        floatingActionButton: FloatingActionButton(
+          child: const Icon(Icons.add),
+          onPressed: () {
+            final home = context.read<HomeBloc>().state.selectedHome;
+            if (home == null) return;
+            Navigator.of(context).push(SceneEditPage.route(home: home));
           },
         ),
       ),

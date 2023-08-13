@@ -48,15 +48,11 @@ class FloorsList extends StatelessWidget {
       }
     }
 
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        ListView.builder(
-          itemCount: items.length,
-          shrinkWrap: true,
-          itemBuilder: (context, index) => items[index],
-        )
-      ],
+    return ListView.builder(
+      itemCount: items.length,
+      shrinkWrap: true,
+      itemBuilder: (context, index) => items[index],
+      physics: const AlwaysScrollableScrollPhysics(),
     );
   }
 }

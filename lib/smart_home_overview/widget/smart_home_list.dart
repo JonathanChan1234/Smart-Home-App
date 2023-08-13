@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:smart_home/l10n/l10n.dart';
 import 'package:smart_home/smart_home_add/view/smart_home_add_page.dart';
 import 'package:smart_home/smart_home_overview/bloc/smart_home_overview_bloc.dart';
 import 'package:smart_home/smart_home_overview/widget/smart_home_error.dart';
@@ -17,7 +18,7 @@ class SmartHomeList extends StatelessWidget {
       builder: (context, state) {
         return Scaffold(
           appBar: AppBar(
-            title: const Text('Your Home'),
+            title: Text(AppLocalizations.of(context).yourHome),
             actions: [
               IconButton(
                 icon: const Icon(Icons.refresh),

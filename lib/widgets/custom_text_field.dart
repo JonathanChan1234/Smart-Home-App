@@ -37,6 +37,7 @@ class CustomTextField extends StatelessWidget {
       decoration: InputDecoration(
         labelText: labelText,
         errorText: errorText,
+        errorMaxLines: 5,
         labelStyle: const TextStyle(color: Colors.black),
         focusedBorder: OutlineInputBorder(
           borderSide: BorderSide(color: Colors.blue.shade300),

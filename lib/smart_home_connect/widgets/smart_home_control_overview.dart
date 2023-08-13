@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:home_api/home_api.dart';
+import 'package:smart_home/l10n/l10n.dart';
 import 'package:smart_home/rooms/room.dart';
 import 'package:smart_home/scenes/view/scene_page.dart';
 
@@ -26,6 +27,7 @@ class _SmartHomeControlOverviewState extends State<SmartHomeControlOverview> {
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context);
     return Scaffold(
       body: IndexedStack(
         index: currentTab.index,
@@ -43,7 +45,7 @@ class _SmartHomeControlOverviewState extends State<SmartHomeControlOverview> {
               value: SmartHomeConnectedTab.rooms,
               groupValue: currentTab,
               icon: Icons.house,
-              label: 'Rooms',
+              label: localizations.rooms,
               onclick: () => setState(() {
                 currentTab = SmartHomeConnectedTab.rooms;
               }),
@@ -52,7 +54,7 @@ class _SmartHomeControlOverviewState extends State<SmartHomeControlOverview> {
               value: SmartHomeConnectedTab.scenes,
               groupValue: currentTab,
               icon: Icons.smart_button,
-              label: 'Scenes',
+              label: localizations.scenes,
               onclick: () => setState(() {
                 currentTab = SmartHomeConnectedTab.scenes;
               }),

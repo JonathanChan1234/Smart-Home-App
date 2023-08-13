@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:home_repository/home_repository.dart';
+import 'package:smart_home/l10n/l10n.dart';
 import 'package:smart_home/settings/view/setting_page.dart';
 import 'package:smart_home/smart_home_overview/bloc/smart_home_overview_bloc.dart';
 import 'package:smart_home/smart_home_overview/widget/smart_home_list.dart';
@@ -28,6 +29,7 @@ class SmartHomeOverviewTabView extends StatelessWidget {
   Widget build(BuildContext context) {
     final currentTab =
         context.select((SmartHomeOverviewBloc bloc) => bloc.state.tab);
+    final localization = AppLocalizations.of(context);
 
     return Scaffold(
       body: IndexedStack(
@@ -46,13 +48,13 @@ class SmartHomeOverviewTabView extends StatelessWidget {
               value: SmartHomeTab.home,
               groupValue: currentTab,
               icon: Icons.home,
-              label: 'Home',
+              label: localization.home,
             ),
             _HomeTabButton(
               value: SmartHomeTab.settings,
               groupValue: currentTab,
               icon: Icons.settings,
-              label: 'Settings',
+              label: localization.settings,
             ),
           ],
         ),

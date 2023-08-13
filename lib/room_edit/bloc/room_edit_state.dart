@@ -11,7 +11,7 @@ class RoomEditState extends Equatable {
   const RoomEditState({
     this.status = RoomEditStatus.initial,
     required this.room,
-    this.name = '',
+    required this.name,
     this.requestError = '',
   });
 

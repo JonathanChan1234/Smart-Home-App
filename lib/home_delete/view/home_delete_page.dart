@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:home_repository/home_repository.dart';
 import 'package:smart_home/home_delete/bloc/home_delete_bloc.dart';
 import 'package:smart_home/home_delete/widgets/home_delete_overview.dart';
+import 'package:smart_home/l10n/l10n.dart';
 import 'package:smart_home/widgets/error_view.dart';
 import 'package:smart_home/widgets/initial_view.dart';
 import 'package:smart_home/widgets/loading_view.dart';
@@ -29,9 +30,10 @@ class HomeDeletePage extends StatelessWidget {
       listenWhen: (previous, current) =>
           previous.requestStatus != current.requestStatus,
       listener: (context, state) {
+        final localizations = AppLocalizations.of(context);
         if (state.requestStatus == HomeDeleteRequestStatus.success) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Remove home successfully')),
+            SnackBar(content: Text(localizations.deleteHomeSuccessMessage)),
           );
           return;
         }
@@ -39,7 +41,7 @@ class HomeDeletePage extends StatelessWidget {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(
-                'Fail to remove home. Error: ${state.requestError}',
+                '''${localizations.deleteHomeFailureMessage} ${state.requestError}''',
               ),
             ),
           );
@@ -57,8 +59,9 @@ class HomeDeleteView extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<HomeDeleteBloc, HomeDeleteState>(
       builder: (context, state) {
+        final localizations = AppLocalizations.of(context);
         return Scaffold(
-          appBar: AppBar(title: const Text('Delete Home')),
+          appBar: AppBar(title: Text(localizations.removeHome)),
           body: Builder(
             builder: (_) {
               switch (state.refreshStatus) {

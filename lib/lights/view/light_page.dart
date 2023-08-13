@@ -6,6 +6,7 @@ import 'package:lights_api/lights_api.dart';
 import 'package:lights_repository/lights_repository.dart';
 import 'package:mqtt_smarthome_client/mqtt_smarthome_client.dart';
 import 'package:room_api/room_api.dart';
+import 'package:smart_home/l10n/l10n.dart';
 import 'package:smart_home/lights/bloc/light_bloc.dart';
 import 'package:smart_home/lights/widgets/widget.dart';
 import 'package:smart_home_api_client/smart_home_api_client.dart';
@@ -63,7 +64,10 @@ class LightView extends StatelessWidget {
     return BlocBuilder<LightBloc, LightState>(
       builder: (context, state) {
         return Scaffold(
-          appBar: AppBar(title: Text('${state.room.name} - Lighting')),
+          appBar: AppBar(
+              title: Text(
+            '${state.room.name} - ${AppLocalizations.of(context).lights}',
+          )),
           body: Builder(
             builder: (_) {
               switch (state.status) {

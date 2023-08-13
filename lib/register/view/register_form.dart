@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:formz/formz.dart';
+import 'package:smart_home/l10n/l10n.dart';
 import 'package:smart_home/login/view/login_page.dart';
 import 'package:smart_home/register/bloc/register_bloc.dart';
 import 'package:smart_home/register/models/models.dart';
@@ -13,6 +14,7 @@ class RegisterForm extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
+    final localization = AppLocalizations.of(context);
     return BlocListener<RegisterBloc, RegisterState>(
       listener: (context, state) {
         if (state.status == FormzStatus.submissionFailure) {
@@ -45,7 +47,7 @@ class RegisterForm extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
-                      'Register',
+                      localization.registerTitle,
                       style: textTheme.titleLarge?.copyWith(
                         fontWeight: FontWeight.bold,
                         fontSize: 32,
@@ -61,7 +63,7 @@ class RegisterForm extends StatelessWidget {
                       thickness: 2,
                     ),
                     Text(
-                      'Already have an account yet?',
+                      localization.alreadyHaveAccountMessage,
                       style: textTheme.labelLarge!
                           .copyWith(fontSize: 16, fontWeight: FontWeight.w700),
                     ),
@@ -79,9 +81,9 @@ class RegisterForm extends StatelessWidget {
                         disabledForegroundColor: Colors.black,
                         minimumSize: const Size.fromHeight(50),
                       ),
-                      label: const Text(
-                        'Click here to login',
-                        style: TextStyle(fontSize: 18),
+                      label: Text(
+                        localization.clickHereToLoginMessage,
+                        style: const TextStyle(fontSize: 18),
                       ),
                     ),
                     _ToServerConfigButton(),
@@ -106,18 +108,30 @@ class RegisterForm extends StatelessWidget {
 class _EmailInput extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final localization = AppLocalizations.of(context);
+
     return BlocBuilder<RegisterBloc, RegisterState>(
       buildWhen: (previous, current) =>
           previous.username.value != current.username.value,
       builder: (context, state) {
-        final error = state.email.error;
+        String? errorMessage;
+        switch (state.email.error) {
+          case EmailValidationError.empty:
+            errorMessage = localization.emptyEmailMessage;
+            break;
+          case EmailValidationError.invalid:
+            errorMessage = localization.invalidEmailMesssage;
+            break;
+          case null:
+            break;
+        }
         return CustomTextField(
           key: const Key('register_email_textField'),
           onChanged: (value) => context
               .read<RegisterBloc>()
               .add(RegisterEmailChanged(email: value)),
-          errorText: state.email.invalid ? error?.message : null,
-          labelText: 'Email',
+          errorText: errorMessage,
+          labelText: localization.email,
         );
       },
     );
@@ -127,18 +141,29 @@ class _EmailInput extends StatelessWidget {
 class _UsernameInput extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final localization = AppLocalizations.of(context);
     return BlocBuilder<RegisterBloc, RegisterState>(
       buildWhen: (previous, current) =>
           previous.username.value != current.username.value,
       builder: (context, state) {
-        final error = state.username.error;
+        String? errorMessage;
+        switch (state.username.error) {
+          case UsernameValidationError.empty:
+            errorMessage = localization.emptyUsernameMessage;
+            break;
+          case UsernameValidationError.tooLong:
+            errorMessage = localization.tooLongUsernameMessage;
+            break;
+          case null:
+            break;
+        }
         return CustomTextField(
           key: const Key('register_usernameInput_textField'),
           onChanged: (value) => context
               .read<RegisterBloc>()
               .add(RegisterUsernameChanged(username: value)),
-          errorText: state.username.invalid ? error?.message : null,
-          labelText: 'Username',
+          errorText: errorMessage,
+          labelText: localization.username,
         );
       },
     );
@@ -148,18 +173,29 @@ class _UsernameInput extends StatelessWidget {
 class _PasswordInput extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final localization = AppLocalizations.of(context);
     return BlocBuilder<RegisterBloc, RegisterState>(
       buildWhen: (previous, current) =>
           previous.password.value != current.password.value,
       builder: (context, state) {
-        final error = state.password.error;
+        String? errorMessage;
+        switch (state.password.error) {
+          case PasswordValidationError.empty:
+            errorMessage = localization.emptyPasswordMessage;
+            break;
+          case PasswordValidationError.invalid:
+            errorMessage = localization.invalidPasswordMessage;
+            break;
+          case null:
+            break;
+        }
         return CustomTextField(
           key: const Key('register_passwordInput_textField'),
           onChanged: (value) => context
               .read<RegisterBloc>()
               .add(RegisterPasswordChanged(password: value)),
-          errorText: state.password.invalid ? error?.message : null,
-          labelText: 'Password',
+          errorText: errorMessage,
+          labelText: localization.password,
           passwordField: true,
         );
       },
@@ -170,18 +206,33 @@ class _PasswordInput extends StatelessWidget {
 class _ConfirmPasswordInput extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final localization = AppLocalizations.of(context);
     return BlocBuilder<RegisterBloc, RegisterState>(
       buildWhen: (previous, current) =>
-          previous.password.value != current.password.value,
+          previous.password.value != current.password.value ||
+          previous.confirmPassword.value != current.confirmPassword.value,
       builder: (context, state) {
-        final error = state.confirmPassword.error;
+        String? errorMessage;
+        switch (state.confirmPassword.error) {
+          case ConfirmPasswordValidationError.empty:
+            errorMessage = localization.emptyPasswordMessage;
+            break;
+          case ConfirmPasswordValidationError.invalid:
+            errorMessage = localization.invalidPasswordMessage;
+            break;
+          case ConfirmPasswordValidationError.mismatch:
+            errorMessage = localization.notMatchConfirmPassword;
+            break;
+          case null:
+            break;
+        }
         return CustomTextField(
           key: const Key('register_confirmPasswordInput_textField'),
           onChanged: (value) => context
               .read<RegisterBloc>()
               .add(RegisterConfirmPasswordChanged(confirmPassword: value)),
-          errorText: state.confirmPassword.invalid ? error?.message : null,
-          labelText: 'Confirm Password',
+          errorText: errorMessage,
+          labelText: localization.confirmPasword,
           passwordField: true,
         );
       },
@@ -210,9 +261,9 @@ class _RegisterButton extends StatelessWidget {
                         .read<RegisterBloc>()
                         .add(const RegisterFormSubmitted())
                     : null,
-                child: const Text(
-                  'Register',
-                  style: TextStyle(fontSize: 18),
+                child: Text(
+                  AppLocalizations.of(context).registerTitle,
+                  style: const TextStyle(fontSize: 18),
                 ),
               );
       },
@@ -238,9 +289,9 @@ class _ToServerConfigButton extends StatelessWidget {
           onPressed: state.status.isSubmissionInProgress
               ? null
               : () => Navigator.of(context).push(ServerConfigPage.route()),
-          label: const Text(
-            'Edit Server Configuration',
-            style: TextStyle(fontSize: 18),
+          label: Text(
+            AppLocalizations.of(context).editServerConfiguration,
+            style: const TextStyle(fontSize: 18),
           ),
         );
       },

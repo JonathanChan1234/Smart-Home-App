@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:scene_action_api/scene_action_api.dart';
 import 'package:smart_home/home/bloc/home_bloc.dart';
+import 'package:smart_home/l10n/l10n.dart';
 import 'package:smart_home/scene_action/bloc/scene_action_bloc.dart';
+import 'package:smart_home/scene_action/helper/action_translation_helper.dart';
 import 'package:smart_home/scene_action_device/view/scene_action_device_page.dart';
 import 'package:smart_home/scene_action_edit/view/scene_action_edit_page.dart';
 import 'package:smart_home/scene_edit/view/scene_edit_page.dart';
@@ -14,6 +16,7 @@ class SceneActionPopulated extends StatelessWidget {
   Widget build(BuildContext context) {
     final state = context.watch<SceneActionBloc>().state;
     final actions = state.actions;
+    final localizations = AppLocalizations.of(context);
     return Scaffold(
       appBar: AppBar(
         title: Text(state.scene.name),
@@ -46,7 +49,12 @@ class SceneActionPopulated extends StatelessWidget {
           return ListTile(
             leading: Icon(action.device.deviceMainCategory.icon),
             title: Text(action.device.name),
-            subtitle: Text(action.alias),
+            subtitle: Text(
+              SceneActionTranslationHelper.toDescription(
+                action,
+                localizations,
+              ),
+            ),
             trailing: IconButton(
               icon: const Icon(Icons.chevron_right_rounded),
               onPressed: () {

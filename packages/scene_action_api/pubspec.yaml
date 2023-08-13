@@ -12,6 +12,7 @@ dependencies:
   equatable: ^2.0.5
   flutter:
     sdk: flutter
+  intl: ^0.17.0
   json_annotation: ^4.8.1
   smart_home_api_client:
     path: ../smart_home_api_client

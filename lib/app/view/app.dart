@@ -3,6 +3,7 @@ import 'package:auth_repository/auth_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:home_repository/home_repository.dart';
+import 'package:locale_repository/locale_repository.dart';
 import 'package:mqtt_smarthome_client/mqtt_smarthome_client.dart';
 import 'package:room_repository/room_repository.dart';
 import 'package:scene_action_repository/scene_action_repository.dart';
@@ -11,6 +12,7 @@ import 'package:smart_home/auth_unknown/auth_unknown_page.dart';
 import 'package:smart_home/authentication/bloc/authentication_bloc.dart';
 import 'package:smart_home/home/bloc/home_bloc.dart';
 import 'package:smart_home/home/view/home_page.dart';
+import 'package:smart_home/l10n/cubit/l10n_cubit.dart';
 import 'package:smart_home/l10n/l10n.dart';
 import 'package:smart_home/login/view/login_page.dart';
 import 'package:smart_home/scene_action/view/scene_action_page.dart';
@@ -24,6 +26,7 @@ class App extends StatefulWidget {
     super.key,
     required this.authRepository,
     required this.homeRepository,
+    required this.localeRepository,
     required this.mqttSmartHomeClient,
     required this.roomRepository,
     required this.sharedPreferences,
@@ -35,6 +38,7 @@ class App extends StatefulWidget {
   final AuthRepository authRepository;
   final HomeRepository homeRepository;
   final RoomRepository roomRepository;
+  final LocaleRepository localeRepository;
   final MqttSmartHomeClient mqttSmartHomeClient;
   final SharedPreferences sharedPreferences;
   final SmartHomeApiClient smartHomeApiClient;
@@ -89,10 +93,16 @@ class _AppState extends State<App> {
       child: MultiBlocProvider(
         providers: [
           BlocProvider(
-            create: (_) =>
-                AuthenticationBloc(authRepository: widget.authRepository),
+            create: (_) => AuthenticationBloc(
+              authRepository: widget.authRepository,
+            ),
           ),
-          BlocProvider(create: (_) => HomeBloc())
+          BlocProvider(create: (_) => HomeBloc()),
+          BlocProvider(
+            create: (_) => L10nCubit(
+              localeRepository: widget.localeRepository,
+            ),
+          )
         ],
         child: const AppView(),
       ),
@@ -110,9 +120,11 @@ class AppView extends StatefulWidget {
 class _AppViewState extends State<AppView> {
   @override
   Widget build(BuildContext context) {
+    final locale = context.watch<L10nCubit>().state;
     return MaterialApp(
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.lightTheme,
+      locale: locale,
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
       home: BlocBuilder<AuthenticationBloc, AuthenticationState>(

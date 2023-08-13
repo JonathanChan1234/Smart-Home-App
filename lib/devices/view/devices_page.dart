@@ -6,6 +6,7 @@ import 'package:home_api/home_api.dart';
 import 'package:room_api/room_api.dart';
 import 'package:smart_home/devices/bloc/devices_bloc.dart';
 import 'package:smart_home/devices/widgets/widget.dart';
+import 'package:smart_home/l10n/l10n.dart';
 import 'package:smart_home/widgets/error_view.dart';
 import 'package:smart_home/widgets/initial_view.dart';
 import 'package:smart_home/widgets/loading_view.dart';
@@ -66,13 +67,14 @@ class DevicesView extends StatelessWidget {
       body: BlocBuilder<DevicesBloc, DevicesState>(
         buildWhen: (previous, current) => previous.status != current.status,
         builder: (context, state) {
+          final localizations = AppLocalizations.of(context);
           switch (state.status) {
             case DevicesStatus.initial:
-              return const InitialView(
-                title: 'Initializing Your Devices',
+              return InitialView(
+                title: localizations.initializngDevices,
               );
             case DevicesStatus.loading:
-              return const LoadingView(message: 'Loading...');
+              return LoadingView(message: '${localizations.loading}...');
             case DevicesStatus.success:
               return DevicesOverview(
                 devices:

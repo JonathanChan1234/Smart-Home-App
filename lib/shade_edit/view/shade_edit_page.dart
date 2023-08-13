@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shades_api/shades_api.dart';
 import 'package:shades_repository/shades_repository.dart';
+import 'package:smart_home/l10n/l10n.dart';
 import 'package:smart_home/shade_edit/bloc/shade_edit_bloc.dart';
 
 class ShadeEditPage extends StatelessWidget {
@@ -29,16 +30,23 @@ class ShadeEditPage extends StatelessWidget {
     return BlocListener<ShadeEditBloc, ShadeEditState>(
       listenWhen: (previous, current) => previous.status != current.status,
       listener: (context, state) {
+        final localizations = AppLocalizations.of(context);
         if (state.status == ShadeEditStatus.success) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Shade name changed successfully')),
+            SnackBar(
+              content: Text(localizations.shadeNameChangedSuccessMessage),
+            ),
           );
           Navigator.of(context).pop();
           return;
         }
         if (state.status == ShadeEditStatus.failure) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(state.requestError)),
+            SnackBar(
+              content: Text(
+                '''${localizations.shadeNameChangedFailureMessage} ${localizations.error}: ${state.requestError}''',
+              ),
+            ),
           );
         }
       },
@@ -57,13 +65,14 @@ class ShadeEditView extends StatelessWidget {
     final floatingActionButtonTheme = theme.floatingActionButtonTheme;
     final fabBackgroundColor = floatingActionButtonTheme.backgroundColor ??
         theme.colorScheme.secondary;
+    final localizations = AppLocalizations.of(context);
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Edit Shade Name'),
+        title: Text(localizations.editShadeName),
       ),
       floatingActionButton: FloatingActionButton(
-        tooltip: 'Edit',
+        tooltip: localizations.edit,
         shape: const ContinuousRectangleBorder(
           borderRadius: BorderRadius.all(Radius.circular(32)),
         ),
@@ -99,13 +108,14 @@ class _ShadeNameField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final state = context.watch<ShadeEditBloc>().state;
+    final localizations = AppLocalizations.of(context);
 
     return TextFormField(
       key: const Key('shadeEdit_name_text_form'),
       initialValue: state.shade.name,
       decoration: InputDecoration(
         enabled: !state.status.isLoadingOrSuccess,
-        labelText: 'shade Name',
+        labelText: localizations.shadeName,
       ),
       maxLength: 50,
       inputFormatters: [

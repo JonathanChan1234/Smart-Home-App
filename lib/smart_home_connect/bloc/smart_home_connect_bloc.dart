@@ -14,11 +14,15 @@ class SmartHomeConnectBloc
     required SmartHome home,
   })  : _homeRepository = homeRepository,
         super(
-          SmartHomeConnectState(
-            home: home,
-          ),
+          SmartHomeConnectState(home: home),
         ) {
     on<SmartHomeConnectRequestEvent>(_onSmartHomeConnectRequest);
+    on<SmartHomeConnectProcessorStatusSubscriptionRequestEvent>(
+      _onSmartHomeProcessorStatusRequest,
+    );
+    on<SmartHomeConnectProcessStatusRefreshEvent>(
+      _onSmartHomeProcessorStatusRefresh,
+    );
   }
 
   final HomeRepository _homeRepository;
@@ -35,7 +39,7 @@ class SmartHomeConnectBloc
     try {
       await _homeRepository.initMqttServerConnection(state.home.id);
       await emit.forEach(
-        _homeRepository.connectionStatus,
+        _homeRepository.serverConnectStatus,
         onData: (status) {
           switch (status) {
             case MqttClientConnectionStatus.connecting:
@@ -61,6 +65,54 @@ class SmartHomeConnectBloc
           connectionError: error is MqttSmartHomeClientException
               ? error.message
               : 'Something is wrong',
+        ),
+      );
+    }
+  }
+
+  Future<void> _onSmartHomeProcessorStatusRequest(
+    SmartHomeConnectProcessorStatusSubscriptionRequestEvent event,
+    Emitter<SmartHomeConnectState> emit,
+  ) async {
+    _homeRepository.initProcessorStatusSubscription(homeId: state.home.id);
+    await emit.forEach(
+      _homeRepository.processorConnectStatus,
+      onData: (status) => state.copyWith(processorConnectStatus: status),
+      onError: (error, _) => state.copyWith(
+        processorConnectStatus: ProcessorConnectionStatus.failure,
+        connectionError: error.toString(),
+      ),
+    );
+  }
+
+  Future<void> _onSmartHomeProcessorStatusRefresh(
+    SmartHomeConnectProcessStatusRefreshEvent event,
+    Emitter<SmartHomeConnectState> emit,
+  ) async {
+    try {
+      state.copyWith(processorConnectStatus: ProcessorConnectionStatus.loading);
+      final processor =
+          await _homeRepository.getHomeProcessor(homeId: state.home.id);
+      if (processor == null) {
+        emit(
+          state.copyWith(
+            processorConnectStatus: ProcessorConnectionStatus.notExist,
+          ),
+        );
+        return;
+      }
+      emit(
+        state.copyWith(
+          processorConnectStatus: processor.onlineStatus
+              ? ProcessorConnectionStatus.online
+              : ProcessorConnectionStatus.offline,
+        ),
+      );
+    } catch (error) {
+      emit(
+        state.copyWith(
+          processorConnectStatus: ProcessorConnectionStatus.failure,
+          connectionError: error.toString(),
         ),
       );
     }

@@ -12,12 +12,3 @@ class HttpPort extends FormzInput<int, HttpPortValidationError> {
     return null;
   }
 }
-
-extension HttpPortErrorExtension on HttpPortValidationError {
-  String? get message {
-    switch (this) {
-      case HttpPortValidationError.outOfRange:
-        return 'HTTP Port out of range';
-    }
-  }
-}

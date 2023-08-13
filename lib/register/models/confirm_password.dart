@@ -11,28 +11,15 @@ class ConfirmPassword
   final String password;
 
   static final _passwordRegExp =
-      RegExp(r'/(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*\W)/gm');
+      RegExp(r'(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*\W)');
 
   @override
   ConfirmPasswordValidationError? validator(String value) {
+    if (password != value) return ConfirmPasswordValidationError.mismatch;
     if (value.isEmpty) return ConfirmPasswordValidationError.empty;
     if (_passwordRegExp.hasMatch(value)) {
       return ConfirmPasswordValidationError.invalid;
     }
-    if (password != value) return ConfirmPasswordValidationError.mismatch;
     return null;
-  }
-}
-
-extension ConfirmPasswordErrorMessage on ConfirmPasswordValidationError {
-  String? get message {
-    switch (this) {
-      case ConfirmPasswordValidationError.empty:
-        return 'Confirm password cannot be empty';
-      case ConfirmPasswordValidationError.invalid:
-        return '''Password must have at least 1 uppercase, lowercast and special character''';
-      case ConfirmPasswordValidationError.mismatch:
-        return 'Password must match';
-    }
   }
 }

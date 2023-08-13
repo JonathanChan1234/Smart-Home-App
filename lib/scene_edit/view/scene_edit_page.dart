@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:home_api/home_api.dart';
 import 'package:scene_api/scene_api.dart';
 import 'package:scene_repository/scene_repository.dart';
+import 'package:smart_home/l10n/l10n.dart';
 import 'package:smart_home/scene_edit/bloc/scene_edit_bloc.dart';
 import 'package:smart_home/widgets/confirm_dialog.dart';
 
@@ -34,25 +35,35 @@ class SceneEditPage extends StatelessWidget {
     return BlocListener<SceneEditBloc, SceneEditState>(
       listenWhen: (previous, current) => previous.status != current.status,
       listener: (context, state) {
-        if (state.eventType == SceneEditEventType.edit &&
-            state.status == SceneEditStatus.success) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Scene name changed successfully')),
-          );
-          Navigator.of(context).pop(state.name);
-          return;
+        final localizations = AppLocalizations.of(context);
+        var message = '';
+        if (state.scene == null) {
+          message = state.status == SceneEditStatus.success
+              ? localizations.sceneCreatedSuccessMessage
+              : localizations.sceneCreatedFailureMessage;
+        } else if (state.eventType == SceneEditEventType.edit) {
+          message = state.status == SceneEditStatus.success
+              ? localizations.sceneNameChangedSuccessMessage
+              : localizations.sceneNameChangedFailureMessage;
+        } else {
+          message = state.status == SceneEditStatus.success
+              ? localizations.sceneDeletedSuccessMessage
+              : localizations.sceneDeletedFailureMessage;
         }
-        if (state.eventType == SceneEditEventType.delete &&
-            state.status == SceneEditStatus.success) {
+        if (state.status == SceneEditStatus.success) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Scene name deleted successfully')),
+            SnackBar(content: Text(message)),
           );
-          Navigator.of(context).popUntil((route) => route.isFirst);
+          if (state.eventType == SceneEditEventType.delete) {
+            Navigator.of(context).popUntil((route) => route.isFirst);
+            return;
+          }
+          Navigator.of(context).pop(state.name);
           return;
         }
         if (state.status == SceneEditStatus.failure) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(state.requestError)),
+            SnackBar(content: Text(message)),
           );
         }
       },
@@ -72,13 +83,16 @@ class SceneEditView extends StatelessWidget {
     final floatingActionButtonTheme = theme.floatingActionButtonTheme;
     final fabBackgroundColor = floatingActionButtonTheme.backgroundColor ??
         theme.colorScheme.secondary;
+    final localizations = AppLocalizations.of(context);
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(scene == null ? 'Create Scene' : 'Edit Scene'),
+        title: Text(
+          scene == null ? localizations.createScene : localizations.editScene,
+        ),
       ),
       floatingActionButton: FloatingActionButton(
-        tooltip: scene == null ? 'Create' : 'Edit',
+        tooltip: scene == null ? localizations.create : localizations.edit,
         shape: const ContinuousRectangleBorder(
           borderRadius: BorderRadius.all(Radius.circular(32)),
         ),
@@ -107,11 +121,8 @@ class SceneEditView extends StatelessWidget {
                     onPressed: () async {
                       final res = await showDialog<bool?>(
                         builder: (dialogContext) => ConfirmDialog(
-                          content: '''
-                    Are you sure that you want to delete this scene? 
-                    This will remove all the scene actions. 
-                    This is an irreversiable change.''',
-                          title: 'Delete Scene',
+                          title: localizations.deleteScene,
+                          content: localizations.deleteSceneDialogContent,
                           onLeftBtnClick: () =>
                               Navigator.of(dialogContext).pop(false),
                           onRightBtnClick: () =>
@@ -127,7 +138,7 @@ class SceneEditView extends StatelessWidget {
                       }
                     },
                     child: Text(
-                      'Delete Scene',
+                      localizations.deleteScene,
                       style: theme.textTheme.bodyMedium!.copyWith(
                         color: Colors.redAccent,
                         fontWeight: FontWeight.bold,
@@ -151,11 +162,11 @@ class _SceneNameField extends StatelessWidget {
     final state = context.watch<SceneEditBloc>().state;
 
     return TextFormField(
-      key: const Key('sceneEdit'),
+      key: const Key('sceneEdit_textformfield'),
       initialValue: state.scene?.name ?? '',
       decoration: InputDecoration(
         enabled: !state.status.isLoadingOrSuccess,
-        labelText: 'Scene Name',
+        labelText: AppLocalizations.of(context).sceneName,
       ),
       maxLength: 50,
       inputFormatters: [

@@ -22,14 +22,4 @@ class LightAction extends DeviceAction {
   Map<String, dynamic> toJson() {
     return _$LightActionToJson(this);
   }
-
-  @override
-  String toString() {
-    final actions = <String>[];
-    if (brightness != null) actions.add('Brightness: $brightness%');
-    if (colorTemperature != null) {
-      actions.add('Color Temperature: ${colorTemperature}K');
-    }
-    return actions.join(" | ");
-  }
 }

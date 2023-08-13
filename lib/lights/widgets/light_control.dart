@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lights_api/lights_api.dart';
+import 'package:smart_home/l10n/l10n.dart';
 import 'package:smart_home/lights/bloc/light_bloc.dart';
 
 class LightControl extends StatelessWidget {
@@ -15,6 +16,7 @@ class LightControl extends StatelessWidget {
   Widget build(BuildContext context) {
     final brightness = light.properties.brightness ?? 0;
     final dimmable = light.capabilities.dimmable;
+    final localizations = AppLocalizations.of(context);
 
     return DecoratedBox(
       decoration: const BoxDecoration(
@@ -29,7 +31,9 @@ class LightControl extends StatelessWidget {
                 ? const Text('--')
                 : dimmable
                     ? Text('$brightness%')
-                    : Text(brightness > 0 ? 'ON' : 'OFF'),
+                    : Text(
+                        brightness > 0 ? localizations.on : localizations.off,
+                      ),
             trailing: Switch(
               activeColor: Colors.yellow,
               value: brightness > 0,

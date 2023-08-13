@@ -4,6 +4,7 @@ import 'package:auth_repository/auth_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:home_api/home_api.dart';
 import 'package:home_repository/home_repository.dart';
+import 'package:locale_repository/locale_repository.dart';
 import 'package:mqtt_smarthome_client/mqtt_smarthome_client.dart';
 import 'package:room_api/room_api.dart';
 import 'package:room_repository/room_repository.dart';
@@ -58,10 +59,12 @@ Future<void> main() async {
       smartHomeApiClient: smartHomeApiClient,
     ),
   );
+  final localeRepository = LocaleRepository(plugin: sharedPreferences);
   await bootstrap(
     () => App(
       authRepository: authRepository,
       homeRepository: homeRepository,
+      localeRepository: localeRepository,
       mqttSmartHomeClient: mqttSmartHomeClient,
       roomRepository: roomRepository,
       sharedPreferences: sharedPreferences,

@@ -15,7 +15,7 @@ class RoomEditBloc extends Bloc<RoomEditEvent, RoomEditState> {
     required RoomRepository roomRepository,
   })  : _roomRepository = roomRepository,
         _home = home,
-        super(RoomEditState(room: room)) {
+        super(RoomEditState(room: room, name: room.name)) {
     on<RoomEditNameChangedEvent>(_onRoomEditNameChanged);
     on<RoomEditSubmittedEvent>(_onRoomEditSubmittedEvent);
   }

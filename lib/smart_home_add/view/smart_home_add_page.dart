@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:home_repository/home_repository.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:smart_home/home/bloc/home_bloc.dart';
+import 'package:smart_home/l10n/l10n.dart';
 import 'package:smart_home/smart_home_add/bloc/smart_home_add_bloc.dart';
 import 'package:smart_home/widgets/confirm_dialog.dart';
 
@@ -25,14 +26,15 @@ class SmartHomeAddPage extends StatelessWidget {
       listenWhen: (previous, current) => previous.status != current.status,
       listener: (context, state) async {
         final home = state.home;
+        final localizations = AppLocalizations.of(context);
         if (state.status == SmartHomeAddStatus.success && home != null) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Add Home successfully')),
+            SnackBar(content: Text(localizations.addHomeSuccessMessage)),
           );
           final res = await showDialog<bool?>(
             builder: (dialogContext) => ConfirmDialog(
-              content: 'Do you want to enter ${home.name}',
-              title: 'Enter home',
+              content: '${localizations.enterHomeDialogContent} ${home.name}?',
+              title: localizations.enterHomeDialogTitle,
               onLeftBtnClick: () => Navigator.of(dialogContext).pop(false),
               onRightBtnClick: () => Navigator.of(dialogContext).pop(true),
             ),
@@ -52,7 +54,9 @@ class SmartHomeAddPage extends StatelessWidget {
         if (state.status == SmartHomeAddStatus.failure && context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('Fail to add home, Error: ${state.requestError}'),
+              content: Text(
+                '''${localizations.addHomeFailureMessage}, ${state.requestError}''',
+              ),
             ),
           );
         }
@@ -67,8 +71,9 @@ class SmartHomeAddView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context);
     return Scaffold(
-      appBar: AppBar(title: const Text('Add Home')),
+      appBar: AppBar(title: Text(localizations.addHome)),
       body: MobileScanner(
         onDetect: (capture) {
           final barcodes = capture.barcodes;
@@ -76,7 +81,7 @@ class SmartHomeAddView extends StatelessWidget {
             debugPrint('Barcode found! ${barcode.rawValue}');
             if (barcode.format != BarcodeFormat.qrCode) {
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Invalid QR code')),
+                SnackBar(content: Text(localizations.invalidQRcode)),
               );
             }
             context.read<SmartHomeAddBloc>().add(

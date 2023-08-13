@@ -6,6 +6,7 @@ import 'package:mqtt_smarthome_client/mqtt_smarthome_client.dart';
 import 'package:room_api/room_api.dart';
 import 'package:shades_api/shades_api.dart';
 import 'package:shades_repository/shades_repository.dart' hide ShadeStatus;
+import 'package:smart_home/l10n/l10n.dart';
 import 'package:smart_home/shades/bloc/shade_bloc.dart';
 import 'package:smart_home/shades/widgets/shade_overview.dart';
 import 'package:smart_home/widgets/error_view.dart';
@@ -58,19 +59,20 @@ class ShadeView extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<ShadeBloc, ShadeState>(
       builder: (context, state) {
+        final localizations = AppLocalizations.of(context);
         return Scaffold(
-          appBar: AppBar(title: Text('${state.room.name} - Shades')),
+          appBar: AppBar(
+            title: Text('${state.room.name} - ${localizations.shades}'),
+          ),
           body: Builder(
             builder: (context) {
               switch (state.status) {
                 case ShadeStatus.initial:
-                  return const InitialView(
-                    title: 'Initializing Shades',
+                  return InitialView(
+                    title: localizations.initializing,
                   );
                 case ShadeStatus.loading:
-                  return const LoadingView(
-                    message: 'Fetching...',
-                  );
+                  return LoadingView(message: localizations.loading);
                 case ShadeStatus.success:
                   return ShadeOverview(shades: state.shades);
                 case ShadeStatus.failure:

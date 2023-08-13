@@ -20,14 +20,3 @@ class MqttHost extends FormzInput<String, MqttHostValidationError> {
     return null;
   }
 }
-
-extension MqttHostErrorExtension on MqttHostValidationError {
-  String? get message {
-    switch (this) {
-      case MqttHostValidationError.empty:
-        return 'Host cannot be empty';
-      case MqttHostValidationError.invalid:
-        return 'Invalid host name';
-    }
-  }
-}
