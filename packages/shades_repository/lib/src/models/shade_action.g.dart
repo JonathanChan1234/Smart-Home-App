@@ -26,7 +26,7 @@ Map<String, dynamic> _$ShadeActionToJson(ShadeAction instance) =>
     };
 
 const _$ShadeActionTypeEnumMap = {
-  ShadeActionType.raise: 'raise',
-  ShadeActionType.stop: 'stop',
-  ShadeActionType.lower: 'lower',
+  ShadeActionType.raise: 0,
+  ShadeActionType.stop: 1,
+  ShadeActionType.lower: 2,
 };

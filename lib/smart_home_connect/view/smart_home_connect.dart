@@ -60,6 +60,7 @@ class SmartHomeConnectView extends StatelessWidget {
                           '''${localizations.exitHomeMessage} ${state.home.name}?''',
                       onLeftBtnClick: () => Navigator.of(context).pop(false),
                       onRightBtnClick: () => Navigator.of(context).pop(true),
+                      rightBtnText: localizations.confirm,
                     ),
                   );
                   if (res == null || !res) return;

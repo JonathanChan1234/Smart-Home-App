@@ -12,9 +12,10 @@ ShadeControlDto _$ShadeControlDtoFromJson(Map<String, dynamic> json) =>
       json,
       ($checkedConvert) {
         final val = ShadeControlDto(
-          action: $checkedConvert(
-              'action', (v) => ShadeAction.fromJson(v as Map<String, dynamic>)),
-          time: $checkedConvert('time', (v) => DateTime.parse(v as String)),
+          properties: $checkedConvert('properties',
+              (v) => ShadeAction.fromJson(v as Map<String, dynamic>)),
+          lastUpdatedAt: $checkedConvert(
+              'lastUpdatedAt', (v) => DateTime.parse(v as String)),
         );
         return val;
       },
@@ -22,6 +23,6 @@ ShadeControlDto _$ShadeControlDtoFromJson(Map<String, dynamic> json) =>
 
 Map<String, dynamic> _$ShadeControlDtoToJson(ShadeControlDto instance) =>
     <String, dynamic>{
-      'action': instance.action.toJson(),
-      'time': instance.time.toIso8601String(),
+      'properties': instance.properties.toJson(),
+      'lastUpdatedAt': instance.lastUpdatedAt.toIso8601String(),
     };

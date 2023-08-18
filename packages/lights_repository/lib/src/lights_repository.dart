@@ -75,7 +75,8 @@ class LightsRepository {
     required LightProperties properties,
   }) {
     final topic = 'home/$homeId/device/light/$deviceId/control';
-    final payload = LightPayload(properties: properties, time: DateTime.now());
+    final payload =
+        LightPayload(properties: properties, lastUpdatedAt: DateTime.now());
     _mqttClient.publish(topic, jsonEncode(payload.toJson()));
   }
 
@@ -107,14 +108,14 @@ class LightsRepository {
         lights.indexWhere((light) => light.id == status.deviceId);
     if (updatedLightIndex == -1) return;
 
-    if (status.payload.time
+    if (status.payload.lastUpdatedAt
         .isBefore(lights[updatedLightIndex].statusLastUpdatedAt)) {
       return;
     }
 
     lights[updatedLightIndex] = lights[updatedLightIndex].copyWith(
       properties: status.payload.properties,
-      statusLastUpdatedAt: status.payload.time,
+      statusLastUpdatedAt: status.payload.lastUpdatedAt,
     );
     _lightsStreamController.add(lights);
   }

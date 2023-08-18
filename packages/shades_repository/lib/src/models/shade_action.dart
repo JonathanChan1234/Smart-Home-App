@@ -18,4 +18,11 @@ class ShadeAction {
   Map<String, dynamic> toJson() => _$ShadeActionToJson(this);
 }
 
-enum ShadeActionType { raise, stop, lower }
+enum ShadeActionType {
+  @JsonValue(0)
+  raise,
+  @JsonValue(1)
+  stop,
+  @JsonValue(2)
+  lower
+}

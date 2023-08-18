@@ -31,8 +31,9 @@ class ShadesRepository {
     final token = await _authRepository.getAuthToken();
     if (token == null) {
       throw const SmartHomeException(
-          code: ErrorCode.badAuthentication,
-          message: 'access token does not exist');
+        code: ErrorCode.badAuthentication,
+        message: 'access token does not exist',
+      );
     }
     return token.accessToken;
   }
@@ -93,8 +94,11 @@ class ShadesRepository {
     required String deviceId,
     required ShadeAction action,
   }) {
-    final topic = 'home/$homeId/device/shade/$deviceId/actionControl';
-    final payload = ShadeControlDto(action: action, time: DateTime.now());
+    final topic = 'home/$homeId/device/shade/$deviceId/control';
+    final payload = ShadeControlDto(
+      properties: action,
+      lastUpdatedAt: DateTime.now(),
+    );
     _mqttSmartHomeClient.publish(topic, jsonEncode(payload.toJson()));
   }
 
@@ -104,14 +108,14 @@ class ShadesRepository {
         shades.indexWhere((shade) => shade.id == status.deviceId);
     if (updatedLightIndex == -1) return;
 
-    if (status.payload.time
+    if (status.payload.lastUpdatedAt
         .isBefore(shades[updatedLightIndex].statusLastUpdatedAt)) {
       return;
     }
 
     shades[updatedLightIndex] = shades[updatedLightIndex].copyWith(
       properties: status.payload.properties,
-      statusLastUpdatedAt: status.payload.time,
+      statusLastUpdatedAt: status.payload.lastUpdatedAt,
     );
     _shadesController.add(shades);
   }

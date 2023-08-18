@@ -30,7 +30,8 @@ class SmartHomeConnected extends StatelessWidget {
           switch (status) {
             case ProcessorConnectionStatus.initial:
               return InitialView(
-                  title: '${localizations.findYourProcessorMessage}...');
+                title: '${localizations.findYourProcessorMessage}...',
+              );
             case ProcessorConnectionStatus.notExist:
               return ErrorView(
                 message: localizations.noProcessorMessage,

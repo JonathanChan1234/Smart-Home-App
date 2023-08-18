@@ -6,15 +6,15 @@ part 'shade_control_dto.g.dart';
 @JsonSerializable()
 class ShadeControlDto {
   const ShadeControlDto({
-    required this.action,
-    required this.time,
+    required this.properties,
+    required this.lastUpdatedAt,
   });
 
   factory ShadeControlDto.fromJson(Map<String, dynamic> json) =>
       _$ShadeControlDtoFromJson(json);
 
-  final ShadeAction action;
-  final DateTime time;
+  final ShadeAction properties;
+  final DateTime lastUpdatedAt;
 
   Map<String, dynamic> toJson() => _$ShadeControlDtoToJson(this);
 }

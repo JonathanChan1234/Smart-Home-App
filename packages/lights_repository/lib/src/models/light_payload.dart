@@ -7,7 +7,7 @@ part 'light_payload.g.dart';
 class LightPayload {
   const LightPayload({
     this.properties,
-    required this.time,
+    required this.lastUpdatedAt,
     this.onlineStatus,
   });
 
@@ -16,7 +16,7 @@ class LightPayload {
 
   final LightProperties? properties;
   final bool? onlineStatus;
-  final DateTime time;
+  final DateTime lastUpdatedAt;
 
   Map<String, dynamic> toJson() => _$LightPayloadToJson(this);
 }

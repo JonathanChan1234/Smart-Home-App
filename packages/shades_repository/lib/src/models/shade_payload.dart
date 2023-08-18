@@ -8,7 +8,7 @@ class ShadePayload {
   const ShadePayload({
     this.properties,
     this.onlineStatus,
-    required this.time,
+    required this.lastUpdatedAt,
   });
 
   factory ShadePayload.fromJson(Map<String, dynamic> json) =>
@@ -16,7 +16,7 @@ class ShadePayload {
 
   final ShadeProperties? properties;
   final bool? onlineStatus;
-  final DateTime time;
+  final DateTime lastUpdatedAt;
 
   Map<String, dynamic> toJson() => _$ShadePayloadToJson(this);
 }

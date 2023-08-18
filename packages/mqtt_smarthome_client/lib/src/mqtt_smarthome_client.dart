@@ -74,6 +74,7 @@ class MqttSmartHomeClient {
     }
 
     _mqttServerClient.keepAlivePeriod = 20;
+    _mqttServerClient.autoReconnect = true;
     _mqttServerClient.connectionMessage =
         await _obtainConnectionMessage(homeId);
     _mqttServerClient.onConnected = _onConnected;
@@ -99,8 +100,8 @@ class MqttSmartHomeClient {
   }
 
   void subscribe(String topic) {
-    if (_mqttServerClient.connectionStatus!.state ==
-        MqttConnectionState.disconnected) {
+    if (_mqttServerClient.connectionStatus!.state !=
+        MqttConnectionState.connected) {
       throw const MqttSmartHomeClientException(
           message:
               "Subscription cannot be done as client is currently disconnected from server");
@@ -110,8 +111,8 @@ class MqttSmartHomeClient {
   }
 
   void publish(String topic, String payload) {
-    if (_mqttServerClient.connectionStatus!.state ==
-        MqttConnectionState.disconnected) {
+    if (_mqttServerClient.connectionStatus!.state !=
+        MqttConnectionState.connected) {
       throw const MqttSmartHomeClientException(
           message:
               "Publish cannot be done as client is currently disconnected from server");

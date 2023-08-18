@@ -129,7 +129,7 @@ class _ShadeButtonControl extends StatelessWidget {
                       ShadeControlEvent(
                         deviceId: shade.id,
                         action: const ShadeAction(
-                          actionType: ShadeActionType.lower,
+                          actionType: ShadeActionType.raise,
                         ),
                       ),
                     )

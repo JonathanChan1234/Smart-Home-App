@@ -27,18 +27,22 @@ class SettingPage extends StatelessWidget {
                     color: Colors.blue.shade800,
                     size: 100,
                   ),
-                  Column(
-                    children: [
-                      Text(
-                        user.name,
-                        style: const TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      Text(
-                        'ID: ${user.id}',
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      )
-                    ],
+                  Expanded(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          user.name,
+                          style: const TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        Text(
+                          'ID: ${user.id}',
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(fontSize: 14),
+                        )
+                      ],
+                    ),
                   ),
                 ],
               ),
