@@ -51,7 +51,7 @@ class AuthUnknownPage extends StatelessWidget {
                 (_) => false,
               ),
               child: const Text('Back', style: TextStyle(fontSize: 18)),
-            )
+            ),
           ]
               .map(
                 (widget) => Padding(

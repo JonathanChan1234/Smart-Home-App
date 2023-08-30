@@ -18,17 +18,16 @@ class RoomOverview extends StatelessWidget {
       backgroundColor: Colors.blue,
       onRefresh: () async =>
           context.read<RoomsBloc>().add(const RoomListInitEvent()),
-      child: SingleChildScrollView(
-        physics: const AlwaysScrollableScrollPhysics(),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            _RoomFilterDropdownMenu(floors: floors),
-            FloorsList(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          _RoomFilterDropdownMenu(floors: floors),
+          Expanded(
+            child: FloorsList(
               floors: floors,
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -53,21 +52,23 @@ class _RoomFilterDropdownMenu extends StatelessWidget {
         context.read<RoomsBloc>().add(
               const RoomFilterUpdatedEvent(),
             );
-      } else if (value == floorFavorite) {
+        return;
+      }
+      if (value == floorFavorite) {
         context.read<RoomsBloc>().add(
               const RoomSetFavoriteFilterEvent(),
             );
-      } else {
-        try {
-          final floor = floors.firstWhere((floor) => floor.id == value);
-          context.read<RoomsBloc>().add(
-                RoomFilterUpdatedEvent(floor: floor),
-              );
-        } catch (e) {
-          context.read<RoomsBloc>().add(
-                const RoomFilterUpdatedEvent(),
-              );
-        }
+        return;
+      }
+      try {
+        final floor = floors.firstWhere((floor) => floor.id == value);
+        context.read<RoomsBloc>().add(
+              RoomFilterUpdatedEvent(floor: floor),
+            );
+      } catch (e) {
+        context.read<RoomsBloc>().add(
+              const RoomFilterUpdatedEvent(),
+            );
       }
     }
 
@@ -88,7 +89,7 @@ class _RoomFilterDropdownMenu extends StatelessWidget {
           child: Text(localizations.favoriteRooms),
         ),
         for (final floor in floors)
-          DropdownMenuItem(value: floor.id, child: Text(floor.name))
+          DropdownMenuItem(value: floor.id, child: Text(floor.name)),
       ],
     );
   }

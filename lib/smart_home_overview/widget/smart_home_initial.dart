@@ -13,7 +13,7 @@ class SmartHomeInitial extends StatelessWidget {
           Text(
             'Initializing',
             style: textTheme.headlineSmall,
-          )
+          ),
         ],
       ),
     );

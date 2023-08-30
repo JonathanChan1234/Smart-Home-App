@@ -17,7 +17,7 @@ class LightLoading extends StatelessWidget {
           const Padding(
             padding: EdgeInsets.all(16),
             child: CircularProgressIndicator(),
-          )
+          ),
         ],
       ),
     );

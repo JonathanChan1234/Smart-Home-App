@@ -15,7 +15,7 @@ class InitialView extends StatelessWidget {
           Text(
             title ?? 'Initializing',
             style: textTheme.headlineSmall,
-          )
+          ),
         ],
       ),
     );

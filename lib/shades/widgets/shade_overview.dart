@@ -45,7 +45,7 @@ class ShadeOverview extends StatelessWidget {
                     : const Icon(
                         Icons.mode_edit,
                       ),
-              )
+              ),
             ],
           ),
         ),
@@ -59,7 +59,7 @@ class ShadeOverview extends StatelessWidget {
                   : ShadeControl(shade: shades[index]),
             ),
           ),
-        )
+        ),
       ],
     );
   }

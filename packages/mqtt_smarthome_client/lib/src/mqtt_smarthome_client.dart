@@ -11,7 +11,21 @@ import 'package:rxdart/rxdart.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:smart_home_api_client/smart_home_api_client.dart';
 
-enum MqttClientConnectionStatus { connecting, connected, disconnected }
+enum MqttClientConnectionStatus {
+  initial,
+  connecting,
+  connected,
+  reconnecting,
+  disconnected,
+  failure
+}
+
+extension MqttClientConnectionStatusX on MqttClientConnectionStatus {
+  bool get isConnected => this == MqttClientConnectionStatus.connected;
+  bool get isConnecting =>
+      this == MqttClientConnectionStatus.connecting ||
+      this == MqttClientConnectionStatus.reconnecting;
+}
 
 class MqttSmartHomeClient {
   MqttSmartHomeClient({
@@ -43,7 +57,7 @@ class MqttSmartHomeClient {
   final SharedPreferences _sharedPreferences;
 
   final _statusController = BehaviorSubject<MqttClientConnectionStatus>.seeded(
-      MqttClientConnectionStatus.disconnected);
+      MqttClientConnectionStatus.initial);
   final _messageController = PublishSubject<MqttIncomingMessage>();
 
   Stream<MqttClientConnectionStatus> get status =>
@@ -74,6 +88,7 @@ class MqttSmartHomeClient {
     }
 
     _mqttServerClient.keepAlivePeriod = 20;
+    _mqttServerClient.connectTimeoutPeriod = 20;
     _mqttServerClient.autoReconnect = true;
     _mqttServerClient.connectionMessage =
         await _obtainConnectionMessage(homeId);
@@ -81,17 +96,30 @@ class MqttSmartHomeClient {
     _mqttServerClient.onDisconnected = _onDisconnected;
     _mqttServerClient.onAutoReconnect =
         () async => await _onAuthReconnect(homeId);
+    _mqttServerClient.onAutoReconnected = _onAuthReconnected;
 
     _statusController.add(MqttClientConnectionStatus.connecting);
     try {
       _mqttServerClient.connect();
     } on NoConnectionException {
       _mqttServerClient.disconnect();
+      _statusController.add(MqttClientConnectionStatus.failure);
       throw const MqttSmartHomeClientException(
           message: "No Connection Exception");
     } on SocketException {
       _mqttServerClient.disconnect();
+      _statusController.add(MqttClientConnectionStatus.failure);
       throw const MqttSmartHomeClientException(message: "Socket Exception");
+    } catch (e) {
+      _mqttServerClient.disconnect();
+      _statusController.add(MqttClientConnectionStatus.failure);
+    }
+
+    if (_mqttServerClient.connectionStatus!.state ==
+        MqttConnectionState.connected) {
+      _statusController.add(MqttClientConnectionStatus.connected);
+    } else {
+      _statusController.add(MqttClientConnectionStatus.failure);
     }
   }
 
@@ -111,14 +139,14 @@ class MqttSmartHomeClient {
   }
 
   void publish(String topic, String payload) {
-    if (_mqttServerClient.connectionStatus!.state !=
-        MqttConnectionState.connected) {
+    if (_statusController.value != MqttClientConnectionStatus.connected) {
       throw const MqttSmartHomeClientException(
           message:
-              "Publish cannot be done as client is currently disconnected from server");
+              "Publish cannot be done as the client is currently disconnected from server");
     }
     final builder = MqttClientPayloadBuilder();
     builder.addString(payload);
+    log('publish message $payload to MQTT broker');
     _mqttServerClient.publishMessage(
       topic,
       MqttQos.exactlyOnce,
@@ -147,8 +175,13 @@ class MqttSmartHomeClient {
   }
 
   Future<void> _onAuthReconnect(String homeId) async {
+    _statusController.add(MqttClientConnectionStatus.reconnecting);
     _mqttServerClient.connectionMessage =
         await _obtainConnectionMessage(homeId);
+  }
+
+  void _onAuthReconnected() {
+    _statusController.add(MqttClientConnectionStatus.connected);
   }
 
   Future<MqttConnectMessage> _obtainConnectionMessage(String homeId) async {

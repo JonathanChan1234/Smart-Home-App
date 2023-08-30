@@ -11,6 +11,8 @@ class ShadeState extends Equatable {
     this.requestError = '',
     this.controlError = '',
     this.editMode = false,
+    this.serverStatus = MqttClientConnectionStatus.initial,
+    this.processorStatus = ProcessorConnectionStatus.initial,
   });
 
   final SmartHome home;
@@ -20,6 +22,8 @@ class ShadeState extends Equatable {
   final String requestError;
   final String controlError;
   final bool editMode;
+  final MqttClientConnectionStatus serverStatus;
+  final ProcessorConnectionStatus processorStatus;
 
   ShadeState copyWith({
     ShadeStatus? status,
@@ -27,6 +31,8 @@ class ShadeState extends Equatable {
     String? requestError,
     String? controlError,
     bool? editMode,
+    MqttClientConnectionStatus? serverStatus,
+    ProcessorConnectionStatus? processorStatus,
   }) {
     return ShadeState(
       home: home,
@@ -36,6 +42,8 @@ class ShadeState extends Equatable {
       requestError: requestError ?? this.requestError,
       controlError: controlError ?? this.controlError,
       editMode: editMode ?? this.editMode,
+      serverStatus: serverStatus ?? this.serverStatus,
+      processorStatus: processorStatus ?? this.processorStatus,
     );
   }
 
@@ -48,5 +56,7 @@ class ShadeState extends Equatable {
         requestError,
         controlError,
         editMode,
+        serverStatus,
+        processorStatus,
       ];
 }

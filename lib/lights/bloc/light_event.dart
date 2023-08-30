@@ -7,6 +7,14 @@ abstract class LightEvent extends Equatable {
   List<Object?> get props => [];
 }
 
+class LightMqttStatusSubscriptionRequestEvent extends LightEvent {
+  const LightMqttStatusSubscriptionRequestEvent();
+}
+
+class LightProcessorSubscriptionRequestEvent extends LightEvent {
+  const LightProcessorSubscriptionRequestEvent();
+}
+
 class LightStatusSubscriptionRequestedEvent extends LightEvent {
   const LightStatusSubscriptionRequestedEvent();
 }

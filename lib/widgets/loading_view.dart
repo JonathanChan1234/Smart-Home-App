@@ -22,7 +22,7 @@ class LoadingView extends StatelessWidget {
           const Padding(
             padding: EdgeInsets.all(16),
             child: CircularProgressIndicator(),
-          )
+          ),
         ],
       ),
     );

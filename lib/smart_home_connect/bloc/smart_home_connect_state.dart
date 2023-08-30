@@ -4,6 +4,7 @@ enum SmartHomeServerConnectStatus {
   initial,
   connecting,
   connected,
+  reconnecting,
   disconnected,
   failure,
 }

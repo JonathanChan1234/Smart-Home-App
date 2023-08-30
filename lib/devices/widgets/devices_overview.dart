@@ -42,7 +42,7 @@ class DevicesOverview extends StatelessWidget {
               localizations.noDeviceFound,
               style: textTheme.bodyLarge!
                   .copyWith(fontSize: 20, fontWeight: FontWeight.bold),
-            )
+            ),
           ],
         ),
       );

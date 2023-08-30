@@ -2,6 +2,7 @@ import 'package:auth_repository/auth_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:home_api/home_api.dart';
+import 'package:home_repository/home_repository.dart';
 import 'package:mqtt_smarthome_client/mqtt_smarthome_client.dart';
 import 'package:room_api/room_api.dart';
 import 'package:shades_api/shades_api.dart';
@@ -34,10 +35,13 @@ class ShadePage extends StatelessWidget {
         ),
         child: BlocProvider(
           create: (context) => ShadeBloc(
+            homeRepository: context.read<HomeRepository>(),
             shadesRepository: context.read<ShadesRepository>(),
             home: home,
             room: room,
           )
+            ..add(const ShadeMqttStatusSubscriptionRequestEvent())
+            ..add(const ShadeProcessorStatusSubscriptionRequestEvent())
             ..add(const ShadeStatusSubscriptionRequestedEvent())
             ..add(const ShadeListInitEvent()),
           child: const ShadePage(),
@@ -74,6 +78,27 @@ class ShadeView extends StatelessWidget {
                 case ShadeStatus.loading:
                   return LoadingView(message: localizations.loading);
                 case ShadeStatus.success:
+                  if (state.serverStatus.isConnecting) {
+                    return LoadingView(
+                      message: state.serverStatus ==
+                              MqttClientConnectionStatus.connecting
+                          ? localizations.connectingMessage
+                          : localizations.reconnectingMessage,
+                    );
+                  }
+                  if (!state.serverStatus.isConnected) {
+                    return ErrorView(
+                      message: localizations.disconnectingMessage,
+                    );
+                  }
+                  if (!state.processorStatus.online) {
+                    return ErrorView(
+                      message: state.processorStatus ==
+                              ProcessorConnectionStatus.offline
+                          ? localizations.offlineProcessorMessage
+                          : localizations.noProcessorMessage,
+                    );
+                  }
                   return ShadeOverview(shades: state.shades);
                 case ShadeStatus.failure:
                   return ErrorView(

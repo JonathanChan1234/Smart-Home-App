@@ -88,7 +88,7 @@ class _AppState extends State<App> {
         ),
         RepositoryProvider<SceneActionRepository>.value(
           value: widget.sceneActionRepository,
-        )
+        ),
       ],
       child: MultiBlocProvider(
         providers: [
@@ -102,7 +102,7 @@ class _AppState extends State<App> {
             create: (_) => L10nCubit(
               localeRepository: widget.localeRepository,
             ),
-          )
+          ),
         ],
         child: const AppView(),
       ),

@@ -100,7 +100,7 @@ class _ShadeActionLevelEdit extends StatelessWidget {
           title: Text(AppLocalizations.of(context).shadeLevel),
           trailing: ColoredCheckbox(
             value: level != null,
-            onChanged: (bool? value) {
+            onChanged: ({value}) {
               if (value == null) return;
               context
                   .read<ShadeActionEditCubit>()
@@ -152,7 +152,7 @@ class _ShadeActionTypeEdit extends StatelessWidget {
           title: Text(localizations.shadeAction),
           trailing: ColoredCheckbox(
             value: actionType != null,
-            onChanged: (value) {
+            onChanged: ({value}) {
               if (value == null) return;
               context
                   .read<ShadeActionEditCubit>()

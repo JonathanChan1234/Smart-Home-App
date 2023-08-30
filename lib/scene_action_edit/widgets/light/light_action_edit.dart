@@ -108,7 +108,7 @@ class _BrightnessActionEdit extends StatelessWidget {
           title: Text(localizations.lightBrightness),
           trailing: ColoredCheckbox(
             value: brightness != null,
-            onChanged: (bool? value) {
+            onChanged: ({bool? value}) {
               if (value == null) return;
               context
                   .read<LightActionEditCubit>()
@@ -161,7 +161,7 @@ class _BrightnessActionEdit extends StatelessWidget {
                   Text(brightness > 0 ? localizations.on : localizations.off),
               ],
             ),
-          )
+          ),
       ],
     );
   }
@@ -179,7 +179,7 @@ class _ColorTemperatureActionEdit extends StatelessWidget {
           title: Text(AppLocalizations.of(context).lightColorTemperature),
           trailing: ColoredCheckbox(
             value: colorTemperature != null,
-            onChanged: (value) {
+            onChanged: ({value}) {
               if (value == null) return;
               context
                   .read<LightActionEditCubit>()
@@ -219,10 +219,10 @@ class _ColorTemperatureActionEdit extends StatelessWidget {
                     ),
                   ),
                 ),
-                Text('$colorTemperature%')
+                Text('$colorTemperature%'),
               ],
             ),
-          )
+          ),
       ],
     );
   }

@@ -38,7 +38,8 @@ class RoomEditPage extends StatelessWidget {
         if (state.status == RoomEditStatus.success) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-                content: Text(localizations.roomNameChangedSuccessMessage)),
+              content: Text(localizations.roomNameChangedSuccessMessage),
+            ),
           );
           Navigator.of(context).pop(true);
         } else if (state.status == RoomEditStatus.failure) {
@@ -88,12 +89,12 @@ class RoomEditView extends StatelessWidget {
             ? const CupertinoActivityIndicator()
             : const Icon(Icons.check_rounded),
       ),
-      body: CupertinoScrollbar(
+      body: const CupertinoScrollbar(
         child: SingleChildScrollView(
           child: Padding(
-            padding: const EdgeInsets.all(16),
+            padding: EdgeInsets.all(16),
             child: Column(
-              children: const [_RoomNameField()],
+              children: [_RoomNameField()],
             ),
           ),
         ),

@@ -1,18 +1,8 @@
 import 'package:dio/dio.dart';
+import 'package:dio_smart_retry/dio_smart_retry.dart';
+import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:smart_home_exception/smart_home_exception.dart';
-
-import 'models/error_message.dart';
-
-class SmartHomeApiException extends DioError {
-  const SmartHomeApiException({
-    message,
-    required super.requestOptions,
-    required this.code,
-  }) : super(message: message);
-
-  final ErrorCode code;
-}
 
 class SmartHomeApiClient {
   SmartHomeApiClient({
@@ -25,65 +15,35 @@ class SmartHomeApiClient {
         'http://${getServerHost()}:${getServerPort()}/api/v1';
     _dio.options.connectTimeout = const Duration(seconds: 5);
     _dio.options.receiveTimeout = const Duration(seconds: 3);
-    _dio.interceptors.add(
-      InterceptorsWrapper(
-        onRequest:
-            (RequestOptions options, RequestInterceptorHandler handler) async {
-          options.headers
-              .addEntries({'Content-Type': 'application/json'}.entries);
-          return handler.next(options);
-        },
-        onResponse: (Response response, ResponseInterceptorHandler handler) {
-          return handler.next(response);
-        },
-        onError: (DioError e, ErrorInterceptorHandler handler) {
-          final response = e.response;
-          if (response == null) {
-            return handler.reject(SmartHomeApiException(
-                requestOptions: e.requestOptions,
-                message: 'Network is poor, please try later',
-                code: ErrorCode.networkIssue));
-          }
-
-          switch (response.statusCode) {
-            case 400:
-              return handler.reject(SmartHomeApiException(
-                  message: ErrorMessage.fromJson(
-                          e.response?.data as Map<String, dynamic>)
-                      .message,
-                  requestOptions: e.requestOptions,
-                  code: ErrorCode.badRequest));
-            case 401:
-              return handler.reject(SmartHomeApiException(
-                message: 'Unauthenticated',
-                requestOptions: e.requestOptions,
-                code: ErrorCode.badAuthentication,
-              ));
-            case 403:
-              return handler.reject(SmartHomeApiException(
-                message: 'Unauthorized',
-                requestOptions: e.requestOptions,
-                code: ErrorCode.forbidden,
-              ));
-            case 404:
-              return handler.reject(SmartHomeApiException(
-                message: ErrorMessage.fromJson(
-                        e.response?.data as Map<String, dynamic>)
-                    .message,
-                requestOptions: e.requestOptions,
-                code: ErrorCode.resourceNotFound,
-              ));
-            case 500:
-              return handler.reject(SmartHomeApiException(
-                message: 'Something is wrong',
-                requestOptions: e.requestOptions,
-                code: ErrorCode.serverInternalError,
-              ));
-          }
-          return handler.next(e);
-        },
-      ),
-    );
+    _dio.interceptors
+      ..add(
+        InterceptorsWrapper(
+          onRequest: (RequestOptions options,
+              RequestInterceptorHandler handler) async {
+            options.headers
+                .addEntries({'Content-Type': 'application/json'}.entries);
+            return handler.next(options);
+          },
+          onResponse: (Response response, ResponseInterceptorHandler handler) {
+            return handler.next(response);
+          },
+          onError: (DioException e, ErrorInterceptorHandler handler) {
+            return handler.next(e);
+          },
+        ),
+      )
+      ..add(RetryInterceptor(
+          dio: _dio,
+          logPrint: (message) => debugPrint(message),
+          retries: 3,
+          retryableExtraStatuses: {
+            status401Unauthorized
+          },
+          retryDelays: const [
+            Duration(seconds: 3),
+            Duration(seconds: 3),
+            Duration(seconds: 3),
+          ]));
   }
 
   static const defaultHost = '10.0.2.2';
@@ -124,18 +84,8 @@ class SmartHomeApiClient {
                   headers: {'Authorization': 'Bearer $accessToken'},
                 ));
       return res;
-    } on DioError catch (e) {
-      if (e is SmartHomeApiException) {
-        throw SmartHomeException(
-          code: e.code,
-          message: e.message,
-        );
-      } else {
-        throw SmartHomeException(
-          code: ErrorCode.unknown,
-          message: e.message,
-        );
-      }
+    } on DioException catch (e) {
+      throw SmartHomeException.fromDioException(e);
     }
   }
 
@@ -153,18 +103,8 @@ class SmartHomeApiClient {
                   headers: {'Authorization': 'Bearer $accessToken'},
                 ));
       return res;
-    } on DioError catch (e) {
-      if (e is SmartHomeApiException) {
-        throw SmartHomeException(
-          code: e.code,
-          message: e.message,
-        );
-      } else {
-        throw SmartHomeException(
-          code: ErrorCode.unknown,
-          message: e.message,
-        );
-      }
+    } on DioException catch (e) {
+      throw SmartHomeException.fromDioException(e);
     }
   }
 
@@ -182,18 +122,8 @@ class SmartHomeApiClient {
                   headers: {'Authorization': 'Bearer $accessToken'},
                 ));
       return res;
-    } on DioError catch (e) {
-      if (e is SmartHomeApiException) {
-        throw SmartHomeException(
-          code: e.code,
-          message: e.message,
-        );
-      } else {
-        throw SmartHomeException(
-          code: ErrorCode.unknown,
-          message: e.message,
-        );
-      }
+    } on DioException catch (e) {
+      throw SmartHomeException.fromDioException(e);
     }
   }
 
@@ -211,18 +141,8 @@ class SmartHomeApiClient {
                   headers: {'Authorization': 'Bearer $accessToken'},
                 ));
       return res;
-    } on DioError catch (e) {
-      if (e is SmartHomeApiException) {
-        throw SmartHomeException(
-          code: e.code,
-          message: e.message,
-        );
-      } else {
-        throw SmartHomeException(
-          code: ErrorCode.unknown,
-          message: e.message,
-        );
-      }
+    } on DioException catch (e) {
+      throw SmartHomeException.fromDioException(e);
     }
   }
 }

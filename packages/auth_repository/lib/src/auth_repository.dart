@@ -108,6 +108,7 @@ class AuthRepository {
         _controller.add(AuthenticationStatus.unknown);
       }
     } catch (e) {
+      log('Fail to get access token. Error: ${e.toString()}');
       // Network or other error
       _controller.add(AuthenticationStatus.unknown);
     }

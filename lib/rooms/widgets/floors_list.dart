@@ -35,7 +35,7 @@ class FloorsList extends StatelessWidget {
         ...rooms.map((room) => RoomCard(room: room)),
         const SizedBox(
           height: 12,
-        )
+        ),
       ];
     }
 

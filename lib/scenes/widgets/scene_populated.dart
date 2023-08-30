@@ -127,7 +127,7 @@ class _SceneCard extends StatelessWidget {
                     icon: const Icon(
                       Icons.more_vert,
                     ),
-                  )
+                  ),
                 ],
               ),
               Column(

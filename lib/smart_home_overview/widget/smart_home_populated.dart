@@ -76,10 +76,10 @@ class _SmartHomeCard extends StatelessWidget {
                   Text(
                     home.description,
                     style: textStyle.titleSmall,
-                  )
+                  ),
                 ],
               ),
-            )
+            ),
           ],
         ),
       ),

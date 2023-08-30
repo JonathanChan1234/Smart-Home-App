@@ -55,6 +55,18 @@ class SmartHomeConnectBloc
               return state.copyWith(
                 serverConnectStatus: SmartHomeServerConnectStatus.disconnected,
               );
+            case MqttClientConnectionStatus.failure:
+              return state.copyWith(
+                serverConnectStatus: SmartHomeServerConnectStatus.failure,
+              );
+            case MqttClientConnectionStatus.initial:
+              return state.copyWith(
+                serverConnectStatus: SmartHomeServerConnectStatus.initial,
+              );
+            case MqttClientConnectionStatus.reconnecting:
+              return state.copyWith(
+                serverConnectStatus: SmartHomeServerConnectStatus.reconnecting,
+              );
           }
         },
       );

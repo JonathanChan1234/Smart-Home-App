@@ -157,7 +157,7 @@ class SceneActionEditView extends StatelessWidget {
                 }
               },
               icon: const Icon(Icons.delete),
-            )
+            ),
         ],
       ),
       body: Builder(

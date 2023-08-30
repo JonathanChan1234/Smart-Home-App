@@ -33,7 +33,7 @@ class ErrorView extends StatelessWidget {
               icon: const Icon(Icons.refresh),
               onPressed: retryCallback,
               label: Text(localizations.retry),
-            )
+            ),
         ]
             .map(
               (widget) => Padding(

@@ -52,6 +52,7 @@ class SmartHomeAddPage extends StatelessWidget {
           }
         }
         if (state.status == SmartHomeAddStatus.failure && context.mounted) {
+          Navigator.of(context).pop();
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(

@@ -8,3 +8,5 @@ abstract class DevicesEvent extends Equatable {
 }
 
 class FetchDeviceListEvent extends DevicesEvent {}
+
+class DeviceMqttStatusSubscriptionEvent extends DevicesEvent {}

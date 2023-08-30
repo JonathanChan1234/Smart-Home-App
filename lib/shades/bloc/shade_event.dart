@@ -7,6 +7,14 @@ abstract class ShadeEvent extends Equatable {
   List<Object?> get props => [];
 }
 
+class ShadeMqttStatusSubscriptionRequestEvent extends ShadeEvent {
+  const ShadeMqttStatusSubscriptionRequestEvent();
+}
+
+class ShadeProcessorStatusSubscriptionRequestEvent extends ShadeEvent {
+  const ShadeProcessorStatusSubscriptionRequestEvent();
+}
+
 class ShadeStatusSubscriptionRequestedEvent extends ShadeEvent {
   const ShadeStatusSubscriptionRequestedEvent();
 }

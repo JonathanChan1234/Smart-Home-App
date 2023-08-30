@@ -61,7 +61,7 @@ Press "Add Home" to add the home again.
               ),
             ),
           ),
-        )
+        ),
       ],
     );
   }

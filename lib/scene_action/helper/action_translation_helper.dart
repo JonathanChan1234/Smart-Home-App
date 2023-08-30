@@ -45,7 +45,8 @@ class SceneActionTranslationHelper {
     final actions = <String>[];
     if (action.actionType != null) {
       actions.add(
-          '''${localizations.shadeAction}: ${action.actionType == ShadeActionType.raise ? localizations.shadeRaiseAction : localizations.shadeLowerAction}''');
+        '''${localizations.shadeAction}: ${action.actionType == ShadeActionType.raise ? localizations.shadeRaiseAction : localizations.shadeLowerAction}''',
+      );
     }
     if (action.level != null) {
       actions.add('${localizations.shadeLevel}: ${action.level}%');

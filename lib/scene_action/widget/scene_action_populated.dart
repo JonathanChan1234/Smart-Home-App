@@ -39,7 +39,7 @@ class SceneActionPopulated extends StatelessWidget {
               }
             },
             icon: const Icon(Icons.more_vert),
-          )
+          ),
         ],
       ),
       body: ListView.builder(

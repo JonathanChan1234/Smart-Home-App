@@ -13,7 +13,7 @@ class LightInitial extends StatelessWidget {
           Text(
             'Initializing your room lighting',
             style: textTheme.headlineSmall,
-          )
+          ),
         ],
       ),
     );

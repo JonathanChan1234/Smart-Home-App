@@ -30,7 +30,7 @@ dependencies:
   home_repository:
     path: packages/home_repository
   hydrated_bloc: ^9.1.0
-  intl: ^0.17.0
+  intl: ^0.18.1
   json_annotation: ^4.8.0
   lights_api:
     path: packages/lights_api
@@ -78,6 +78,3 @@ flutter:
   generate: true
   assets:
     - images/home_banner.png
-
-
-

@@ -3,6 +3,8 @@ import 'package:devices_api/devices_api.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:home_api/home_api.dart';
+import 'package:home_repository/home_repository.dart';
+import 'package:mqtt_smarthome_client/mqtt_smarthome_client.dart';
 import 'package:room_api/room_api.dart';
 import 'package:smart_home/devices/bloc/devices_bloc.dart';
 import 'package:smart_home/devices/widgets/widget.dart';
@@ -35,7 +37,10 @@ class DevicesPage extends StatelessWidget {
             authRepository: context.read<AuthRepository>(),
             smartHomeApiClient: context.read<SmartHomeApiClient>(),
           ),
-        )..add(FetchDeviceListEvent()),
+          homeRepository: context.read<HomeRepository>(),
+        )
+          ..add(DeviceMqttStatusSubscriptionEvent())
+          ..add(FetchDeviceListEvent()),
         child: DevicesPage(home: home, room: room),
       ),
     );
@@ -61,11 +66,13 @@ class DevicesView extends StatelessWidget {
             onPressed: () =>
                 context.read<DevicesBloc>().add(FetchDeviceListEvent()),
             icon: const Icon(Icons.refresh),
-          )
+          ),
         ],
       ),
       body: BlocBuilder<DevicesBloc, DevicesState>(
-        buildWhen: (previous, current) => previous.status != current.status,
+        buildWhen: (previous, current) =>
+            previous.status != current.status ||
+            previous.serverStatus != current.serverStatus,
         builder: (context, state) {
           final localizations = AppLocalizations.of(context);
           switch (state.status) {
@@ -76,6 +83,17 @@ class DevicesView extends StatelessWidget {
             case DevicesStatus.loading:
               return LoadingView(message: '${localizations.loading}...');
             case DevicesStatus.success:
+              final serverStatus = state.serverStatus;
+              if (serverStatus.isConnecting) {
+                return LoadingView(
+                  message: localizations.connectingMessage,
+                );
+              }
+              if (!serverStatus.isConnected) {
+                return ErrorView(
+                  message: localizations.disconnectingMessage,
+                );
+              }
               return DevicesOverview(
                 devices:
                     state.deviceCount.where((row) => row.count != 0).toList(),

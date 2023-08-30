@@ -93,6 +93,10 @@ class SmartHomeConnectView extends StatelessWidget {
                   return SmartHomeConnectDisconnected(home: state.home);
                 case SmartHomeServerConnectStatus.failure:
                   return ErrorView(message: state.connectionError);
+                case SmartHomeServerConnectStatus.reconnecting:
+                  return LoadingView(
+                    message: localizations.reconnectingMessage,
+                  );
               }
             },
           ),

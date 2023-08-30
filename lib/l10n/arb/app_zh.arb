@@ -80,6 +80,7 @@
     "exitHome": "離開家庭",
     "exitHomeMessage": "確定離開這個家庭?",
     "connectingMessage": "連接您的家庭中",
+    "reconnectingMessage": "重新連接您的服務噐",
     "disconnectingMessage": "未能連接家庭，請檢查您的網絡環境",
     "connectionFailureMessage": "未能連接您的家庭, 錯誤",
 

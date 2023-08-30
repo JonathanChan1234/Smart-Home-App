@@ -40,7 +40,7 @@ class SettingPage extends StatelessWidget {
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: const TextStyle(fontSize: 14),
-                        )
+                        ),
                       ],
                     ),
                   ),
@@ -67,10 +67,10 @@ class SettingPage extends StatelessWidget {
                       onTap: () => context
                           .read<AuthenticationBloc>()
                           .add(AuthenticationLogoutRequest()),
-                    )
+                    ),
                   ],
                 ),
-              )
+              ),
             ],
           );
         },

@@ -144,7 +144,7 @@ class SceneEditView extends StatelessWidget {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                  )
+                  ),
               ],
             ),
           ),

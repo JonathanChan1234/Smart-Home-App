@@ -7,7 +7,7 @@ class ColoredCheckbox extends StatelessWidget {
     required this.value,
   });
 
-  final void Function(bool? value) onChanged;
+  final void Function({bool? value}) onChanged;
   final bool value;
 
   Color getColor(Set<MaterialState> states) {
@@ -28,7 +28,7 @@ class ColoredCheckbox extends StatelessWidget {
       checkColor: Colors.white,
       fillColor: MaterialStateProperty.resolveWith(getColor),
       value: value,
-      onChanged: onChanged,
+      onChanged: (value) => onChanged(value: value),
     );
   }
 }

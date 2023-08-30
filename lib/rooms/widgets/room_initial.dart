@@ -13,7 +13,7 @@ class RoomInitial extends StatelessWidget {
           Text(
             'Initializing Room',
             style: textTheme.headlineSmall,
-          )
+          ),
         ],
       ),
     );

@@ -78,7 +78,8 @@
     "@_SMART_HOME_CONNECT": {},
     "exitHome": "Exit Home",
     "exitHomeMessage": "Are you sure you want to exit home",
-    "connectingMessage": "Connecting",
+    "connectingMessage": "Connecting to the home server",
+    "reconnectingMessage": "Reconnecting to the home server",
     "disconnectingMessage": "Disconnected from server. Please check your network connection",
     "connectionFailureMessage": "Fail to connect to server. Error:",
 

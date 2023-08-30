@@ -18,6 +18,14 @@ enum ProcessorConnectionStatus {
   failure,
 }
 
+extension ProcessorConnectionStatusX on ProcessorConnectionStatus {
+  bool get online => this == ProcessorConnectionStatus.online;
+  bool get notExist => this == ProcessorConnectionStatus.notExist;
+  bool get failure =>
+      this == ProcessorConnectionStatus.failure ||
+      this == ProcessorConnectionStatus.offline;
+}
+
 class HomeRepository {
   HomeRepository({
     required AuthRepository authRepository,

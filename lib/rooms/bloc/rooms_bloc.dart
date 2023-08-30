@@ -87,6 +87,7 @@ class RoomsBloc extends Bloc<RoomsEvent, RoomsState> {
     emit(
       state.copyWith(
         isFavorite: () => true,
+        selectedFloor: () => null,
       ),
     );
   }

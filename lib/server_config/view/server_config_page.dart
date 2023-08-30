@@ -269,7 +269,7 @@ class _ChangeLanguageSelect extends StatelessWidget {
       {'value': LanguageCode.chinese, 'label': '中文'},
       {
         'value': LanguageCode.und,
-        'label': AppLocalizations.of(context).defaultLanguage
+        'label': AppLocalizations.of(context).defaultLanguage,
       },
     ];
 
@@ -301,7 +301,7 @@ class _ChangeLanguageSelect extends StatelessWidget {
               ),
             );
           }).toList(),
-        )
+        ),
       ]
           .map(
             (widget) =>

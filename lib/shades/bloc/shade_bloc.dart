@@ -1,6 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:home_api/home_api.dart';
+import 'package:home_repository/home_repository.dart';
 import 'package:mqtt_smarthome_client/mqtt_smarthome_client.dart';
 import 'package:room_api/room_api.dart';
 import 'package:shades_api/shades_api.dart';
@@ -13,9 +14,11 @@ part 'shade_state.dart';
 class ShadeBloc extends Bloc<ShadeEvent, ShadeState> {
   ShadeBloc({
     required ShadesRepository shadesRepository,
+    required HomeRepository homeRepository,
     required SmartHome home,
     required Room room,
   })  : _shadesRepository = shadesRepository,
+        _homeRepository = homeRepository,
         super(ShadeState(home: home, room: room)) {
     on<ShadeListInitEvent>(_onShadeListInit);
     on<ShadeStatusSubscriptionRequestedEvent>(
@@ -23,9 +26,36 @@ class ShadeBloc extends Bloc<ShadeEvent, ShadeState> {
     );
     on<ShadeControlEvent>(_onShadeControlEvent);
     on<ShadeEditModeChangedEvent>(_onShadeEditModeChanged);
+    on<ShadeMqttStatusSubscriptionRequestEvent>(
+      _onShadeMqttStatusSubscriptionRequest,
+    );
+    on<ShadeProcessorStatusSubscriptionRequestEvent>(
+      _onShadeProcessorStatusSubscriptionRequest,
+    );
   }
 
   final ShadesRepository _shadesRepository;
+  final HomeRepository _homeRepository;
+
+  Future<void> _onShadeMqttStatusSubscriptionRequest(
+    ShadeMqttStatusSubscriptionRequestEvent event,
+    Emitter<ShadeState> emit,
+  ) async {
+    await emit.forEach(
+      _homeRepository.serverConnectStatus,
+      onData: (status) => state.copyWith(serverStatus: status),
+    );
+  }
+
+  Future<void> _onShadeProcessorStatusSubscriptionRequest(
+    ShadeProcessorStatusSubscriptionRequestEvent event,
+    Emitter<ShadeState> emit,
+  ) async {
+    await emit.forEach(
+      _homeRepository.processorConnectStatus,
+      onData: (status) => state.copyWith(processorStatus: status),
+    );
+  }
 
   Future<void> _onShadeListInit(
     ShadeListInitEvent event,
