@@ -83,7 +83,7 @@ class AuthRepository {
       // If the accessToken does not expire, return accessToken
       final expireTime = DateTime.fromMillisecondsSinceEpoch(
           JwtUtils.getJwtExpirationTime(authToken.accessToken) * 1000);
-      if (expireTime.compareTo(DateTime.now()) > 0) return authToken;
+      if (DateTime.now().compareTo(expireTime) < 0) return authToken;
 
       // Fetch the new token using refresh token if expired
       // Set user to be unauthenticated for bad request and invalid access token

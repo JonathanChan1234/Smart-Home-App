@@ -191,6 +191,7 @@ class MqttSmartHomeClient {
     if (currentUser == null || token == null) {
       throw const MqttSmartHomeClientException(message: "unauthenticated");
     }
+    print(token.accessToken);
 
     final connMess = MqttConnectMessage()
         .withClientIdentifier(client.clientId.toString())

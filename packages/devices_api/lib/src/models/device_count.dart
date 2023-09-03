@@ -18,7 +18,7 @@ class DeviceCount {
   Map<String, dynamic> toJson() => _$DeviceCountToJson(this);
 }
 
-enum DeviceMainCategory { light, shade, unknown }
+enum DeviceMainCategory { light, shade, ac, unknown }
 
 extension DeviceMainCategoryIntX on int {
   DeviceMainCategory toDeviceMainCategory() {
@@ -27,6 +27,8 @@ extension DeviceMainCategoryIntX on int {
         return DeviceMainCategory.light;
       case 1:
         return DeviceMainCategory.shade;
+      case 2:
+        return DeviceMainCategory.ac;
       default:
         return DeviceMainCategory.unknown;
     }
@@ -38,6 +40,8 @@ extension DeviceMainCategoryIntX on int {
         return 'light';
       case 1:
         return 'shade';
+      case 2:
+        return 'ac';
       default:
         throw Exception('Unsupported device type');
     }

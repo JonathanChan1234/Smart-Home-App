@@ -1,5 +1,8 @@
+import 'dart:convert';
+
 import 'package:auth_repository/auth_repository.dart';
 import 'package:devices_api/src/models/models.dart';
+import 'package:devices_api/src/models/update_device_dto.dart';
 import 'package:smart_home_api_client/smart_home_api_client.dart';
 import 'package:smart_home_exception/smart_home_exception.dart';
 
@@ -38,5 +41,18 @@ class DeviceApi {
     return (body as List<dynamic>)
         .map((device) => DeviceCount.fromJson(device as Map<String, dynamic>))
         .toList();
+  }
+
+  Future updateDeviceName({
+    required String homeId,
+    required String deviceId,
+    required String name,
+    required String accessToken,
+  }) {
+    return _smartHomeApiClient.httpPut(
+      path: '/home/$homeId/device/$deviceId',
+      body: jsonEncode(UpdateDeviceDto(name: name).toJson()),
+      accessToken: accessToken,
+    );
   }
 }

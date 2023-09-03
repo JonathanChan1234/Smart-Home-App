@@ -1,4 +1,5 @@
 import 'package:scene_action_api/scene_action_api.dart';
+import 'package:smart_home/l10n/helpers/ac_translation_helper.dart';
 import 'package:smart_home/l10n/l10n.dart';
 
 class SceneActionTranslationHelper {
@@ -19,6 +20,11 @@ class SceneActionTranslationHelper {
         );
       case DeviceMainCategory.unknown:
         return '';
+      case DeviceMainCategory.ac:
+        return toAirConditionerActionDescription(
+          AirConditionerAction.fromJson(action.action),
+          localizations,
+        );
     }
   }
 
@@ -51,6 +57,31 @@ class SceneActionTranslationHelper {
     if (action.level != null) {
       actions.add('${localizations.shadeLevel}: ${action.level}%');
     }
+    return actions.join(' | ');
+  }
+
+  static String toAirConditionerActionDescription(
+    AirConditionerAction action,
+    AppLocalizations localizations,
+  ) {
+    final actions = <String>[];
+    if (action.fanSpeed != null) {
+      actions.add(
+        '${localizations.acFanSpeed}: ${action.fanSpeed?.alias(localizations)}',
+      );
+    }
+    if (action.operationMode != null) {
+      actions.add(
+        '''${localizations.acOperationMode}: ${action.operationMode?.alias(localizations)}''',
+      );
+    }
+
+    if (action.setTemperature != null) {
+      actions.add(
+        '${localizations.currentTemperature}: ${action.setTemperature}°C',
+      );
+    }
+
     return actions.join(' | ');
   }
 }

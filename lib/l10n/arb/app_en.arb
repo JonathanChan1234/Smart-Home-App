@@ -119,6 +119,7 @@
     },
     "lights": "Lights",
     "shades": "Shades",
+    "ac": "AC",
     "unknown": "Unknown",
     "on": "ON",
     "off": "OFF",
@@ -134,6 +135,26 @@
     "shadeNameChangedFailureMessage": "Fail to change shade name.",
     "editShadeName": "Edit Shade Name",
     "shadeName": "Shade Name",
+
+    "@_SCENE_PAGE": {},
+    "sceneActivateSuccessMessage": "Activate scene {scene} successfully",
+    "@sceneActivateSuccessMessage": {
+        "placeholders": {
+            "scene": {
+                "type": "String",
+                "example": "Test Scene"
+            }
+        } 
+    },
+    "sceneActivateFailureMessage": "Fail to Activate scene {scene}",
+    "@sceneActivateFailureMessage": {
+        "placeholders": {
+            "scene": {
+                "type": "String",
+                "example": "Test Scene"
+            }
+        } 
+    },
 
     "@_SCENE_EDIT_PAGE": {},
     "sceneNameChangedSuccessMessage": "Scene name changed successfully",
@@ -166,5 +187,28 @@
     "shadeLevel": "Level",
     "shadeAction": "Action",
     "shadeRaiseAction": "Raise",
-    "shadeLowerAction": "Lower"
+    "shadeLowerAction": "Lower",
+
+    "@_AIR_CONDITIONER": {},
+    "setPoint": "SETPOINT",
+    "currentTemperature": "CURRENT TEMP.",
+    "acOperationModeTitle": "MODE",
+    "acOperationMode": "Mode",
+    "acFanSpeedTitle": "FAN",
+    "acFanSpeed": "Fan Speed",
+    "acFanMode": "Fan",
+    "acCoolMode": "Cool",
+    "acHeatMode": "Heat",
+    "acDryMode": "Dry",
+    "acAutoMode": "Auto",
+    "acFanQuiet": "Quiet",
+    "acFanLow": "Low",
+    "acFanMedium": "Medium",
+    "acFanHigh": "High",
+    "acFanTop": "Top",
+    "acFanAuto": "Auto",
+    "acNameChangedSuccessMessage": "AC name changed successfully",
+    "acNameChangedFailureMessage": "Fail to change AC name.",
+    "editAcName": "Edit AC Name",
+    "acName": "AC Name"
 }

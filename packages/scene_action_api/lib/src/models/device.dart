@@ -56,6 +56,7 @@ class Device extends Equatable {
 enum DeviceMainCategory {
   light,
   shade,
+  ac,
   unknown,
 }
 
@@ -64,6 +65,7 @@ enum DeviceSubCategory {
   lightSwitch,
   rollerShade,
   motorShade,
+  airConditioner,
   unknown,
 }
 
@@ -90,6 +92,8 @@ extension DeviceMainCategoryIcon on DeviceMainCategory {
         return Icons.roller_shades;
       case DeviceMainCategory.unknown:
         return Icons.question_mark;
+      case DeviceMainCategory.ac:
+        return Icons.hvac_sharp;
     }
   }
 }

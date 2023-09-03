@@ -2,6 +2,7 @@ import 'package:devices_api/devices_api.dart';
 import 'package:flutter/material.dart';
 import 'package:home_api/home_api.dart';
 import 'package:room_api/room_api.dart';
+import 'package:smart_home/air_conditioner/view/air_conditioner_page.dart';
 import 'package:smart_home/devices/widgets/devices_tile.dart';
 import 'package:smart_home/l10n/l10n.dart';
 import 'package:smart_home/lights/view/light_page.dart';
@@ -73,6 +74,14 @@ class DevicesOverview extends StatelessWidget {
                 home: home,
                 room: room,
               ),
+            );
+          case DeviceMainCategory.ac:
+            return DevicesTile(
+              name: localizations.ac,
+              icon: Icons.hvac,
+              color: Colors.blue,
+              route: () => AirConditionerPage.route(home: home, room: room),
+              statusText: localizations.devices(device.count),
             );
           case DeviceMainCategory.unknown:
             return DevicesTile(

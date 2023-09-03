@@ -9,6 +9,8 @@ environment:
   flutter: ">=1.17.0"
 
 dependencies:
+  air_conditioner_api:
+    path: ../air_conditioner_api
   equatable: ^2.0.5
   flutter:
     sdk: flutter

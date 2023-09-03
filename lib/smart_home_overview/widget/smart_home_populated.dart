@@ -60,7 +60,7 @@ class _SmartHomeCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Image.asset(
-              'images/home_banner.png',
+              'assets/images/home_banner.png',
               height: 128,
               width: 96,
             ),

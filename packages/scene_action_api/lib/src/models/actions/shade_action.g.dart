@@ -7,9 +7,8 @@ part of 'shade_action.dart';
 // **************************************************************************
 
 ShadeAction _$ShadeActionFromJson(Map<String, dynamic> json) => ShadeAction(
-      actionType: $enumDecodeNullable(
-          _$ShadeActionTypeEnumMap, json['actionType'],
-          unknownValue: ShadeActionType.na),
+      actionType:
+          $enumDecodeNullable(_$ShadeActionTypeEnumMap, json['actionType']),
       level: json['level'] as int?,
     );
 

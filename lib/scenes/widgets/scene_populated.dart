@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:scene_api/scene_api.dart';
 import 'package:smart_home/home/bloc/home_bloc.dart';
+import 'package:smart_home/l10n/l10n.dart';
 import 'package:smart_home/scene_action/view/scene_action_page.dart';
 import 'package:smart_home/scene_edit/view/scene_edit_page.dart';
 import 'package:smart_home/scenes/bloc/scene_bloc.dart';
@@ -18,14 +19,19 @@ class ScenePopulated extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
+    final localizations = AppLocalizations.of(context);
 
     return BlocListener<SceneBloc, SceneState>(
+      listenWhen: (previous, current) =>
+          previous.activateStatus != current.activateStatus,
       listener: (context, state) {
         if (state.activateStatus == SceneActivateStatus.success) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(
-                '''Scene ${state.activateScene?.name ?? ''} activated successfully''',
+                localizations.sceneActivateSuccessMessage(
+                  state.activateScene?.name ?? '',
+                ),
               ),
             ),
           );
@@ -36,8 +42,7 @@ class ScenePopulated extends StatelessWidget {
             SnackBar(
               content: Text(
                 '''
-                Fail to activate scene ${state.activateScene?.name ?? ''}. 
-                Error: ${state.error}''',
+                ${localizations.sceneActivateFailureMessage(state.activateScene?.name ?? '')}. ${state.error}''',
               ),
             ),
           );

@@ -11,6 +11,8 @@ extension MainCategoryExtensionX on DeviceMainCategory {
         return 'light';
       case DeviceMainCategory.shade:
         return 'shade';
+      case DeviceMainCategory.ac:
+        return 'ac';
       default:
         return '';
     }

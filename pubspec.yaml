@@ -8,6 +8,10 @@ environment:
   flutter: 3.3.10
 
 dependencies:
+  air_conditioner_api:
+    path: packages/air_conditioner_api
+  air_conditioner_repository:
+    path: packages/air_conditioner_repository
   auth_api:
     path: packages/auth_api
   auth_local_storage:
@@ -63,6 +67,7 @@ dependencies:
     path: packages/smart_home_api_client
   smart_home_exception:
     path: packages/smart_home_exception
+  syncfusion_flutter_gauges: ^22.2.11
 
 dev_dependencies:
   bloc_test: ^9.1.1
@@ -77,4 +82,8 @@ flutter:
   uses-material-design: true
   generate: true
   assets:
-    - images/home_banner.png
+    - assets/images/home_banner.png
+  fonts:
+    - family: CustomIcons
+      fonts:
+        - asset: assets/fonts/CustomIcons.ttf

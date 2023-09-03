@@ -6,6 +6,7 @@ import 'package:scene_api/scene_api.dart';
 import 'package:smart_home/l10n/l10n.dart';
 import 'package:smart_home/scene_action/view/scene_action_page.dart';
 import 'package:smart_home/scene_action_edit/bloc/scene_action_edit_bloc.dart';
+import 'package:smart_home/scene_action_edit/widgets/air_conditioner/air_conditioner_action_edit.dart';
 import 'package:smart_home/scene_action_edit/widgets/light/light_action_edit.dart';
 import 'package:smart_home/scene_action_edit/widgets/shade/shade_action_edit.dart';
 import 'package:smart_home/widgets/confirm_dialog.dart';
@@ -176,6 +177,11 @@ class SceneActionEditView extends StatelessWidget {
             case DeviceMainCategory.unknown:
               return ErrorView(
                 message: localizations.deviceTypeNotSupported,
+              );
+            case DeviceMainCategory.ac:
+              return AirConditionerActionEditPage(
+                airConditioner: actionDevice,
+                action: action,
               );
           }
         },

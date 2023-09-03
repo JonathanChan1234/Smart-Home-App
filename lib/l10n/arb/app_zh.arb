@@ -120,6 +120,7 @@
     },
     "lights": "燈光",
     "shades": "窗簾",
+    "ac": "空調",
     "unknown": "不明",
     "on": "開",
     "off": "關",
@@ -135,6 +136,26 @@
     "shadeNameChangedFailureMessage": "更改窗簾名稱失敗",
     "editShadeName": "更改窗簾名稱",
     "shadeName": "窗簾名稱",
+
+    "@_SCENE_PAGE": {},
+    "sceneActivateSuccessMessage": "啟動場景{scene}成功",
+    "@sceneActivateSuccessMessage": {
+        "placeholders": {
+            "scene": {
+                "type": "String",
+                "example": "Test Scene"
+            }
+        } 
+    },
+    "sceneActivateFailureMessage": "啟動場景{scene}失敗",
+    "@sceneActivateFailureMessage": {
+        "placeholders": {
+            "scene": {
+                "type": "String",
+                "example": "Test Scene"
+            }
+        } 
+    },
 
     "@_SCENE_EDIT_PAGE": {},
     "sceneNameChangedSuccessMessage": "更改場景名稱成功",
@@ -167,5 +188,28 @@
     "shadeLevel": "打開幅度",
     "shadeAction": "動作",
     "shadeRaiseAction": "升起",
-    "shadeLowerAction": "降下"
+    "shadeLowerAction": "降下",
+
+    "@_AIR_CONDITIONER": {},
+    "setPoint": "設定點",
+    "currentTemperature": "溫度",
+    "acOperationModeTitle": "模式",
+    "acOperationMode": "模式",
+    "acFanSpeedTitle": "風速",
+    "acFanSpeed": "風速",
+    "acFanMode": "風扇",
+    "acCoolMode": "制冷",
+    "acHeatMode": "暖氣",
+    "acDryMode": "抽濕",
+    "acAutoMode": "自動",
+    "acFanQuiet": "安靜",
+    "acFanLow": "低",
+    "acFanMedium": "中",
+    "acFanHigh": "高",
+    "acFanTop": "最高",
+    "acFanAuto": "自動",
+    "acNameChangedSuccessMessage": "空調名稱更改成功",
+    "acNameChangedFailureMessage": "空調名稱更改失敗",
+    "editAcName": "更改空調名稱",
+    "acName": "空調名稱"
 }

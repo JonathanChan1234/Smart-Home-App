@@ -9,6 +9,20 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "52.0.0"
+  air_conditioner_api:
+    dependency: "direct main"
+    description:
+      path: "packages/air_conditioner_api"
+      relative: true
+    source: path
+    version: "0.0.1"
+  air_conditioner_repository:
+    dependency: "direct main"
+    description:
+      path: "packages/air_conditioner_repository"
+      relative: true
+    source: path
+    version: "0.0.1"
   analyzer:
     dependency: transitive
     description:
@@ -933,6 +947,22 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.2.0"
+  syncfusion_flutter_core:
+    dependency: transitive
+    description:
+      name: syncfusion_flutter_core
+      sha256: "2baf60cd245a21a7069f036bbca1ca222633d38f57748e133da97a305712627c"
+      url: "https://pub.dev"
+    source: hosted
+    version: "22.2.11"
+  syncfusion_flutter_gauges:
+    dependency: "direct main"
+    description:
+      name: syncfusion_flutter_gauges
+      sha256: c086f17e84452e809b12f9832763ec4cea347b9f6e1e662a0e8addabca6cc2e5
+      url: "https://pub.dev"
+    source: hosted
+    version: "22.2.11"
   synchronized:
     dependency: transitive
     description:
@@ -1070,5 +1100,5 @@ packages:
     source: hosted
     version: "3.1.1"
 sdks:
-  dart: ">=3.1.0-185.0.dev <4.0.0"
+  dart: ">=3.1.0 <4.0.0"
   flutter: ">=3.3.10"
