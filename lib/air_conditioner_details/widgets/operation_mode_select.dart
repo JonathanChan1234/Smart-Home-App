@@ -13,7 +13,7 @@ class OperationModeSelect extends StatelessWidget {
 
   final AirConditionerCapabilities capabilities;
   final OperationMode? operationMode;
-  final void Function(OperationMode operationMode) onOperationModeChanged;
+  final void Function(OperationMode operationMode)? onOperationModeChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -45,11 +45,12 @@ class OperationModeSelect extends StatelessWidget {
         },
       );
       if (operationMode == null) return;
-      onOperationModeChanged(operationMode);
+      onOperationModeChanged!(operationMode);
     }
 
     return TextButton(
-      onPressed: showOperationModeOptions,
+      onPressed:
+          onOperationModeChanged == null ? null : showOperationModeOptions,
       child: Column(
         children: [
           Text(

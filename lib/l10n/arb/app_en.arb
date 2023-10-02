@@ -123,6 +123,7 @@
     "unknown": "Unknown",
     "on": "ON",
     "off": "OFF",
+    "power": "Power",
 
     "@_LIGHT_EDIT_PAGE": {},
     "lightNameChangedSuccessMessage": "Light name changed successfully",

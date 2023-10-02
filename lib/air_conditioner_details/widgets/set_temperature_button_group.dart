@@ -11,7 +11,7 @@ class SetTemperatureButtonGroup extends StatelessWidget {
 
   final AirConditionerCapabilities capabilities;
   final double? temperature;
-  final void Function(double temperature) onTemperatureChanaged;
+  final void Function(double temperature)? onTemperatureChanaged;
 
   @override
   Widget build(BuildContext context) {
@@ -21,15 +21,17 @@ class SetTemperatureButtonGroup extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
         IconButton(
-          onPressed: () {
-            onTemperatureChanaged(
-              temperature == null
-                  ? highEnd
-                  : (temperature! + 1.0) <= highEnd
-                      ? temperature! + 1.0
-                      : temperature!,
-            );
-          },
+          onPressed: onTemperatureChanaged == null
+              ? null
+              : () {
+                  onTemperatureChanaged!(
+                    temperature == null
+                        ? highEnd
+                        : (temperature! + 1.0) <= highEnd
+                            ? temperature! + 1.0
+                            : temperature!,
+                  );
+                },
           icon: const Icon(Icons.add),
         ),
         Text(
@@ -41,15 +43,17 @@ class SetTemperatureButtonGroup extends StatelessWidget {
           ),
         ),
         IconButton(
-          onPressed: () {
-            onTemperatureChanaged(
-              temperature == null
-                  ? highEnd
-                  : (temperature! - 1.0) >= lowEnd
-                      ? temperature! - 1.0
-                      : temperature!,
-            );
-          },
+          onPressed: onTemperatureChanaged == null
+              ? null
+              : () {
+                  onTemperatureChanaged!(
+                    temperature == null
+                        ? highEnd
+                        : (temperature! - 1.0) >= lowEnd
+                            ? temperature! - 1.0
+                            : temperature!,
+                  );
+                },
           icon: const Icon(Icons.remove),
         ),
       ],

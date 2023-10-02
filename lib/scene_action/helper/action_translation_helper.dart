@@ -64,7 +64,9 @@ class SceneActionTranslationHelper {
     AirConditionerAction action,
     AppLocalizations localizations,
   ) {
-    final actions = <String>[];
+    final actions = <String>[
+      '''${localizations.power}: ${action.power ? localizations.on : localizations.off}'''
+    ];
     if (action.fanSpeed != null) {
       actions.add(
         '${localizations.acFanSpeed}: ${action.fanSpeed?.alias(localizations)}',

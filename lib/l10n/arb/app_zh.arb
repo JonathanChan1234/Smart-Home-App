@@ -124,6 +124,7 @@
     "unknown": "不明",
     "on": "開",
     "off": "關",
+    "power": "電源",
 
     "@_LIGHT_EDIT_PAGE": {},
     "lightNameChangedSuccessMessage": "更改燈光名稱成功",

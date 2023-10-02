@@ -15,6 +15,10 @@ class AirConditionerActionCubit extends Cubit<AirConditionerActionState> {
           ),
         );
 
+  void airConditionerActionPowerUpdated() {
+    emit(state.copyWith(power: !state.power));
+  }
+
   void airConditionerActionFanSpeedUpdated(FanSpeed? fanSpeed) {
     emit(state.copyWith(fanSpeed: () => fanSpeed));
   }

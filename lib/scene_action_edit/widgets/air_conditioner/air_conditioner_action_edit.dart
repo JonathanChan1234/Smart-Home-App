@@ -63,6 +63,28 @@ class AirConditionerActionEdit extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         mainAxisSize: MainAxisSize.min,
         children: [
+          SceneActionTile(
+            enabled: true,
+            title: localizations.power,
+            widget: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  state.power ? localizations.on : localizations.off,
+                ),
+                IconButton(
+                  onPressed: () => context
+                      .read<AirConditionerActionCubit>()
+                      .airConditionerActionPowerUpdated(),
+                  icon: Icon(
+                    Icons.power_settings_new,
+                    color: state.power ? Colors.red : Colors.grey,
+                  ),
+                ),
+              ],
+            ),
+            onEnabledChanged: ({required enabled}) {},
+          ),
           if (capabilities.defaultFanSpeed != null)
             SceneActionTile(
               enabled: state.fanSpeed != null,
@@ -113,14 +135,14 @@ class AirConditionerActionEdit extends StatelessWidget {
                     enabled ? capabilities.setTemperatureHighEnd : null),
           ),
           ElevatedButton(
-            onPressed: state.isValid &&
-                    !sceneActionEditStatus.isLoadingOrSuccess
+            onPressed: !sceneActionEditStatus.isLoadingOrSuccess
                 ? () {
                     context.read<SceneActionEditBloc>().add(
                           SceneActionEditSubmittedEvent<AirConditionerAction>(
                             category: DeviceMainCategory.ac,
                             device: airConditioner,
                             deviceProperties: AirConditionerAction(
+                              power: state.power,
                               fanSpeed: state.fanSpeed,
                               operationMode: state.operationMode,
                               setTemperature: state.temperature,

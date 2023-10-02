@@ -73,8 +73,10 @@ class AirConditionerDetailsView extends StatelessWidget {
           );
         }
         final airConditioner = state.devices[airConditionerIndex];
+        final power = airConditioner.properties.power;
         final setTemperature = airConditioner.properties.setTemperature;
         final capabilities = airConditioner.capabilities;
+        final localizations = AppLocalizations.of(context);
 
         return Scaffold(
           appBar: AppBar(
@@ -108,39 +110,74 @@ class AirConditionerDetailsView extends StatelessWidget {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          const Icon(
-                            Icons.thermostat_sharp,
-                            size: 30,
-                          ),
-                          Column(
-                            mainAxisSize: MainAxisSize.min,
+                          Row(
                             children: [
-                              Text(
-                                airConditioner.name,
-                                style: const TextStyle(
-                                  fontSize: 20,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
+                              const Icon(
+                                Icons.thermostat_sharp,
+                                size: 30,
                               ),
-                              Text(
-                                AppLocalizations.of(context).control,
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: Colors.grey.shade500,
-                                  fontWeight: FontWeight.w200,
-                                ),
+                              Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Text(
+                                    airConditioner.name,
+                                    style: const TextStyle(
+                                      fontSize: 20,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                  Text(
+                                    AppLocalizations.of(context).control,
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: Colors.grey.shade500,
+                                      fontWeight: FontWeight.w200,
+                                    ),
+                                  ),
+                                ],
                               ),
-                            ],
+                            ]
+                                .map(
+                                  (widget) => Padding(
+                                    padding: const EdgeInsets.all(8),
+                                    child: widget,
+                                  ),
+                                )
+                                .toList(),
                           ),
-                        ]
-                            .map(
-                              (widget) => Padding(
-                                padding: const EdgeInsets.all(8),
-                                child: widget,
-                              ),
-                            )
-                            .toList(),
+                          Padding(
+                            padding: const EdgeInsets.all(4),
+                            child: Row(
+                              children: [
+                                Text(
+                                  power ?? false
+                                      ? localizations.on
+                                      : localizations.off,
+                                ),
+                                IconButton(
+                                  onPressed: () => context
+                                      .read<AirConditionerBloc>()
+                                      .add(
+                                        AirConditionerStatusChangedEvent(
+                                          deviceId: airConditioner.id,
+                                          properties: AirConditionerProperties(
+                                            power: !(power ?? false),
+                                          ),
+                                        ),
+                                      ),
+                                  icon: Icon(
+                                    Icons.power_settings_new,
+                                    color: power ?? false
+                                        ? Colors.red
+                                        : Colors.grey,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
                       ),
                       const Divider(),
                       TemperatureDetailsGauge(airConditioner: airConditioner),
@@ -148,14 +185,16 @@ class AirConditionerDetailsView extends StatelessWidget {
                       SetTemperatureButtonGroup(
                         capabilities: capabilities,
                         temperature: setTemperature,
-                        onTemperatureChanaged: (temperature) =>
-                            context.read<AirConditionerBloc>().add(
-                                  AirConditionerStatusChangedEvent(
-                                    deviceId: airConditioner.id,
-                                    properties: AirConditionerProperties(
-                                        setTemperature: temperature),
-                                  ),
-                                ),
+                        onTemperatureChanaged: power ?? false
+                            ? (temperature) =>
+                                context.read<AirConditionerBloc>().add(
+                                      AirConditionerStatusChangedEvent(
+                                        deviceId: airConditioner.id,
+                                        properties: AirConditionerProperties(
+                                            setTemperature: temperature),
+                                      ),
+                                    )
+                            : null,
                       ),
                       const Divider(),
                       IntrinsicHeight(
@@ -166,29 +205,35 @@ class AirConditionerDetailsView extends StatelessWidget {
                               capabilities: capabilities,
                               operationMode:
                                   airConditioner.properties.operationMode,
-                              onOperationModeChanged: (operationMode) =>
-                                  context.read<AirConditionerBloc>().add(
+                              onOperationModeChanged: power ?? false
+                                  ? (operationMode) => context
+                                      .read<AirConditionerBloc>()
+                                      .add(
                                         AirConditionerStatusChangedEvent(
                                           deviceId: airConditioner.id,
                                           properties: AirConditionerProperties(
                                             operationMode: operationMode,
                                           ),
                                         ),
-                                      ),
+                                      )
+                                  : null,
                             ),
                             const VerticalDivider(),
                             FanSpeedSelect(
                               capabilities: capabilities,
                               fanSpeed: airConditioner.properties.fanSpeed,
-                              onFanSpeedChanged: (fanSpeed) =>
-                                  context.read<AirConditionerBloc>().add(
+                              onFanSpeedChanged: power ?? false
+                                  ? (fanSpeed) => context
+                                      .read<AirConditionerBloc>()
+                                      .add(
                                         AirConditionerStatusChangedEvent(
                                           deviceId: airConditioner.id,
                                           properties: AirConditionerProperties(
                                             fanSpeed: fanSpeed,
                                           ),
                                         ),
-                                      ),
+                                      )
+                                  : null,
                             ),
                           ],
                         ),

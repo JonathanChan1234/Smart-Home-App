@@ -8,6 +8,7 @@ part 'air_conditioner_properties.g.dart';
 @JsonSerializable()
 class AirConditionerProperties extends Equatable {
   const AirConditionerProperties({
+    this.power,
     this.fanSpeed,
     this.operationMode,
     this.setTemperature,
@@ -17,18 +18,21 @@ class AirConditionerProperties extends Equatable {
   factory AirConditionerProperties.fromJson(Map<String, dynamic> json) =>
       _$AirConditionerPropertiesFromJson(json);
 
+  final bool? power;
   final FanSpeed? fanSpeed;
   final OperationMode? operationMode;
   final double? setTemperature;
   final double? roomTemperature;
 
-  AirConditionerProperties copyWith(
+  AirConditionerProperties copyWith({
+    bool? power,
     FanSpeed? fanSpeed,
     OperationMode? operationMode,
     double? setTemperature,
     double? roomTemperature,
-  ) {
+  }) {
     return AirConditionerProperties(
+      power: power ?? this.power,
       fanSpeed: fanSpeed ?? this.fanSpeed,
       operationMode: operationMode ?? this.operationMode,
       setTemperature: setTemperature ?? this.setTemperature,
@@ -39,6 +43,11 @@ class AirConditionerProperties extends Equatable {
   Map<String, dynamic> toJson() => _$AirConditionerPropertiesToJson(this);
 
   @override
-  List<Object?> get props =>
-      [fanSpeed, operationMode, setTemperature, roomTemperature];
+  List<Object?> get props => [
+        power,
+        fanSpeed,
+        operationMode,
+        setTemperature,
+        roomTemperature,
+      ];
 }

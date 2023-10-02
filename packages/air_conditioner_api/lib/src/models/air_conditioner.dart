@@ -49,10 +49,11 @@ class AirConditioner extends Equatable {
       subCategory: subCategory,
       properties: properties != null
           ? this.properties.copyWith(
-              properties.fanSpeed,
-              properties.operationMode,
-              properties.setTemperature,
-              properties.roomTemperature)
+              power: properties.power,
+              fanSpeed: properties.fanSpeed,
+              operationMode: properties.operationMode,
+              setTemperature: properties.setTemperature,
+              roomTemperature: properties.roomTemperature)
           : this.properties,
       capabilities: capabilities,
       onlineStatus: onlineStatus ?? this.onlineStatus,

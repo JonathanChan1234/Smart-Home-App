@@ -13,10 +13,11 @@ class AirConditionerTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final power = airConditioner.properties.power;
     final setTemperature = airConditioner.properties.setTemperature;
     final lowEnd = airConditioner.capabilities.setTemperatureLowEnd;
     final highEnd = airConditioner.capabilities.setTemperatureHighEnd;
-    final localizatins = AppLocalizations.of(context);
+    final localizations = AppLocalizations.of(context);
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(8, 4, 8, 0),
@@ -29,35 +30,64 @@ class AirConditionerTile extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
-              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Padding(
-                  padding: const EdgeInsets.all(10),
-                  child: Column(
-                    children: [
-                      TemperatureGauge(
-                        temperature: airConditioner.properties.roomTemperature,
+                Row(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(10),
+                      child: Column(
+                        children: [
+                          TemperatureGauge(
+                            temperature:
+                                airConditioner.properties.roomTemperature,
+                          ),
+                          Text(
+                            airConditioner.properties.operationMode
+                                    ?.alias(localizations) ??
+                                '?',
+                            style: TextStyle(
+                              fontWeight: FontWeight.w200,
+                              color: Colors.grey.shade500,
+                            ),
+                          ),
+                        ],
                       ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(10),
+                      child: Text(
+                        airConditioner.name,
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(4),
+                  child: Row(
+                    children: [
                       Text(
-                        airConditioner.properties.operationMode
-                                ?.alias(localizatins) ??
-                            '?',
-                        style: TextStyle(
-                          fontWeight: FontWeight.w200,
-                          color: Colors.grey.shade500,
+                        power ?? false ? localizations.on : localizations.off,
+                      ),
+                      IconButton(
+                        onPressed: () => context.read<AirConditionerBloc>().add(
+                              AirConditionerStatusChangedEvent(
+                                deviceId: airConditioner.id,
+                                properties: AirConditionerProperties(
+                                  power: !(power ?? false),
+                                ),
+                              ),
+                            ),
+                        icon: Icon(
+                          Icons.power_settings_new,
+                          color: power ?? false ? Colors.red : Colors.grey,
                         ),
                       ),
                     ],
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(10),
-                  child: Text(
-                    airConditioner.name,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
                   ),
                 ),
               ],
@@ -67,20 +97,22 @@ class AirConditionerTile extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
                 IconButton(
-                  onPressed: () {
-                    context.read<AirConditionerBloc>().add(
-                          AirConditionerStatusChangedEvent(
-                            deviceId: airConditioner.id,
-                            properties: AirConditionerProperties(
-                              setTemperature: setTemperature == null
-                                  ? highEnd
-                                  : setTemperature + 1 <= highEnd
-                                      ? setTemperature + 1
-                                      : setTemperature,
-                            ),
-                          ),
-                        );
-                  },
+                  onPressed: power ?? false
+                      ? () {
+                          context.read<AirConditionerBloc>().add(
+                                AirConditionerStatusChangedEvent(
+                                  deviceId: airConditioner.id,
+                                  properties: AirConditionerProperties(
+                                    setTemperature: setTemperature == null
+                                        ? highEnd
+                                        : setTemperature + 1 <= highEnd
+                                            ? setTemperature + 1
+                                            : setTemperature,
+                                  ),
+                                ),
+                              );
+                        }
+                      : null,
                   icon: const Icon(Icons.add),
                 ),
                 Column(
@@ -98,20 +130,22 @@ class AirConditionerTile extends StatelessWidget {
                   ],
                 ),
                 IconButton(
-                  onPressed: () {
-                    context.read<AirConditionerBloc>().add(
-                          AirConditionerStatusChangedEvent(
-                            deviceId: airConditioner.id,
-                            properties: AirConditionerProperties(
-                              setTemperature: setTemperature == null
-                                  ? highEnd
-                                  : setTemperature - 1 >= lowEnd
-                                      ? setTemperature - 1
-                                      : setTemperature,
-                            ),
-                          ),
-                        );
-                  },
+                  onPressed: power ?? false
+                      ? () {
+                          context.read<AirConditionerBloc>().add(
+                                AirConditionerStatusChangedEvent(
+                                  deviceId: airConditioner.id,
+                                  properties: AirConditionerProperties(
+                                    setTemperature: setTemperature == null
+                                        ? highEnd
+                                        : setTemperature - 1 >= lowEnd
+                                            ? setTemperature - 1
+                                            : setTemperature,
+                                  ),
+                                ),
+                              );
+                        }
+                      : null,
                   icon: const Icon(Icons.remove),
                 ),
               ],

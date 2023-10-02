@@ -13,7 +13,7 @@ class FanSpeedSelect extends StatelessWidget {
 
   final AirConditionerCapabilities capabilities;
   final FanSpeed? fanSpeed;
-  final void Function(FanSpeed fanSpeed) onFanSpeedChanged;
+  final void Function(FanSpeed fanSpeed)? onFanSpeedChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -46,11 +46,11 @@ class FanSpeedSelect extends StatelessWidget {
         },
       );
       if (fanSpeed == null) return;
-      onFanSpeedChanged(fanSpeed);
+      onFanSpeedChanged!(fanSpeed);
     }
 
     return TextButton(
-      onPressed: showFanSpeedOptions,
+      onPressed: onFanSpeedChanged == null ? null : showFanSpeedOptions,
       child: Column(
         children: [
           Text(

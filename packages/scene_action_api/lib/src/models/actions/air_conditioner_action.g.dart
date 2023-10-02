@@ -9,6 +9,7 @@ part of 'air_conditioner_action.dart';
 AirConditionerAction _$AirConditionerActionFromJson(
         Map<String, dynamic> json) =>
     AirConditionerAction(
+      power: json['power'] as bool,
       fanSpeed: $enumDecodeNullable(_$FanSpeedEnumMap, json['fanSpeed']),
       operationMode:
           $enumDecodeNullable(_$OperationModeEnumMap, json['operationMode']),
@@ -18,6 +19,7 @@ AirConditionerAction _$AirConditionerActionFromJson(
 Map<String, dynamic> _$AirConditionerActionToJson(
         AirConditionerAction instance) =>
     <String, dynamic>{
+      'power': instance.power,
       'fanSpeed': _$FanSpeedEnumMap[instance.fanSpeed],
       'operationMode': _$OperationModeEnumMap[instance.operationMode],
       'setTemperature': instance.setTemperature,

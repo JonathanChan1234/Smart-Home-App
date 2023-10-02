@@ -7,6 +7,7 @@ part 'air_conditioner_action.g.dart';
 @JsonSerializable()
 class AirConditionerAction extends DeviceAction {
   const AirConditionerAction({
+    required this.power,
     this.fanSpeed,
     this.operationMode,
     this.setTemperature,
@@ -15,6 +16,7 @@ class AirConditionerAction extends DeviceAction {
   factory AirConditionerAction.fromJson(Map<String, dynamic> json) =>
       _$AirConditionerActionFromJson(json);
 
+  final bool power;
   final FanSpeed? fanSpeed;
   final OperationMode? operationMode;
   final double? setTemperature;
