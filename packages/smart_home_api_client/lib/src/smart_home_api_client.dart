@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:dio/dio.dart';
+import 'package:dio/io.dart';
 import 'package:dio_smart_retry/dio_smart_retry.dart';
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -11,8 +14,15 @@ class SmartHomeApiClient {
     String? url,
   })  : _sharedPreferences = plugin,
         _dio = dio ?? Dio() {
+    _dio.httpClientAdapter = IOHttpClientAdapter(createHttpClient: () {
+      final HttpClient client =
+          HttpClient(context: SecurityContext(withTrustedRoots: false));
+      // You can test the intermediate / root cert here. We just ignore it.
+      client.badCertificateCallback = (cert, host, port) => true;
+      return client;
+    });
     _dio.options.baseUrl =
-        'http://${getServerHost()}:${getServerPort()}/api/v1';
+        'https://${getServerHost()}:${getServerPort()}/api/v1';
     _dio.options.connectTimeout = const Duration(seconds: 5);
     _dio.options.receiveTimeout = const Duration(seconds: 3);
     _dio.interceptors
@@ -55,7 +65,7 @@ class SmartHomeApiClient {
 
   // host: [domain]:[port]
   Future<void> setServerHost({required String host, required int port}) async {
-    _dio.options.baseUrl = 'http://$host:$port/api/v1';
+    _dio.options.baseUrl = 'https://$host:$port/api/v1';
     _sharedPreferences.setString(kServerHostKey, host);
     _sharedPreferences.setInt(kServerPortKey, port);
   }

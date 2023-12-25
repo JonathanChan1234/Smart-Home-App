@@ -66,6 +66,8 @@ class MqttSmartHomeClient {
   Stream<MqttIncomingMessage> get message =>
       _messageController.asBroadcastStream();
 
+  int retryCount = 0;
+
   Future<void> setServerConfig(String host, int port) async {
     _mqttServerClient.server = host;
     _mqttServerClient.port = port;
@@ -89,14 +91,14 @@ class MqttSmartHomeClient {
 
     _mqttServerClient.keepAlivePeriod = 20;
     _mqttServerClient.connectTimeoutPeriod = 20;
-    _mqttServerClient.autoReconnect = true;
+    // _mqttServerClient.autoReconnect = true;
     _mqttServerClient.connectionMessage =
         await _obtainConnectionMessage(homeId);
     _mqttServerClient.onConnected = _onConnected;
-    _mqttServerClient.onDisconnected = _onDisconnected;
+    _mqttServerClient.onDisconnected = () => _onDisconnected(homeId);
     _mqttServerClient.onAutoReconnect =
-        () async => await _onAuthReconnect(homeId);
-    _mqttServerClient.onAutoReconnected = _onAuthReconnected;
+        () async => await _onAutoReconnect(homeId);
+    _mqttServerClient.onAutoReconnected = _onAutoReconnected;
 
     _statusController.add(MqttClientConnectionStatus.connecting);
     try {
@@ -151,7 +153,6 @@ class MqttSmartHomeClient {
       topic,
       MqttQos.exactlyOnce,
       builder.payload!,
-      retain: true,
     );
   }
 
@@ -167,31 +168,44 @@ class MqttSmartHomeClient {
   void _onConnected() {
     if (_statusController.isClosed) return;
     _statusController.add(MqttClientConnectionStatus.connected);
+    retryCount = 0;
   }
 
-  void _onDisconnected() {
+  void _onDisconnected(String homeId) {
     if (_statusController.isClosed) return;
-    _statusController.add(MqttClientConnectionStatus.disconnected);
+    _statusController.add(MqttClientConnectionStatus.reconnecting);
+    if (retryCount == 3) {
+      _statusController.add(MqttClientConnectionStatus.disconnected);
+      return;
+    }
+    log("MQTT Client disconnecting");
+    Future.delayed(const Duration(seconds: 1), () async {
+      log("MQTT Client reconnecting");
+      _mqttServerClient.connectionMessage =
+          await _obtainConnectionMessage(homeId);
+      retryCount++;
+      _mqttServerClient.connect();
+    });
   }
 
-  Future<void> _onAuthReconnect(String homeId) async {
+  Future<void> _onAutoReconnect(String homeId) async {
     _statusController.add(MqttClientConnectionStatus.reconnecting);
     _mqttServerClient.connectionMessage =
         await _obtainConnectionMessage(homeId);
   }
 
-  void _onAuthReconnected() {
+  void _onAutoReconnected() {
     _statusController.add(MqttClientConnectionStatus.connected);
   }
 
   Future<MqttConnectMessage> _obtainConnectionMessage(String homeId) async {
     final client = await _mqttClientApi.getMqttClientId(homeId);
     final currentUser = await _authRepository.getCurrentUser();
-    final token = await _authRepository.getAuthToken();
+    final token = await _authRepository.getAuthToken(forceRefresh: true);
     if (currentUser == null || token == null) {
       throw const MqttSmartHomeClientException(message: "unauthenticated");
     }
-    print(token.accessToken);
+    log('connection message obtained. token: $token');
 
     final connMess = MqttConnectMessage()
         .withClientIdentifier(client.clientId.toString())

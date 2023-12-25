@@ -56,7 +56,7 @@ class ScenePopulated extends StatelessWidget {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Icon(Icons.error, size: 96),
+                    const Icon(Icons.question_mark, size: 96),
                     Text(
                       'You do have any scene yet',
                       style: textTheme.headlineSmall,
@@ -70,14 +70,18 @@ class ScenePopulated extends StatelessWidget {
                 context.read<SceneBloc>().add(const SceneListInitEvent());
                 return Future.value();
               },
-              child: GridView.count(
-                padding: const EdgeInsets.all(8),
-                crossAxisCount: 2,
-                childAspectRatio: 1.5,
-                shrinkWrap: true,
+              child: SingleChildScrollView(
                 physics: const AlwaysScrollableScrollPhysics(),
-                children:
-                    scenes.map((scene) => _SceneCard(scene: scene)).toList(),
+                child: Wrap(
+                  children: scenes
+                      .map(
+                        (scene) => Padding(
+                          padding: const EdgeInsets.all(8),
+                          child: _SceneCard(scene: scene),
+                        ),
+                      )
+                      .toList(),
+                ),
               ),
             );
           },
@@ -104,52 +108,59 @@ class _SceneCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final textStyle = Theme.of(context).textTheme;
     final state = context.watch<SceneBloc>().state;
-    return GestureDetector(
-      onTap: state.activateStatus == SceneActivateStatus.loading
-          ? null
-          : () =>
-              context.read<SceneBloc>().add(SceneActivatedEvent(scene: scene)),
-      child: Card(
-        child: Padding(
-          padding: const EdgeInsets.all(8),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Icon(Icons.bookmark, size: 30),
-                  IconButton(
-                    onPressed: () {
-                      Navigator.of(context).push(
-                        SceneActionPage.route(
-                          home: context.read<SmartHomeConnectBloc>().state.home,
-                          scene: scene,
-                        ),
-                      );
-                    },
-                    icon: const Icon(
-                      Icons.more_vert,
+    return SizedBox(
+      width: 175,
+      height: 150,
+      child: GestureDetector(
+        onTap: state.activateStatus == SceneActivateStatus.loading
+            ? null
+            : () => context
+                .read<SceneBloc>()
+                .add(SceneActivatedEvent(scene: scene)),
+        child: Card(
+          child: Padding(
+            padding: const EdgeInsets.all(8),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Icon(Icons.bolt_outlined, size: 50),
+                    IconButton(
+                      onPressed: () {
+                        Navigator.of(context).push(
+                          SceneActionPage.route(
+                            home:
+                                context.read<SmartHomeConnectBloc>().state.home,
+                            scene: scene,
+                          ),
+                        );
+                      },
+                      icon: const Icon(
+                        Icons.more_vert,
+                      ),
                     ),
-                  ),
-                ],
-              ),
-              Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    scene.name,
-                    overflow: TextOverflow.ellipsis,
-                    style: textStyle.titleLarge,
-                  ),
-                  if (state.activateStatus == SceneActivateStatus.loading &&
-                      state.activateScene?.id == scene.id)
-                    const CircularProgressIndicator(),
-                ],
-              ),
-            ],
+                  ],
+                ),
+                Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      scene.name,
+                      overflow: TextOverflow.ellipsis,
+                      style: textStyle.titleLarge!.copyWith(fontSize: 20),
+                    ),
+                    if (state.activateStatus == SceneActivateStatus.loading &&
+                        state.activateScene?.id == scene.id)
+                      const CircularProgressIndicator(),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ),

@@ -70,7 +70,8 @@ class AuthRepository {
     _controller.add(AuthenticationStatus.authenticated);
   }
 
-  Future<AuthToken?> getAuthToken() async {
+  // If forceRefresh is true, refresh token request will be made. The same token will be returned if the token is not yet expired
+  Future<AuthToken?> getAuthToken({bool forceRefresh = false}) async {
     try {
       // Get the jwt from local storage
       final authToken = _authLocalStorageApi.getAuthToken();
@@ -79,14 +80,15 @@ class AuthRepository {
         return null;
       }
 
-      // Parse the expiration second to DateTime
+      // Not Used: Parse the expiration second to DateTime
       // If the accessToken does not expire, return accessToken
-      final expireTime = DateTime.fromMillisecondsSinceEpoch(
-          JwtUtils.getJwtExpirationTime(authToken.accessToken) * 1000);
-      if (DateTime.now().compareTo(expireTime) < 0) return authToken;
+      if (!forceRefresh) {
+        final expireTime = DateTime.fromMillisecondsSinceEpoch(
+            JwtUtils.getJwtExpirationTime(authToken.accessToken) * 1000);
+        if (DateTime.now().compareTo(expireTime) < 0) return authToken;
+      }
 
-      // Fetch the new token using refresh token if expired
-      // Set user to be unauthenticated for bad request and invalid access token
+      // Fetch the new token using refresh token
       final newToken = await _authApiClient.refreshToken(
         authToken.accessToken,
         authToken.refreshToken,
@@ -96,11 +98,11 @@ class AuthRepository {
         newToken.refreshToken,
       );
       return AuthToken(
-          accessToken: newToken.accessToken,
-          refreshToken: newToken.refreshToken);
-    } on JwtParseException {
-      _controller.add(AuthenticationStatus.unauthenticated);
+        accessToken: newToken.accessToken,
+        refreshToken: newToken.refreshToken,
+      );
     } on SmartHomeException catch (e) {
+      // Set user to be unauthenticated for bad request and invalid access token
       if (e.code == ErrorCode.badAuthentication) {
         _controller.add(AuthenticationStatus.unauthenticated);
       } else {

@@ -49,8 +49,7 @@ class DevicesOverview extends StatelessWidget {
       );
     }
 
-    return GridView.count(
-      crossAxisCount: 2,
+    return Wrap(
       children: devices.map((device) {
         switch (device.mainCategory.toDeviceMainCategory()) {
           case DeviceMainCategory.light:
